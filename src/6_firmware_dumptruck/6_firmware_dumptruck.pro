@@ -1,6 +1,15 @@
-QT -= gui
+CONFIG += c++17
 
-CONFIG += c++11 console
-CONFIG -= app_bundle
+SOURCES += \
+    main.cpp
 
-SOURCES +=
+message(6_firmware_dumptruck project dir: $${PWD})
+
+# Artifact direcotires configuration
+DESTDIR     = $$PWD/../binaries
+OBJECTS_DIR = $$PWD/build/.obj
+MOC_DIR     = $$PWD/build/.moc
+RCC_DIR     = $$PWD/build/.qrc
+UI_DIR      = $$PWD/build/.ui
+
+message(6_firmware_dumptruck output dir: $${DESTDIR})
