@@ -1,7 +1,15 @@
-#ifndef HOST_WIDGET_H
-#define HOST_WIDGET_H
+#ifndef MAIN_WIDGET_H
+#define MAIN_WIDGET_H
 
+#include <memory>
+
+#include <QTimer>
 #include <QWidget>
+
+enum class form_names {
+    main,
+    stoppages,
+};
 
 namespace Ui {
 class host_widget;
@@ -16,6 +24,8 @@ public:
 
 private:
     Ui::host_widget *ui;
+
+    QTimer *m_timer_update_time;
 };
 
-#endif // HOST_WIDGET_H
+#endif // MAIN_WIDGET_H

@@ -8,17 +8,24 @@ INCLUDEPATH += \
     widgets \
     ../0_sensors_gps
 
+DEPENDPATH += \
+    ../0_sensors_gps
+
 SOURCES += \
-    widgets/host_widget.cpp \
-    main.cpp
+    main.cpp \
+    widgets/main_widget.cpp \
+    widgets/stoppages_form.cpp
 
 HEADERS += \
-    widgets/host_widget.h
+    widgets/main_widget.h \
+    widgets/stoppages_form.h
 
 FORMS += \
-    widgets/host_widget.ui
+    widgets/main_widget.ui \
+    widgets/stoppages_form.ui
 
-LIBS += -L$$PWD/../binaries -lsensors-gps
+LIBS += -L$$PWD/../binaries \
+    -lsensors-gps
 
 message(6_firmware_auxiliary project dir: $${PWD})
 
@@ -33,3 +40,6 @@ message(6_firmware_auxiliary output dir: $${DESTDIR})
 
 target.path += /usr/sbin
 INSTALLS += target
+
+RESOURCES += \
+    ui_imgs.qrc
