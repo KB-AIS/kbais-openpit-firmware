@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Sensors
-    auto gps_sensor_thread = new Sensors::Gps::gps_sensor_thread(&app);
+    auto gps_sensor_thread = new class gps_sensor_thread(&app);
     //gps_sensor_thread->moveToThread(gps_sensor_thread);
 
     // UI
