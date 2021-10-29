@@ -6,8 +6,7 @@ TEMPLATE = lib
 
 CONFIG += c++17
 
-HEADERS += \
-    hello_world.h
+HEADERS +=
 
 message(0_sensors_gps project dir: $${PWD})
 

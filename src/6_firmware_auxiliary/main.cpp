@@ -1,17 +1,13 @@
-#include <iostream>
-
+// Qt
 #include <QApplication>
-
-#include <widgets/main_widget.h>
-
-#include <hello_world.h>
-
+// Firmware Aux
+#include <forms/main_form.h>
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    host_widget host_widget;
-    host_widget.show();
+    main_form main_form;
+    main_form.show();
 
     return app.exec();
 }
