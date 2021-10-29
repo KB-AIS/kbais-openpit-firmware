@@ -1,4 +1,4 @@
-QT += core
+QT += core serialport
 
 TARGET = sensors-gps
 
@@ -6,7 +6,8 @@ TEMPLATE = lib
 
 CONFIG += c++17
 
-HEADERS +=
+HEADERS += \
+    gps_sensor_thread.h
 
 message(0_sensors_gps project dir: $${PWD})
 
@@ -21,3 +22,6 @@ message(0_sensors_gps output dir: $${DESTDIR})
 
 target.path += /usr/lib
 INSTALLS += target
+
+SOURCES += \
+    gps_sensor_thread.cpp

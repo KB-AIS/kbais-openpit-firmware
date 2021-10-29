@@ -5,8 +5,10 @@ TARGET = carrier-auxiliary
 CONFIG += c++17
 
 INCLUDEPATH += \
-    widgets \
-    ../0_sensors_gps
+    ../0_sensors_gps \
+    # OSS
+    # plog -- logging library
+    ../_oss/plog/include
 
 DEPENDPATH += \
     ../0_sensors_gps
