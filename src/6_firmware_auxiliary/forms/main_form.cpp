@@ -1,10 +1,12 @@
 #include "main_form.h"
 #include "ui_main_form.h"
 
+// OSS
+#include <plog/Log.h>
+
 main_form::main_form(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::main_form)
-{
+    ui(new Ui::main_form) {
     ui->setupUi(this);
 
     m_timer_update_time = new QTimer();
@@ -31,9 +33,12 @@ main_form::main_form(QWidget *parent) :
     m_timer_update_time->start();
 }
 
-main_form::~main_form()
-{
+main_form::~main_form() {
     delete ui;
 
     delete m_timer_update_time;
+}
+
+void main_form::update_gps_data_slot() {
+    LOGI << "CONNECTED!";
 }

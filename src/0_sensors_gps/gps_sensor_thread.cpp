@@ -1,6 +1,8 @@
 #include "gps_sensor_thread.h"
+// OSS
+#include <plog/Log.h>
 
-using namespace Sensors::Ui;
+using namespace Sensors::Gps;
 
 gps_sensor_thread::gps_sensor_thread(QObject *parent) :
     QThread(parent)
@@ -9,7 +11,7 @@ gps_sensor_thread::gps_sensor_thread(QObject *parent) :
 }
 
 void gps_sensor_thread::run() {
-    auto setup_gps_device_serial_port = [](QSerialPort *device) {
+    auto setup_gps_device = [](QSerialPort *device) {
         const QString device_port_name = "/dev/ttyS5";
 
         device->setPortName(device_port_name);
@@ -19,10 +21,18 @@ void gps_sensor_thread::run() {
         device->setFlowControl(QSerialPort::NoFlowControl);
     };
 
-    m_gps_device_serial_port = new QSerialPort();
-    setup_gps_device_serial_port(m_gps_device_serial_port);
+    auto reset_gps_device = []() {
+
+    };
+
+    PLOGI << "Setup GPS sensors thread";
+
+    m_gps_device = new QSerialPort();
+    setup_gps_device(m_gps_device);
 
     forever {
+        emit update_gps_data_signal();
+
         auto return_code = exec();
     }
 }

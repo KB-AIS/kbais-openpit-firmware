@@ -1,10 +1,15 @@
-QT += core serialport
+QT += gui serialport
 
 TARGET = sensors-gps
 
 TEMPLATE = lib
 
 CONFIG += c++17
+
+INCLUDEPATH += \
+    # OSS
+    # plog -- logging library
+    ../_oss/plog/include
 
 HEADERS += \
     gps_sensor_thread.h
