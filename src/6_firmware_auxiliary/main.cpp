@@ -25,21 +25,21 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Sensors
-    auto gps_sensor_thread = new class gps_sensor_thread(&app);
-    //gps_sensor_thread->moveToThread(gps_sensor_thread);
+    gps_sensor_thread gps_sensor_thread;
+    gps_sensor_thread.moveToThread(&gps_sensor_thread);
 
     // UI
     main_form main_form;
 
     // Connect
     QObject::connect(
-        gps_sensor_thread,
+        &gps_sensor_thread,
         &gps_sensor_thread::update_gps_data_signal,
         &main_form,
         &main_form::update_gps_data_slot
     );
 
-    gps_sensor_thread->start();
+    gps_sensor_thread.start();
 
     main_form.show();
 

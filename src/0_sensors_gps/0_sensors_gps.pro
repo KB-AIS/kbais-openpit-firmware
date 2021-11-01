@@ -7,7 +7,6 @@ TEMPLATE = lib
 CONFIG += c++17
 
 INCLUDEPATH += \
-    # OSS
     # plog        -- logging library
     ../_oss/plog/include \
     # qdeferred   -- async code execution

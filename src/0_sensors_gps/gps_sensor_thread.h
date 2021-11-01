@@ -22,7 +22,7 @@ private:
     /*!
      * \brief Serial port to read data from GPS device.
      */
-    QSerialPort m_gps_device;
+    QSerialPort *m_gps_device;
 
 signals:
     /*!

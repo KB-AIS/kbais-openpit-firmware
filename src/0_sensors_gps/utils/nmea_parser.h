@@ -6,7 +6,7 @@ namespace Sensors::Gps {
 /*!
  * \brief Parser of NMEA protocol.
  *
- * \link http://aprs.gids.nl/nmea/
+ * \link https://gpsd.gitlab.io/gpsd/NMEA.html
  */
 class nmea_parser
 {
