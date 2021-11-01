@@ -15,13 +15,14 @@ class gps_sensor_thread : public QThread {
 
 public:
     gps_sensor_thread(QObject *parent = nullptr);
+    ~gps_sensor_thread();
     void run() override;
 
 private:
     /*!
      * \brief Serial port to read data from GPS device.
      */
-    QSerialPort *m_gps_device;
+    QSerialPort m_gps_device;
 
 signals:
     /*!

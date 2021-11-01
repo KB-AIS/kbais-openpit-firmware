@@ -8,11 +8,14 @@ CONFIG += c++17
 
 INCLUDEPATH += \
     # OSS
-    # plog -- logging library
-    ../_oss/plog/include
+    # plog        -- logging library
+    ../_oss/plog/include \
+    # qdeferred   -- async code execution
+    ../_oss/qdef/src
 
 HEADERS += \
-    gps_sensor_thread.h
+    gps_sensor_thread.h \
+    utils/nmea_parser.h
 
 message(0_sensors_gps project dir: $${PWD})
 
@@ -29,4 +32,5 @@ target.path += /usr/lib
 INSTALLS += target
 
 SOURCES += \
-    gps_sensor_thread.cpp
+    gps_sensor_thread.cpp \
+    utils/nmea_parser.cpp
