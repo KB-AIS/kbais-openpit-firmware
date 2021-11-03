@@ -1,8 +1,10 @@
 #ifndef GPS_SENSOR_THREAD_H
 #define GPS_SENSOR_THREAD_H
 
+// Qt
 #include <QObject>
 #include <QThread>
+// Qt SerialPort
 #include <QtSerialPort/QSerialPort>
 
 namespace Sensors::Gps {
@@ -22,14 +24,15 @@ private:
     /*!
      * \brief Serial port to read data from GPS device.
      */
-    QSerialPort *m_gps_device;
+    QSerialPort m_gps_device;
 
 signals:
     /*!
      * \brief Emit singal on GPS data update from device.
      */
     void update_gps_data_signal();
+
 };
 
-}
+} // Sensors::Gps
 #endif // GPS_SENSOR_THREAD_H
