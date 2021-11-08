@@ -1,11 +1,10 @@
 #include <gps_sensor_thread.h>
 #include <utils/nmea_parser.h>
 
+// qt
+#include <QVector>
 // plog
 #include <plog/Log.h>
-// qdef
-#include <QDeferred>
-#include <QLambdaThreadWorker>
 
 namespace Sensors::Gps {
 
@@ -39,16 +38,20 @@ void gps_sensor_thread::run() {
         return isDeviceOpen;
     };
 
-    bool is_frame_open = false;
+    QVector<Nmea::ISentence> sentences { };
 
     connect(
         &m_gps_device, &QSerialPort::readyRead,
         this, [&] {
             PLOGD << "Consuming from GPS device";
+            // Clear previous output recived from GPS device
+            sentences.clear();
 
-            Nmea::process_input(m_gps_device);
+            Nmea::process_input(m_gps_device, sentences);
 
             PLOGD << "Finish consuming from GPS device";
+
+            //TODO: Process output sentences
         }
     );
 

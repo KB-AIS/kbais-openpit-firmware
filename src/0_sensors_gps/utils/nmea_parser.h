@@ -4,6 +4,7 @@
 // Qt
 #include <QDateTime>
 #include <QIODevice>
+#include <QVector>
 
 // CONSTANTS
 namespace Sensors::Gps::Nmea {
@@ -28,7 +29,15 @@ namespace Sensors::Gps::Nmea {
 // SENTENCES
 namespace Sensors::Gps::Nmea {
 
-struct GgaSentence {
+/*!
+ * \brief The ISentence struct
+ */
+struct ISentence { };
+
+/*!
+ * \brief The GgaSentence struct
+ */
+struct GgaSentence : ISentence {
 
 public:
     /*!
@@ -38,7 +47,10 @@ public:
 
 };
 
-struct RmcSentence {
+/*!
+ * \brief The RmcSentence struct
+ */
+struct RmcSentence : ISentence {
 
 public:
     /*!
@@ -62,7 +74,12 @@ public:
 // FUNCTIONS
 namespace Sensors::Gps::Nmea {
 
-static void process_input(QIODevice& device);
+/*!
+ * \brief process_input
+ * \param device
+ * \param output
+ */
+void process_input(QIODevice& device, QVector<ISentence>& output_sentences);
 
 }
 
