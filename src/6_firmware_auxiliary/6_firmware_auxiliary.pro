@@ -1,8 +1,8 @@
 QT += core gui widgets
 
-TARGET = carrier-auxiliary
-
 CONFIG += c++17
+
+TARGET = carrier-auxiliary
 
 INCLUDEPATH += \
     # SENSORS
@@ -16,14 +16,19 @@ DEPENDPATH += \
     ../0_sensors_gps
 
 SOURCES += \
-    forms/main_form.cpp \
-    main.cpp
+    host_presenter.cpp \
+    main.cpp \
+    presentation/diag_presenter.cpp \
+    presentation/main_presenter.cpp
 
 HEADERS += \
-    forms/main_form.h
+    host_presenter.h \
+    presentation/diag_presenter.h \
+    presentation/main_presenter.h
 
 FORMS += \
-    forms/main_form.ui
+    presentation/diag_view.ui \
+    presentation/main_view.ui
 
 LIBS += -L$$PWD/../binaries \
     -lsensors-gps

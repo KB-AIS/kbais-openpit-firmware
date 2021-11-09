@@ -1,11 +1,18 @@
 #ifndef GPS_SENSOR_THREAD_H
 #define GPS_SENSOR_THREAD_H
 
-// Qt
+#include <utils/nmea_parser.h>
+
+// std
+#include <memory>
+// qt
 #include <QObject>
 #include <QThread>
-// Qt SerialPort
+#include <QVector>
+// qt serial port
 #include <QtSerialPort/QSerialPort>
+
+using std::shared_ptr;
 
 namespace Sensors::Gps {
 
@@ -17,14 +24,24 @@ class gps_sensor_thread : public QThread {
 
 public:
     gps_sensor_thread(QObject *parent = nullptr);
+
     ~gps_sensor_thread();
+
     void run() override;
 
 private:
+    void process_device_read();
+
     /*!
      * \brief Serial port to read data from GPS device.
      */
     QSerialPort m_gps_device;
+
+    QVector<shared_ptr<Nmea::ISentence>> m_sentences;
+
+    shared_ptr<Nmea::GgaSentence> m_gga_sentence;
+
+    shared_ptr<Nmea::RmcSentence> m_rmc_sentence;
 
 signals:
     /*!

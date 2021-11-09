@@ -13,8 +13,12 @@ INCLUDEPATH += \
     ../_oss/qdef/src
 
 HEADERS += \
-    gps_sensor_thread.h \
-    utils/nmea_parser.h
+    utils/nmea_parser.h \
+    gps_sensor_thread.h
+
+SOURCES += \
+    utils/nmea_parser.cpp \
+    gps_sensor_thread.cpp
 
 message(0_sensors_gps project dir: $${PWD})
 
@@ -29,7 +33,3 @@ message(0_sensors_gps output dir: $${DESTDIR})
 
 target.path += /usr/lib
 INSTALLS += target
-
-SOURCES += \
-    gps_sensor_thread.cpp \
-    utils/nmea_parser.cpp

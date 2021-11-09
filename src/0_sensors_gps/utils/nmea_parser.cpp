@@ -14,18 +14,18 @@ const int CMD_LEN { 3 };
 
 const int CMD_POS { 3 };
 
-typedef std::function<ISentence(const QByteArray&)> sentence_parser;
+typedef std::function<shared_ptr<ISentence>(const QByteArray&)> sentence_parser;
 
-static ISentence parse_gga_sentence(const QByteArray &sentence_bytes) {
+static shared_ptr<ISentence> parse_gga_sentence(const QByteArray& sentence_bytes) {
     PLOGD << "Consumed sentence: " << sentence_bytes;
 
-    return GgaSentence { };
+    return std::make_shared<GgaSentence>(GgaSentence { });
 }
 
-static ISentence parse_rmc_sentence(const QByteArray &sentence_bytes) {
+static shared_ptr<ISentence>parse_rmc_sentence(const QByteArray& sentence_bytes) {
     PLOGD << "Consumed sentence: " << sentence_bytes;
 
-    return RmcSentence { };
+    return std::make_shared<RmcSentence>(RmcSentence { });
 }
 
 static const std::map<QString, sentence_parser> sentence_parsers {
@@ -34,7 +34,7 @@ static const std::map<QString, sentence_parser> sentence_parsers {
 };
 
 // FUNCTIONS
-void process_input(QIODevice& device, QVector<ISentence>& output_sentences) {
+void process_input(QIODevice& device, QVector<std::shared_ptr<ISentence>>& sentences) {
     const auto bytes = device.peek(PEEK_SIZE);
 
     unsigned int bytes_scaned { 0 };
@@ -67,7 +67,7 @@ void process_input(QIODevice& device, QVector<ISentence>& output_sentences) {
         if (itr != sentence_parsers.end()) {
             auto sentence = itr->second(sentence_bytes);
 
-            output_sentences.append(sentence);
+            sentences.append(sentence);
         }
     }
 

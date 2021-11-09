@@ -1,10 +1,11 @@
-#include <forms/main_form.h>
+#include <presentation/main_presenter.h>
 
-// Qt
-#include <QApplication>
-// Sensors GPS
+// sensors\gps
 #include <gps_sensor_thread.h>
-// OSS
+
+// qt
+#include <QApplication>
+// plog
 #include <plog/Init.h>
 #include <plog/Log.h>
 #include <plog/Appenders/ConsoleAppender.h>
@@ -13,15 +14,17 @@
 using namespace Sensors::Gps;
 
 static void setup_logging() {
-    static plog::ConsoleAppender<plog::TxtFormatter> consoleAppender;
-    plog::init(plog::debug).addAppender(&consoleAppender);
+    using namespace plog;
+
+    static ConsoleAppender<TxtFormatter> console_appender;
+
+    init(debug).addAppender(&console_appender);
 }
 
 int main(int argc, char *argv[]) {
     setup_logging();
 
-    PLOGI << "Starting AUX application";
-
+    PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
     // Sensors
@@ -29,19 +32,19 @@ int main(int argc, char *argv[]) {
     gps_sensor_thread.moveToThread(&gps_sensor_thread);
 
     // UI
-    main_form main_form;
+    main_presenter main_presenter;
 
     // Connect
     QObject::connect(
-        &gps_sensor_thread,
-        &gps_sensor_thread::update_gps_data_signal,
-        &main_form,
-        &main_form::update_gps_data_slot
+        &gps_sensor_thread, &gps_sensor_thread::update_gps_data_signal,
+
+        &main_presenter, &main_presenter::update_gps_data_slot
     );
 
     gps_sensor_thread.start();
 
-    main_form.show();
+    main_presenter.show();
 
+    PLOGI << "Starup AUX application";
     return app.exec();
 }

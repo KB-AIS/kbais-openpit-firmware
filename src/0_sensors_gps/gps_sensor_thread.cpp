@@ -1,17 +1,30 @@
 #include <gps_sensor_thread.h>
 #include <utils/nmea_parser.h>
 
-// qt
-#include <QVector>
+// std
+#include <typeinfo>
+#include <functional>
 // plog
 #include <plog/Log.h>
+#include <QtGlobal>
+// TODO: Move to utils?
+template<typename TTo, typename TFrom>
+void action_if(
+    const std::shared_ptr<TFrom>& value,
+    std::function<void(const std::shared_ptr<TTo>&)> action
+) {
+    auto casted_value = std::dynamic_pointer_cast<TTo>(value);
+    if (!casted_value) return;
+
+    action(casted_value);
+}
 
 namespace Sensors::Gps {
 
 const int PEEK_SIZE { 1024 };
 
 gps_sensor_thread::gps_sensor_thread(QObject *parent) : QThread(parent),
-    m_gps_device() { }
+    m_gps_device(), m_sentences() { }
 
 gps_sensor_thread::~gps_sensor_thread() {
     m_gps_device.close();
@@ -38,21 +51,10 @@ void gps_sensor_thread::run() {
         return isDeviceOpen;
     };
 
-    QVector<Nmea::ISentence> sentences { };
-
     connect(
         &m_gps_device, &QSerialPort::readyRead,
-        this, [&] {
-            PLOGD << "Consuming from GPS device";
-            // Clear previous output recived from GPS device
-            sentences.clear();
 
-            Nmea::process_input(m_gps_device, sentences);
-
-            PLOGD << "Finish consuming from GPS device";
-
-            //TODO: Process output sentences
-        }
+        this, &gps_sensor_thread::process_device_read
     );
 
     PLOGD << "Setup GPS device in thread";
@@ -62,9 +64,31 @@ void gps_sensor_thread::run() {
     reset_gps_device(m_gps_device);
 
     forever {
-        emit update_gps_data_signal();
-
         auto exit_code = exec();
+    }
+}
+
+void gps_sensor_thread::process_device_read() {
+    PLOGD << "Consuming from GPS device";
+    // Clear previous output recived from GPS device
+    m_sentences.clear();
+
+    Nmea::process_input(m_gps_device, m_sentences);
+
+    for (auto& sentence : m_sentences) {
+        action_if<Nmea::GgaSentence>(sentence, [=](auto gga_sentence) {
+            PLOGD << "Capture GGA sentence";
+            m_gga_sentence = gga_sentence;
+        });
+
+        action_if<Nmea::RmcSentence>(sentence, [=](auto mc_sentence) {
+            PLOGD << "Capture RMC sentence";
+            m_rmc_sentence = mc_sentence;
+        });
+
+        if (!m_gga_sentence || !m_rmc_sentence) continue;
+
+        emit update_gps_data_signal();
     }
 }
 

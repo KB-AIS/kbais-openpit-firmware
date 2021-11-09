@@ -1,10 +1,14 @@
 #ifndef NMEA_PARSER_H
 #define NMEA_PARSER_H
 
-// Qt
+// std
+#include <memory>
+// qt
 #include <QDateTime>
 #include <QIODevice>
 #include <QVector>
+
+using std::shared_ptr;
 
 // CONSTANTS
 namespace Sensors::Gps::Nmea {
@@ -30,29 +34,20 @@ namespace Sensors::Gps::Nmea {
 namespace Sensors::Gps::Nmea {
 
 /*!
- * \brief The ISentence struct
+ * Interface to mark NMEA sentences
  */
-struct ISentence { };
+struct ISentence {
+    virtual ~ISentence() = default;
+};
 
-/*!
- * \brief The GgaSentence struct
- */
-struct GgaSentence : ISentence {
-
-public:
+struct GgaSentence : public ISentence {
     /*!
      * \brief UTC of position report.
      */
     QDateTime position_time;
-
 };
 
-/*!
- * \brief The RmcSentence struct
- */
-struct RmcSentence : ISentence {
-
-public:
+struct RmcSentence : public ISentence {
     /*!
      * \brief UTC of position fix.
      */
@@ -65,21 +60,14 @@ public:
     double longitude;
 
     double speed_over_ground;
-
 };
 
 }
 
-
 // FUNCTIONS
 namespace Sensors::Gps::Nmea {
 
-/*!
- * \brief process_input
- * \param device
- * \param output
- */
-void process_input(QIODevice& device, QVector<ISentence>& output_sentences);
+void process_input(QIODevice& device, QVector<shared_ptr<ISentence>>& sentences);
 
 }
 
