@@ -8,17 +8,16 @@ INCLUDEPATH += \
     # project
     ../0_sensors_gps \
     # oss
-    # plog -- logging library
     ../_oss/plog/include
 
 SOURCES += \
-    host_presenter.cpp \
+    host_wrapper.cpp \
     main.cpp \
     presentation/diag_presenter.cpp \
     presentation/main_presenter.cpp
 
 HEADERS += \
-    host_presenter.h \
+    host_wrapper.h \
     presentation/diag_presenter.h \
     presentation/main_presenter.h
 
@@ -27,7 +26,8 @@ FORMS += \
     presentation/main_view.ui
 
 LIBS += -L$$PWD/../binaries \
-    -lsensors-gps
+    -lsensors-gps \
+    -lutils
 
 message(6_firmware_auxiliary project dir: $${PWD})
 

@@ -1,8 +1,8 @@
 TARGET = sensors-gps
 
-TEMPLATE = lib
-
 QT += serialport
+
+TEMPLATE = lib
 
 CONFIG += c++17
 
@@ -14,12 +14,12 @@ INCLUDEPATH += \
     ../_oss/qdef/src
 
 HEADERS += \
-    gps_sensor_thread.h \
+    gps_device_contoller.h \
     nmea/nmea_parser.h
 
 SOURCES += \
-    nmea/nmea_parser.cpp \
-    gps_sensor_thread.cpp
+    gps_device_contoller.cpp \
+    nmea/nmea_parser.cpp
 
 LIBS += -L$$PWD/../binaries \
     -lutils

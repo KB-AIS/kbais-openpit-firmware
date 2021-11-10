@@ -11,9 +11,6 @@ class main_presenter;
 
 }
 
-/*!
- * \brief The main_form class
- */
 class main_presenter : public QWidget {
     Q_OBJECT
 

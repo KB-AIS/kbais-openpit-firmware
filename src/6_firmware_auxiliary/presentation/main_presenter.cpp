@@ -18,7 +18,7 @@ main_presenter::main_presenter(QWidget *parent) : QWidget(parent),
     ui->setupUi(this);
 
     // Setup on screen timer update with 1 second interval.
-    m_timer_update_time = new QTimer();
+    m_timer_update_time = new QTimer(this);
 
     connect(
         m_timer_update_time, &QTimer::timeout,
@@ -43,8 +43,6 @@ main_presenter::main_presenter(QWidget *parent) : QWidget(parent),
 
 main_presenter::~main_presenter() {
     delete ui;
-
-    delete m_timer_update_time;
 }
 
 void main_presenter::update_gps_data_slot() {

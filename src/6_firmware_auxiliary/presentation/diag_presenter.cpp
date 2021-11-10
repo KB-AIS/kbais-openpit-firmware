@@ -6,7 +6,6 @@ diag_presenter::diag_presenter(QWidget *parent) : QWidget(parent),
     ui->setupUi(this);
 }
 
-diag_presenter::~diag_presenter()
-{
+diag_presenter::~diag_presenter() {
     delete ui;
 }

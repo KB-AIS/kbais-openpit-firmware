@@ -8,8 +8,6 @@
 #include <QIODevice>
 #include <QVector>
 
-using std::shared_ptr;
-
 // CONSTANTS
 namespace Sensors::Gps::Nmea {
 
@@ -61,7 +59,7 @@ struct RmcSentence : public ISentence {
 // FUNCTIONS
 namespace Sensors::Gps::Nmea {
 
-void process_input(QIODevice& device, QVector<shared_ptr<ISentence>>& output_sentences);
+void process_input(QIODevice& device, QVector<std::shared_ptr<ISentence>>& output_sentences);
 
 }
 

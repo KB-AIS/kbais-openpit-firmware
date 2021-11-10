@@ -6,13 +6,15 @@
 // plog
 #include <plog/Log.h>
 
+using std::shared_ptr;
+
 namespace Sensors::Gps::Nmea {
 
-const int PEEK_SIZE { 1024 };
+constexpr int PEEK_SIZE { 1024 };
 
-const int CMD_LEN { 3 };
+constexpr int CMD_LEN { 3 };
 
-const int CMD_POS { 3 };
+constexpr int CMD_POS { 3 };
 
 typedef std::function<shared_ptr<ISentence>(const QByteArray&)> sentence_parser;
 
