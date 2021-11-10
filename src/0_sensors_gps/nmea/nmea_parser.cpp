@@ -34,7 +34,7 @@ static const std::map<QString, sentence_parser> sentence_parsers {
 };
 
 // FUNCTIONS
-void process_input(QIODevice& device, QVector<std::shared_ptr<ISentence>>& sentences) {
+void process_input(QIODevice& device, QVector<shared_ptr<ISentence>>& output_sentences) {
     const auto bytes = device.peek(PEEK_SIZE);
 
     unsigned int bytes_scaned { 0 };
@@ -67,7 +67,7 @@ void process_input(QIODevice& device, QVector<std::shared_ptr<ISentence>>& sente
         if (itr != sentence_parsers.end()) {
             auto sentence = itr->second(sentence_bytes);
 
-            sentences.append(sentence);
+            output_sentences.append(sentence);
         }
     }
 

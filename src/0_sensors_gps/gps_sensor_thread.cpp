@@ -1,5 +1,7 @@
 #include <gps_sensor_thread.h>
-#include <utils/nmea_parser.h>
+
+// utils
+#include <casting.h>
 
 // std
 #include <typeinfo>
@@ -7,17 +9,6 @@
 // plog
 #include <plog/Log.h>
 #include <QtGlobal>
-// TODO: Move to utils?
-template<typename TTo, typename TFrom>
-void action_if(
-    const std::shared_ptr<TFrom>& value,
-    std::function<void(const std::shared_ptr<TTo>&)> action
-) {
-    auto casted_value = std::dynamic_pointer_cast<TTo>(value);
-    if (!casted_value) return;
-
-    action(casted_value);
-}
 
 namespace Sensors::Gps {
 
@@ -76,12 +67,12 @@ void gps_sensor_thread::process_device_read() {
     Nmea::process_input(m_gps_device, m_sentences);
 
     for (auto& sentence : m_sentences) {
-        action_if<Nmea::GgaSentence>(sentence, [=](auto gga_sentence) {
+        Utils::Casting::action_if<Nmea::GgaSentence>(sentence, [=](auto gga_sentence) {
             PLOGD << "Capture GGA sentence";
             m_gga_sentence = gga_sentence;
         });
 
-        action_if<Nmea::RmcSentence>(sentence, [=](auto mc_sentence) {
+        Utils::Casting::action_if<Nmea::RmcSentence>(sentence, [=](auto mc_sentence) {
             PLOGD << "Capture RMC sentence";
             m_rmc_sentence = mc_sentence;
         });

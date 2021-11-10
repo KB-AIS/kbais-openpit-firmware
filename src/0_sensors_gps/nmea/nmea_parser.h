@@ -41,16 +41,10 @@ struct ISentence {
 };
 
 struct GgaSentence : public ISentence {
-    /*!
-     * \brief UTC of position report.
-     */
     QDateTime position_time;
 };
 
 struct RmcSentence : public ISentence {
-    /*!
-     * \brief UTC of position fix.
-     */
     QDateTime position_time;
 
     bool is_valid;
@@ -67,7 +61,7 @@ struct RmcSentence : public ISentence {
 // FUNCTIONS
 namespace Sensors::Gps::Nmea {
 
-void process_input(QIODevice& device, QVector<shared_ptr<ISentence>>& sentences);
+void process_input(QIODevice& device, QVector<shared_ptr<ISentence>>& output_sentences);
 
 }
 

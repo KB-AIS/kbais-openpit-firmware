@@ -1,7 +1,7 @@
 #ifndef GPS_SENSOR_THREAD_H
 #define GPS_SENSOR_THREAD_H
 
-#include <utils/nmea_parser.h>
+#include <nmea/nmea_parser.h>
 
 // std
 #include <memory>

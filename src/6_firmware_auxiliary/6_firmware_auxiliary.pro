@@ -1,19 +1,15 @@
+TARGET = carrier-auxiliary
+
 QT += core gui widgets
 
 CONFIG += c++17
 
-TARGET = carrier-auxiliary
-
 INCLUDEPATH += \
-    # SENSORS
-    # GPS sensor
+    # project
     ../0_sensors_gps \
-    # OSS
+    # oss
     # plog -- logging library
     ../_oss/plog/include
-
-DEPENDPATH += \
-    ../0_sensors_gps
 
 SOURCES += \
     host_presenter.cpp \
@@ -35,7 +31,6 @@ LIBS += -L$$PWD/../binaries \
 
 message(6_firmware_auxiliary project dir: $${PWD})
 
-# Artifact direcotires configuration
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj
 MOC_DIR     = $$PWD/build/.moc

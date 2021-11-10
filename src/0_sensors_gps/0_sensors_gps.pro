@@ -1,28 +1,31 @@
-QT += gui serialport
-
 TARGET = sensors-gps
 
 TEMPLATE = lib
 
+QT += serialport
+
 CONFIG += c++17
 
 INCLUDEPATH += \
-    # plog        -- logging library
+    # project
+    ../_utils \
+    # oss
     ../_oss/plog/include \
-    # qdeferred   -- async code execution
     ../_oss/qdef/src
 
 HEADERS += \
-    utils/nmea_parser.h \
-    gps_sensor_thread.h
+    gps_sensor_thread.h \
+    nmea/nmea_parser.h
 
 SOURCES += \
-    utils/nmea_parser.cpp \
+    nmea/nmea_parser.cpp \
     gps_sensor_thread.cpp
+
+LIBS += -L$$PWD/../binaries \
+    -lutils
 
 message(0_sensors_gps project dir: $${PWD})
 
-# Artifact direcotires configuration
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj
 MOC_DIR     = $$PWD/build/.moc
