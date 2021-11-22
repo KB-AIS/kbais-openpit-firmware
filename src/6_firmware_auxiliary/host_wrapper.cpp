@@ -22,7 +22,7 @@ host_wrapper::host_wrapper() :
     m_nav_stack->show();
 
     connect(
-        &m_gps_controller, &gps_device_controller::update_gps_data_signal,
+        &m_gps_controller, &GpsDeviceController::update_gps_data_signal,
 
         m_main_presenter, &main_presenter::update_gps_data_slot
     );

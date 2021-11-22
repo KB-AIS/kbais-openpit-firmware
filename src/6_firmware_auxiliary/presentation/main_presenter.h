@@ -1,6 +1,9 @@
 #ifndef MAIN_PRESENTER_H
 #define MAIN_PRESENTER_H
 
+
+#include <gps_udpate.h>
+
 // qt
 #include <QTimer>
 #include <QWidget>
@@ -20,7 +23,7 @@ public:
     ~main_presenter();
 
 public slots:
-    void update_gps_data_slot();
+    void update_gps_data_slot(const Sensors::Gps::GpsUpdate&);
 
 private:
     Ui::main_presenter* ui;

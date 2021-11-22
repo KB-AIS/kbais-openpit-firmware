@@ -1,4 +1,4 @@
-#include "sentences.h"
+#include "nmea_sentence.h"
 
 // plog
 #include <plog/Log.h>
@@ -35,6 +35,14 @@ std::pair<double, double> parse_lat_lon(
     return { lat, lon };
 }
 
+GgaSentence::GgaSentence() {}
+
+GgaSentence::GgaSentence(
+    const QTime& time,
+    double lat, double lon, short qal, short sat
+) : time { time },
+    lat { lat }, lon { lon }, qal { qal }, sat { sat } {}
+
 std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes) {
     constexpr int FP_TIME               { 1 };
     constexpr int FP_LAT                { 2 };
@@ -67,6 +75,14 @@ std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes
         pos_time , lat, lon, gps_quality, satellites,
     });
 }
+
+RmcSentence::RmcSentence() {}
+
+RmcSentence::RmcSentence(
+    const QDateTime& datetime,
+    double lat, double lon, double spd
+) : datetime { datetime }, is_valid { true },
+    lat { lat }, lon { lon }, spd { spd } {}
 
 std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes) {
     constexpr int FP_TIME               { 1 };

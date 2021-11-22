@@ -1,7 +1,7 @@
 #ifndef NMEA_PARSER_H
 #define NMEA_PARSER_H
 
-#include <nmea/sentences.h>
+#include <nmea/nmea_sentence.h>
 
 // std
 #include <memory>
@@ -32,7 +32,7 @@ constexpr int SENTENCE_MAX_LENGTH { 82 };
  * \param device
  * \param output_sentences
  */
-void process_input(QIODevice& device, std::vector<std::shared_ptr<ISentence>>& output_sentences);
+void process_input(QIODevice& device, std::vector<std::shared_ptr<NmeaSentence>>& output_sentences);
 
 }
 

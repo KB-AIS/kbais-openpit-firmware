@@ -1,51 +1,37 @@
 #ifndef GPS_DEVICE_CONTROLLER_H
 #define GPS_DEVICE_CONTROLLER_H
 
+
 #include <nmea/nmea_parser.h>
+#include <gps_udpate.h>
 
 // std
 #include <memory>
 #include <vector>
 // qt
 #include <QObject>
-#include <QThread>
 // qt serial port
 #include <QtSerialPort/QSerialPort>
 
-// Contracts
 namespace Sensors::Gps {
 
-struct gps_update {
-
-    double latitude;
-
-    double longitude;
-
-};
-
-}
-
-Q_DECLARE_METATYPE(Sensors::Gps::gps_update);
-
-namespace Sensors::Gps {
-
-class gps_device_controller : public QObject {
+class GpsDeviceController : public QObject {
     Q_OBJECT;
 
 public:
-    gps_device_controller(QObject *parent = nullptr);
+    GpsDeviceController(QObject *parent = nullptr);
 
-    ~gps_device_controller();
+    ~GpsDeviceController();
 
     /*!
      * \brief Emit singal on GPS data update from device.
      */
-    Q_SIGNAL void update_gps_data_signal();
+    Q_SIGNAL void update_gps_data_signal(const GpsUpdate&);
 
 private:
     QSerialPort m_gps_device;
 
-    std::vector<std::shared_ptr<Nmea::ISentence>> m_sentences;
+    std::vector<std::shared_ptr<Nmea::NmeaSentence>> m_sentences;
 
     std::shared_ptr<Nmea::GgaSentence> m_gga_sentence;
 

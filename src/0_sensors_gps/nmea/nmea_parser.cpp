@@ -1,6 +1,6 @@
 #include "nmea_parser.h"
 
-#include <nmea/sentences.h>
+#include <nmea/nmea_sentence.h>
 
 // std
 #include <functional>
@@ -20,14 +20,14 @@ constexpr int CMD_LEN { 3 };
 
 constexpr int CMD_POS { 3 };
 
-typedef std::function<shared_ptr<ISentence>(const QByteArray&)> sentence_parser;
+typedef std::function<shared_ptr<NmeaSentence>(const QByteArray&)> sentence_parser;
 
 static const std::map<QString, sentence_parser> sentence_parsers {
     { "GGA", parse_gga_sentence },
     { "RMC", parse_rmc_sentence },
 };
 
-void process_input(QIODevice& device, vector<shared_ptr<ISentence>>& output_sentences) {
+void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_sentences) {
     const auto bytes = device.peek(PEEK_SIZE);
 
     unsigned int bytes_scaned { 0u };

@@ -6,8 +6,11 @@
 // qt
 #include <QDateTime>
 #include <QLabel>
+#include <QStringBuilder>
 // plog
 #include <plog/Log.h>
+
+using Sensors::Gps::GpsUpdate;
 
 const QString TIME_EVEN_FMT { "hh:mm" };
 
@@ -45,6 +48,11 @@ main_presenter::~main_presenter() {
     delete ui;
 }
 
-void main_presenter::update_gps_data_slot() {
+void main_presenter::update_gps_data_slot(const GpsUpdate& update) {
+    const auto text = QString("Time %1 Coords %2 %3")
+            .arg(update.datetime.toString("d M yyyy hh:mm:ss"))
+            .arg(update.latitude)
+            .arg(update.longitude);
 
+    ui->lbl_diag->setText(text);
 }

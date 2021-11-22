@@ -35,7 +35,7 @@ private:
     QStackedWidget* m_nav_stack;
     main_presenter* m_main_presenter;
     diag_presenter* m_diag_presenter;
-    Sensors::Gps::gps_device_controller m_gps_controller;
+    Sensors::Gps::GpsDeviceController m_gps_controller;
 };
 
 #endif // HOST_WRAPPER_H

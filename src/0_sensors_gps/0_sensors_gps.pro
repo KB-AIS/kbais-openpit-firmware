@@ -15,13 +15,14 @@ INCLUDEPATH += \
 
 HEADERS += \
     gps_device_controller.h \
+    gps_udpate.h \
     nmea/nmea_parser.h \
-    nmea/sentences.h
+    nmea/nmea_sentence.h
 
 SOURCES += \
     gps_device_controller.cpp \
     nmea/nmea_parser.cpp \
-    nmea/sentences.cpp
+    nmea/nmea_sentence.cpp
 
 LIBS += -L$$PWD/../binaries \
     -lutils
