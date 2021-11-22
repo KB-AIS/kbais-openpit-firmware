@@ -1,4 +1,4 @@
-#include <gps_device_contoller.h>
+#include <gps_device_controller.h>
 
 // utils
 #include <casting.h>
@@ -55,7 +55,7 @@ bool gps_device_controller::reset_gps_device() {
 }
 
 void gps_device_controller::on_gps_device_read_ready() {
-    PLOGD << "Consuming from GPS device";
+    // PLOGD << "Consuming from GPS device";
 
     m_sentences.clear();
 
@@ -66,11 +66,16 @@ void gps_device_controller::on_gps_device_read_ready() {
             m_gga_sentence = gga_sentence;
         });
 
-        Utils::Casting::action_if<Nmea::RmcSentence>(sentence, [=](auto mc_sentence) {
-            m_rmc_sentence = mc_sentence;
+        Utils::Casting::action_if<Nmea::RmcSentence>(sentence, [=](auto rmc_sentence) {
+            m_rmc_sentence = rmc_sentence;
         });
 
-        if (!m_gga_sentence || !m_rmc_sentence) continue;
+        if (!m_gga_sentence || !m_rmc_sentence) {
+            continue;
+        }
+
+        PLOGD << m_gga_sentence->time.toString();
+        PLOGD << m_rmc_sentence->datetime.toString();
 
         emit update_gps_data_signal();
     }

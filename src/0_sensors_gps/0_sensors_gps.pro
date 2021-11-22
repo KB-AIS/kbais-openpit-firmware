@@ -14,12 +14,14 @@ INCLUDEPATH += \
     ../_oss/qdef/src
 
 HEADERS += \
-    gps_device_contoller.h \
-    nmea/nmea_parser.h
+    gps_device_controller.h \
+    nmea/nmea_parser.h \
+    nmea/sentences.h
 
 SOURCES += \
-    gps_device_contoller.cpp \
-    nmea/nmea_parser.cpp
+    gps_device_controller.cpp \
+    nmea/nmea_parser.cpp \
+    nmea/sentences.cpp
 
 LIBS += -L$$PWD/../binaries \
     -lutils

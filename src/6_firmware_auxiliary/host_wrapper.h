@@ -5,7 +5,7 @@
 #include <presentation/main_presenter.h>
 
 // sensors
-#include <gps_device_contoller.h>
+#include <gps_device_controller.h>
 
 // qt
 #include <QObject>
@@ -35,7 +35,7 @@ private:
     QStackedWidget* m_nav_stack;
     main_presenter* m_main_presenter;
     diag_presenter* m_diag_presenter;
-    Sensors::Gps::gps_device_controller m_gps_contoller;
+    Sensors::Gps::gps_device_controller m_gps_controller;
 };
 
 #endif // HOST_WRAPPER_H

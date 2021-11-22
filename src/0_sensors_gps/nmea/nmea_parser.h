@@ -1,65 +1,38 @@
 #ifndef NMEA_PARSER_H
 #define NMEA_PARSER_H
 
+#include <nmea/sentences.h>
+
 // std
 #include <memory>
+#include <vector>
 // qt
 #include <QDateTime>
 #include <QIODevice>
-#include <QVector>
 
-// CONSTANTS
-namespace Sensors::Gps::Nmea {
-
-    /*!
-     *  \brief Indicate NMEA sentence begining.
-     */
-    const char SENTENCE_BEG { '$' };
-
-    /*!
-     * \brief Indicate NMEA sentence finish.
-     */
-    const char SENTENCE_FIN[] { '\r', '\n' };
-
-    /*!
-     * \brief Max NMEA sentence length in bytes.
-     */
-    const int SENTENCE_MAX_LENGTH { 82 };
-
-}
-
-// SENTENCES
 namespace Sensors::Gps::Nmea {
 
 /*!
- * Interface to mark NMEA sentences
+ *  \brief Indicate NMEA sentence begining.
  */
-struct ISentence {
-    virtual ~ISentence() = default;
-};
+constexpr char SENTENCE_BEG { '$' };
 
-struct GgaSentence : public ISentence {
-    QDateTime position_time;
-};
+/*!
+ * \brief Indicate NMEA sentence finish.
+ */
+constexpr char SENTENCE_FIN[] { '\r', '\n' };
 
-struct RmcSentence : public ISentence {
-    QDateTime position_time;
+/*!
+ * \brief Max NMEA sentence length in bytes.
+ */
+constexpr int SENTENCE_MAX_LENGTH { 82 };
 
-    bool is_valid;
-
-    double latitude;
-
-    double longitude;
-
-    double speed_over_ground;
-};
-
-}
-
-// FUNCTIONS
-namespace Sensors::Gps::Nmea {
-
-void process_input(QIODevice& device, QVector<std::shared_ptr<ISentence>>& output_sentences);
+/*!
+ * \brief process_input
+ * \param device
+ * \param output_sentences
+ */
+void process_input(QIODevice& device, std::vector<std::shared_ptr<ISentence>>& output_sentences);
 
 }
 

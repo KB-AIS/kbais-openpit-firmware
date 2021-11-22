@@ -46,5 +46,5 @@ main_presenter::~main_presenter() {
 }
 
 void main_presenter::update_gps_data_slot() {
-    LOGD << "CONNECTED!";
+
 }
