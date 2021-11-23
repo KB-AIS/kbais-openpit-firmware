@@ -1,7 +1,10 @@
+#include <commands/setup_time_handler.h>
 #include <host_wrapper.h>
+
 
 // qt
 #include <QApplication>
+#include <QObject>
 // plog
 #include <plog/Init.h>
 #include <plog/Log.h>
@@ -24,7 +27,17 @@ int main(int argc, char *argv[]) {
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
-    host_wrapper host;
+    GpsDeviceController gpsController;
+
+    HostWrapper host { gpsController };
+
+    SetupTimeHandler setupTimeHandler;
+
+    QObject::connect(
+        &gpsController, &GpsDeviceController::update_gps_data_signal,
+
+        &setupTimeHandler, &SetupTimeHandler::handle_slot
+    );
 
     PLOGI << "Starup AUX application";
     return app.exec();

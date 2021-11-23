@@ -72,7 +72,7 @@ std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes
     const auto satellites  = fields[FP_SATELLITES].toShort(&is_conv_ok);
 
     return std::make_shared<GgaSentence>(GgaSentence {
-        pos_time , lat, lon, gps_quality, satellites,
+        pos_time, lat, lon, gps_quality, satellites,
     });
 }
 
@@ -114,7 +114,7 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
 
     const auto speed = fields[FP_SPEED].toDouble(&is_conv_ok);
 
-    const auto date = QDate::fromString(fields[FP_DATE], DATE_FORMAT);
+    const auto date = QDate::fromString(fields[FP_DATE], DATE_FORMAT).addYears(100);
 
     return std::make_shared<RmcSentence>(RmcSentence {
         QDateTime(date, time, Qt::UTC), lat, lon, speed

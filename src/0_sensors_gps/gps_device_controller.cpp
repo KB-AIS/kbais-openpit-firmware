@@ -12,8 +12,6 @@
 
 namespace Sensors::Gps {
 
-constexpr int PEEK_SIZE { 1024 };
-
 // !Q: where device name comes from?
 const QString DEVICE_PORT_NAME { "/dev/ttyS5" };
 
@@ -55,7 +53,7 @@ bool GpsDeviceController::reset_gps_device() {
 }
 
 void GpsDeviceController::on_gps_device_read_ready() {
-    // Remove senteces from read buffer
+    // Remove sentences from read buffer
     m_sentences.clear();
     Nmea::process_input(m_gps_device, m_sentences);
 

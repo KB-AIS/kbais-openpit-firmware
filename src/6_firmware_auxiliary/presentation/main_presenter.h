@@ -22,8 +22,7 @@ public:
 
     ~main_presenter();
 
-public slots:
-    void update_gps_data_slot(const Sensors::Gps::GpsUpdate&);
+    Q_SLOT void update_gps_data_slot(const Sensors::Gps::GpsUpdate&);
 
 private:
     Ui::main_presenter* ui;
