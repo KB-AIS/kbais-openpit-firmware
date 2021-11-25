@@ -62,6 +62,6 @@ struct RmcSentence : public NmeaSentence {
 
 std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes);
 
-}
+} // Sensors::Gps::Nmea
 
 #endif // NMEA_SENTENCE_H

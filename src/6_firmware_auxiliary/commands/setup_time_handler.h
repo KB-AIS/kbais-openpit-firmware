@@ -2,11 +2,14 @@
 #define SETSYSTEMTIMECMDHANDLER_H
 
 
-// sensors\gps
-#include <gps_udpate.h>
+#include "gps_udpate.h"
+
 // qt
 #include <QObject>
 
+/*!
+ * Used to setup system time by GPS update.
+ */
 class SetupTimeHandler : public QObject {
     Q_OBJECT
 

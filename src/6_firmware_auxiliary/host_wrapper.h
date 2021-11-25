@@ -2,10 +2,11 @@
 #define HOST_WRAPPER_H
 
 
-#include <presentation/diag_presenter.h>
-#include <presentation/main_presenter.h>
-// sensors\gps
-#include <gps_device_controller.h>
+#include "gps_device_controller.h"
+
+#include "presentation/diag_presenter.h"
+#include "presentation/main_presenter.h"
+
 // qt
 #include <QObject>
 #include <QStackedWidget>

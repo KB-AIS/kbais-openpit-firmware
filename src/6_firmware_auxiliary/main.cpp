@@ -1,6 +1,5 @@
-#include <commands/setup_time_handler.h>
-#include <host_wrapper.h>
-
+#include "commands/setup_time_handler.h"
+#include "host_wrapper.h"
 
 // qt
 #include <QApplication>
@@ -13,7 +12,7 @@
 
 using namespace Sensors::Gps;
 
-static void setup_logging() {
+void setup_logging() {
     using namespace plog;
 
     static ConsoleAppender<TxtFormatter> console_appender;
@@ -27,11 +26,12 @@ int main(int argc, char *argv[]) {
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
+    // TODO: Move composition initialization into abstruction (DI container, mb?).
     GpsDeviceController gpsController;
 
-    HostWrapper host { gpsController };
+    SetupTimeHandler setupTimeHandler { };
 
-    SetupTimeHandler setupTimeHandler;
+    HostWrapper host { gpsController };
 
     QObject::connect(
         &gpsController, &GpsDeviceController::update_gps_data_signal,
@@ -39,6 +39,6 @@ int main(int argc, char *argv[]) {
         &setupTimeHandler, &SetupTimeHandler::handle_slot
     );
 
-    PLOGI << "Starup AUX application";
+    PLOGI << "Startup AUX application";
     return app.exec();
 }

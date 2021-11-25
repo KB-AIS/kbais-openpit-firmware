@@ -2,8 +2,8 @@
 #define GPS_DEVICE_CONTROLLER_H
 
 
-#include <nmea/nmea_parser.h>
-#include <gps_udpate.h>
+#include "nmea/nmea_parser.h"
+#include "gps_udpate.h"
 
 // std
 #include <memory>

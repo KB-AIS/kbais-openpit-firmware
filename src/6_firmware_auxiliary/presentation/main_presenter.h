@@ -2,7 +2,7 @@
 #define MAIN_PRESENTER_H
 
 
-#include <gps_udpate.h>
+#include "gps_udpate.h"
 
 // qt
 #include <QTimer>
@@ -22,7 +22,7 @@ public:
 
     ~main_presenter();
 
-    Q_SLOT void update_gps_data_slot(const Sensors::Gps::GpsUpdate&);
+    Q_SLOT void update_gps_data_slot(const Sensors::Gps::GpsUpdate& update);
 
 private:
     Ui::main_presenter* ui;

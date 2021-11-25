@@ -1,7 +1,8 @@
 #ifndef NMEA_PARSER_H
 #define NMEA_PARSER_H
 
-#include <nmea/nmea_sentence.h>
+
+#include "nmea/nmea_sentence.h"
 
 // std
 #include <memory>
@@ -28,12 +29,17 @@ constexpr char SENTENCE_FIN[] { '\r', '\n' };
 constexpr int SENTENCE_MAX_LENGTH { 82 };
 
 /*!
- * \brief process_input
- * \param device
- * \param output_sentences
+ * Static function to read a byte stream from IO device and parse it into set of NMEA sentences.
+ *
+ * \param device An IO device to read serialized NMEA byte stream from.
+ *
+ * \param output_sentences A reference to array which used to push parsed NMEA sentences into.
  */
-void process_input(QIODevice& device, std::vector<std::shared_ptr<NmeaSentence>>& output_sentences);
+void process_input(
+    QIODevice& device,
+    std::vector<std::shared_ptr<NmeaSentence>>& output_sentences
+);
 
-}
+} // Sensors::Gps::Nmea
 
 #endif // NMEA_PARSER_H

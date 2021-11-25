@@ -1,14 +1,20 @@
 #ifndef GPS_UDPATE_H
 #define GPS_UDPATE_H
 
+
 // qt
 #include <QMetaType>
 #include <QDateTime>
 
 namespace Sensors::Gps {
 
+/*!
+ * A DTO object holds general GPS data.
+ */
 struct GpsUpdate {
-
+    /*!
+     * A UTC+0 datetime when GPS read has been produced.
+     */
     const QDateTime& datetime { };
 
     const bool is_valid { false };
@@ -19,7 +25,7 @@ struct GpsUpdate {
 
 };
 
-}
+} // Sensors::Gps
 
 Q_DECLARE_METATYPE(Sensors::Gps::GpsUpdate);
 

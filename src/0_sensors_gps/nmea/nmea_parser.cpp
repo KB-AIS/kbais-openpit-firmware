@@ -1,6 +1,5 @@
 #include "nmea_parser.h"
 
-#include <nmea/nmea_sentence.h>
 
 // std
 #include <functional>

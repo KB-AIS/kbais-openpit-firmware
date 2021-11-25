@@ -12,7 +12,6 @@ INCLUDEPATH += \
 
 SOURCES += \
     commands/setup_time_handler.cpp \
-    composition_builder.cpp \
     host_wrapper.cpp \
     main.cpp \
     presentation/diag_presenter.cpp \
@@ -20,7 +19,6 @@ SOURCES += \
 
 HEADERS += \
     commands/setup_time_handler.h \
-    composition_builder.h \
     host_wrapper.h \
     presentation/diag_presenter.h \
     presentation/main_presenter.h

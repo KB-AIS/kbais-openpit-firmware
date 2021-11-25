@@ -1,5 +1,6 @@
 #include "nmea_sentence.h"
 
+
 // plog
 #include <plog/Log.h>
 
@@ -121,4 +122,4 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
     });
 }
 
-}
+} // Sensors::Gps::Nmea
