@@ -1,6 +1,0 @@
-[submodule "src/_oss/plog"]
-	path = src/_oss/plog
-	url = https://github.com/SergiusTheBest/plog
-[submodule "src/_oss/qdef"]
-	path = src/_oss/qdef
-	url = https://github.com/juangburgos/QDeferred
