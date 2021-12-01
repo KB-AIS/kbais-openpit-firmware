@@ -1,8 +1,13 @@
+#include "event.h"
+#include "aux_recurrent_event_mapper.h"
 #include "commands/setup_time_handler.h"
+#include "event_collectors_adapter.h"
+#include "immediate_event_collector.h"
 #include "host_wrapper.h"
-// qt
+// Qt
 #include <QApplication>
-#include <QObject>
+#include <QHash>
+#include <QMetaType>
 // plog
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
@@ -20,23 +25,40 @@ void setupLogging() {
 }
 
 int main(int argc, char *argv[]) {
+    qMetaTypeId<Event>();
+
     setupLogging();
 
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
-    // TODO: Move composition initialization into abstruction (DI container, mb?).
-    GpsDeviceController gpsController;
+    GpsDeviceController gps_controller { };
 
-    SetupTimeHandler setupTimeHandler { };
+    SetupTimeHandler setup_time_handler { };
 
-    HostWrapper host { gpsController };
+    HostWrapper host { gps_controller };
 
     QObject::connect(
-       &gpsController, &GpsDeviceController::update_gps_data_signal,
+       &gps_controller, &GpsDeviceController::update_gps_data_signal,
 
-       &setupTimeHandler, &SetupTimeHandler::handle_slot
+       &setup_time_handler, &SetupTimeHandler::handle_slot
     );
+
+    RecurrentEventCollector recurrent_event_collector { };
+
+    AuxRecurrentEventMapper aux_reccurrent_event_mapper {
+        recurrent_event_collector,
+        gps_controller
+    };
+
+    ImmediateEventCollector immediate_event_collector { };
+
+    EventCollectorsAdapter event_collectors_adapter {
+        recurrent_event_collector,
+        immediate_event_collector
+    };
+
+    PLOGD << "[MAIN] Do work in thead: " << QThread::currentThread();
 
     PLOGI << "Startup AUX application";
     return app.exec();

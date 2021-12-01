@@ -2,7 +2,6 @@
 
 // std
 #include <cmath>
-
 // qt
 #include <QDateTime>
 #include <plog/Log.h>

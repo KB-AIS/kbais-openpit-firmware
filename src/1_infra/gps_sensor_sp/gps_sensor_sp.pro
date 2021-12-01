@@ -2,7 +2,7 @@ PROJDIR = $${PWD}/../../
 
 TARGET = gps-sensor-sp
 
-QT += serialport
+QT += core serialport
 
 TEMPLATE = lib
 

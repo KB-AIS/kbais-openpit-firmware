@@ -1,8 +1,9 @@
-PROJDIR = $${PWD}/../..
+PROJDIR = $${PWD}/../../
+OSSDIR = $${PROJDIR}/../oss/
 
 TARGET = aux-run
 
-QT += widgets
+QT += core widgets
 
 CONFIG += c++17
 
@@ -11,15 +12,27 @@ INCLUDEPATH += \
     $${PROJDIR}/1_infra/gps_sensor_sp \
     $${PROJDIR}/1_inter/aux_view \
     $${PROJDIR}/2_app/gps_sensor \
-    # plog
-    $${PROJDIR}/../oss/plog/include
+    # Plog
+    $${OSSDIR}/plog/include
+
+include($${OSSDIR}/QDeferred/src/qdeferred.pri)
+include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 
 HEADERS += \
-    commands/setup_time_handler.h
+    aux_recurrent_event_mapper.h \
+    commands/setup_time_handler.h \
+    event.h \
+    event_collectors_adapter.h \
+    immediate_event_collector.h \
+    recurrent_event_collector.h
 
 SOURCES += \
+    aux_recurrent_event_mapper.cpp \
     commands/setup_time_handler.cpp \
-    main.cpp
+    event_collectors_adapter.cpp \
+    immediate_event_collector.cpp \
+    main.cpp \
+    recurrent_event_collector.cpp
 
 LIBS += -L$${PROJDIR}/binaries \
     -laux-view \
