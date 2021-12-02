@@ -19,6 +19,7 @@ include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 
 HEADERS += \
+    aux_immediate_event_mapper.h \
     aux_recurrent_event_mapper.h \
     commands/setup_time_handler.h \
     event.h \
@@ -27,6 +28,7 @@ HEADERS += \
     recurrent_event_collector.h
 
 SOURCES += \
+    aux_immediate_event_mapper.cpp \
     aux_recurrent_event_mapper.cpp \
     commands/setup_time_handler.cpp \
     event_collectors_adapter.cpp \

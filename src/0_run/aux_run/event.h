@@ -6,14 +6,16 @@
 #include <QMetaType>
 
 struct Event {
+    /*!
+     * Group events by their type.
+     */
+    const QString tag;
+
+    const QString payload;
 
     const Event &operator=(const Event& event) {
-        return { event.m_tag, event.m_payload };
+        return { event.tag, event.payload };
     }
-
-    const QString m_tag; // unique event tag
-
-    const QString m_payload;
 
 };
 

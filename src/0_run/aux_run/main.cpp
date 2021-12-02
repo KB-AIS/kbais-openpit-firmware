@@ -1,9 +1,10 @@
-#include "event.h"
 #include "aux_recurrent_event_mapper.h"
+#include "aux_immediate_event_mapper.h"
 #include "commands/setup_time_handler.h"
+#include "event.h"
 #include "event_collectors_adapter.h"
-#include "immediate_event_collector.h"
 #include "host_wrapper.h"
+#include "immediate_event_collector.h"
 // Qt
 #include <QApplication>
 #include <QHash>
@@ -24,10 +25,14 @@ void setupLogging() {
     init(debug).addAppender(&console_appender);
 }
 
-int main(int argc, char *argv[]) {
+void setupMetaTypes() {
     qMetaTypeId<Event>();
+}
 
+int main(int argc, char *argv[]) {
     setupLogging();
+
+    setupMetaTypes();
 
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
@@ -52,6 +57,8 @@ int main(int argc, char *argv[]) {
     };
 
     ImmediateEventCollector immediate_event_collector { };
+
+    AuxImmediateEventMapper auxImmediateEventMapper { immediate_event_collector, &host };
 
     EventCollectorsAdapter event_collectors_adapter {
         recurrent_event_collector,

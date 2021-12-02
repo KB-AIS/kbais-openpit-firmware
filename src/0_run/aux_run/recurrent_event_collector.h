@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QMutex>
 #include <QObject>
+#include <QVector>
 
 class RecurrentEventCollector : public QObject {
     Q_OBJECT
@@ -13,12 +14,12 @@ class RecurrentEventCollector : public QObject {
 public:
     explicit RecurrentEventCollector(QObject *parent = nullptr);
 
-    Q_SLOT void place_event_slot(const Event& event);
+    Q_SLOT void handleEventPlaced(const Event& event);
 
-    const QList<Event> pop_events();
+    const QVector<Event> pop_events();
 
 private:
-    QHash<QString, Event> m_events;
+    QHash<QString, Event> internalStore;
 
     QMutex m_events_mutex;
 

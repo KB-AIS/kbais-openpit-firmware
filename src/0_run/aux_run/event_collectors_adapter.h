@@ -5,6 +5,7 @@
 #include "immediate_event_collector.h"
 // Qt
 #include <QObject>
+#include <QMutex>
 // QDeferred
 #include <QLambdaThreadWorker>
 
@@ -18,8 +19,18 @@ public:
         QObject* parent = nullptr
     );
 
+    Q_SLOT void handleImmediateEventPlaced();
+
 private:
-    QLambdaThreadWorker m_worker;
+    void collectEventsFromAdapters();
+
+    RecurrentEventCollector& recurrentCollector;
+
+    ImmediateEventCollector& immediateCollector;
+
+    QMutex collectEventsMtx;
+
+    QLambdaThreadWorker worker;
 
 };
 

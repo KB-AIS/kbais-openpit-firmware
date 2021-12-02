@@ -39,7 +39,12 @@ main_presenter::main_presenter(QWidget *parent) : QWidget(parent),
 
     m_timer_update_time->start(timer_update_interval);
 
-    // TODO: Setup the rest of presenter
+    connect(
+        ui->btn_nav_to_stop, &QPushButton::released,
+
+        this, [&] { emit notifyTestUserEvent(); }
+    );
+
 }
 
 main_presenter::~main_presenter() {

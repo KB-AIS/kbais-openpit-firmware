@@ -15,16 +15,16 @@ class AuxRecurrentEventMapper : public QObject {
 public:
     explicit AuxRecurrentEventMapper(
         const RecurrentEventCollector& collector,
-        const Sensors::Gps::GpsDeviceController& gps_sensor,
+        const Sensors::Gps::GpsDeviceController& gpsSensor,
         QObject *parent = nullptr
     );
 
 private:
-    Q_SIGNAL void place_event_signal(const Event& event);
+    Q_SIGNAL void notifyEventPlaced(const Event& event);
 
-    const Event map_gps_update_to_event(const Sensors::Gps::GpsUpdate& gps_update);
+    const Event mapGpsUpdate(const Sensors::Gps::GpsUpdate& gps_update);
 
-    QLambdaThreadWorker m_worker;
+    QLambdaThreadWorker worker;
 
 };
 

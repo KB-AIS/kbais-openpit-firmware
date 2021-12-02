@@ -3,18 +3,22 @@
 RecurrentEventCollector::RecurrentEventCollector(QObject *parent) : QObject(parent) { }
 
 void
-RecurrentEventCollector::place_event_slot(const Event& event) {
+RecurrentEventCollector::handleEventPlaced(const Event& event) {
     QMutexLocker locker(&m_events_mutex);
 
-    m_events.insert(event.m_tag, event);
+    internalStore.insert(event.tag, event);
 }
 
-const QList<Event>
+const QVector<Event>
 RecurrentEventCollector::pop_events() {
     QMutexLocker locker(&m_events_mutex);
 
-    auto const events = m_events.values();
-    m_events.clear();
+    QVector<Event> events { };
+    for (auto& event : internalStore) {
+        events.append(event);
+    }
+
+    internalStore.clear();
 
     return events;
 }

@@ -3,8 +3,10 @@
 
 #include "event.h"
 // Qt
-#include <QList>
+#include <QMutex>
 #include <QObject>
+#include <QTimer>
+#include <QVector>
 
 class ImmediateEventCollector : public QObject {
     Q_OBJECT
@@ -12,10 +14,18 @@ class ImmediateEventCollector : public QObject {
 public:
     explicit ImmediateEventCollector(QObject *parent = nullptr);
 
-    Q_SLOT void place_event_slot(const Event event);
+    Q_SLOT void handleEventPlaced(const Event event);
+
+    const QVector<Event> pop_events();
+
+    Q_SIGNAL void notifyImmediateEventPlaced();
 
 private:
-    QList<Event> m_events;
+    QList<Event> internalStore;
+
+    QMutex internalStoreMtx;
+
+    QTimer fireImmediateEventPlacedTimer;
 
 };
 

@@ -13,32 +13,22 @@ AuxRecurrentEventMapper::AuxRecurrentEventMapper(
     QObject* parent
 ): QObject(parent) {
     connect(
-        this, &AuxRecurrentEventMapper::place_event_signal,
-
-        &collector, &RecurrentEventCollector::place_event_slot
+        this, &AuxRecurrentEventMapper::notifyEventPlaced,
+        &collector, &RecurrentEventCollector::handleEventPlaced
     );
-
-    m_worker.startLoopInThread([&]() {
-        PLOGD << "[LLS] Do work in thead: " << QThread::currentThread();
-
-        emit place_event_signal({ "LLS", "test event" });
-    }, 1 * 500);
 
     connect(
         &gps_sensor, &GpsDeviceController::update_gps_data_signal,
-
         this, [&](const GpsUpdate& gps_update) {
-            PLOGD << "[GPS] Do work in thead: " << QThread::currentThread();
-
-            emit place_event_signal(map_gps_update_to_event(gps_update));
+            emit notifyEventPlaced(mapGpsUpdate(gps_update));
         }
     );
 }
 
-const Event AuxRecurrentEventMapper::map_gps_update_to_event(
+// TODO: make mappers reusable
+const Event AuxRecurrentEventMapper::mapGpsUpdate(
     const GpsUpdate& gps_update
-)  {
-    // todo: implement serialization
+) {
     return {
         "GPS",
           QString::number(gps_update.latitude)
