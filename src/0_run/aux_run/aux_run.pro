@@ -19,22 +19,22 @@ include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 
 HEADERS += \
-    aux_immediate_event_mapper.h \
-    aux_recurrent_event_mapper.h \
+    aux_immediate_messages_mapper.h \
+    aux_recurrent_messages_mapper.h \
     commands/setup_time_handler.h \
-    event.h \
-    event_collectors_adapter.h \
-    immediate_event_collector.h \
-    recurrent_event_collector.h
+    device_message.h \
+    immediate_messages_collector.h \
+    messages_collectors_adapter.h \
+    recurrent_messages_collector.h
 
 SOURCES += \
-    aux_immediate_event_mapper.cpp \
-    aux_recurrent_event_mapper.cpp \
+    aux_immediate_messages_mapper.cpp \
+    aux_recurrent_messages_mapper.cpp \
     commands/setup_time_handler.cpp \
-    event_collectors_adapter.cpp \
-    immediate_event_collector.cpp \
+    immediate_messages_collector.cpp \
     main.cpp \
-    recurrent_event_collector.cpp
+    messages_collectors_adapter.cpp \
+    recurrent_messages_collector.cpp
 
 LIBS += -L$${PROJDIR}/binaries \
     -laux-view \

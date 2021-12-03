@@ -1,4 +1,4 @@
-#include "aux_recurrent_event_mapper.h"
+#include "aux_recurrent_messages_mapper.h"
 
 // Qt
 #include <QThread>
@@ -8,13 +8,13 @@
 using namespace Sensors::Gps;
 
 AuxRecurrentEventMapper::AuxRecurrentEventMapper(
-    const RecurrentEventCollector& collector,
+    const RecurrentMessagesCollector& collector,
     const GpsDeviceController& gps_sensor,
     QObject* parent
 ): QObject(parent) {
     connect(
         this, &AuxRecurrentEventMapper::notifyEventPlaced,
-        &collector, &RecurrentEventCollector::handleEventPlaced
+        &collector, &RecurrentMessagesCollector::handleMessageReceived
     );
 
     connect(
@@ -26,7 +26,7 @@ AuxRecurrentEventMapper::AuxRecurrentEventMapper(
 }
 
 // TODO: make mappers reusable
-const Event AuxRecurrentEventMapper::mapGpsUpdate(
+const DeviceMessage AuxRecurrentEventMapper::mapGpsUpdate(
     const GpsUpdate& gps_update
 ) {
     return {

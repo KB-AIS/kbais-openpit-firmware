@@ -4,3 +4,6 @@
 [submodule "qdef"]
 	path = oss/QDeferred
 	url = https://github.com/juangburgos/QDeferred
+[submodule "sqlo"]
+	path = oss/sqlite_orm
+	url = https://github.com/fnc12/sqlite_orm

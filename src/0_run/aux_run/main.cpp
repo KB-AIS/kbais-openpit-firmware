@@ -1,10 +1,10 @@
-#include "aux_recurrent_event_mapper.h"
-#include "aux_immediate_event_mapper.h"
+#include "aux_recurrent_messages_mapper.h"
+#include "aux_immediate_messages_mapper.h"
 #include "commands/setup_time_handler.h"
-#include "event.h"
-#include "event_collectors_adapter.h"
+#include "device_message.h"
+#include "messages_collectors_adapter.h"
 #include "host_wrapper.h"
-#include "immediate_event_collector.h"
+#include "immediate_messages_collector.h"
 // Qt
 #include <QApplication>
 #include <QHash>
@@ -26,7 +26,7 @@ void setupLogging() {
 }
 
 void setupMetaTypes() {
-    qMetaTypeId<Event>();
+    qMetaTypeId<DeviceMessage>();
 }
 
 int main(int argc, char *argv[]) {
@@ -49,18 +49,18 @@ int main(int argc, char *argv[]) {
        &setup_time_handler, &SetupTimeHandler::handle_slot
     );
 
-    RecurrentEventCollector recurrent_event_collector { };
+    RecurrentMessagesCollector recurrent_event_collector { };
 
     AuxRecurrentEventMapper aux_reccurrent_event_mapper {
         recurrent_event_collector,
         gps_controller
     };
 
-    ImmediateEventCollector immediate_event_collector { };
+    ImmediateMessagesCollector immediate_event_collector { };
 
-    AuxImmediateEventMapper auxImmediateEventMapper { immediate_event_collector, &host };
+    AuxImmediateMessagesMapper auxImmediateEventMapper { immediate_event_collector, &host };
 
-    EventCollectorsAdapter event_collectors_adapter {
+    MessagesCollectorsAdapter event_collectors_adapter {
         recurrent_event_collector,
         immediate_event_collector
     };
