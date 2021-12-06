@@ -5,7 +5,7 @@ TARGET = aux-run
 
 QT += core widgets
 
-CONFIG += c++17
+CONFIG += c++14 c++17
 
 INCLUDEPATH += \
     # carrier-firmware
@@ -13,7 +13,8 @@ INCLUDEPATH += \
     $${PROJDIR}/1_inter/aux_view \
     $${PROJDIR}/2_app/gps_sensor \
     # Plog
-    $${OSSDIR}/plog/include
+    $${OSSDIR}/plog/include \
+    $${OSSDIR}/bodi/include
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)

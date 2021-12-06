@@ -7,7 +7,9 @@
 // plog
 #include <plog/Log.h>
 
-constexpr std::chrono::milliseconds FIRE_DELAY { 1000 };
+using namespace std::chrono_literals;
+
+constexpr std::chrono::milliseconds FIRE_DELAY { 1s };
 
 ImmediateMessagesCollector::ImmediateMessagesCollector(
     QObject *parent
@@ -35,7 +37,6 @@ ImmediateMessagesCollector::handleMessageReceived(const DeviceMessage& event) {
         return;
     }
 
-    // TODO: move timeout to const
     fireMessageCollectedTimer.start(FIRE_DELAY);
 }
 

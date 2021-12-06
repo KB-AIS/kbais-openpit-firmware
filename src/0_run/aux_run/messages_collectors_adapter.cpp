@@ -1,5 +1,7 @@
 #include "messages_collectors_adapter.h"
 
+// std
+#include <chrono>
 // Qt
 #include <QThread>
 #include <QDateTime>
@@ -7,6 +9,10 @@
 #include <QVector>
 // plog
 #include <plog/Log.h>
+
+using namespace std::chrono_literals;
+
+constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 10s };
 
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     RecurrentMessagesCollector& recurrentCollector,
@@ -23,7 +29,7 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     );
 
     // TODO: Setup iteration time from configuration
-    worker.startLoopInThread([&] { collectMessages(); }, 10 * 1000);
+    threadWorker.startLoopInThread([&] { collectMessages(); }, COLLECT_MSGS_TIMEOUT.count());
 }
 
 void
