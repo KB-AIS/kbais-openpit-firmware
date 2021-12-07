@@ -1,8 +1,9 @@
 #ifndef MESSAGESCOLLECTORSADAPTER_H
 #define MESSAGESCOLLECTORSADAPTER_H
 
-#include "recurrent_messages_collector.h"
 #include "immediate_messages_collector.h"
+#include "recurrent_messages_collector.h"
+#include "save_device_messages_command.h"
 // Qt
 #include <QMutex>
 #include <QObject>
@@ -25,6 +26,8 @@ private:
     void collectMessages();
 
     QLambdaThreadWorker threadWorker;
+
+    SaveDeviceMessagesCommand saveCommand;
 
     RecurrentMessagesCollector& recurrentCollector;
 

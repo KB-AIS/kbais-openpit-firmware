@@ -5,6 +5,7 @@
 #include "messages_collectors_adapter.h"
 #include "host_wrapper.h"
 #include "immediate_messages_collector.h"
+#include "database_factory.h"
 // Qt
 #include <QApplication>
 #include <QHash>
@@ -14,6 +15,8 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
+
+using namespace Caching::Configuration;
 
 using namespace Sensors::Gps;
 
@@ -37,6 +40,8 @@ int main(int argc, char *argv[]) {
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
+    configureConnection();
+
     GpsDeviceController gps_controller { };
 
     SetupTimeHandler setup_time_handler { };
@@ -58,14 +63,15 @@ int main(int argc, char *argv[]) {
 
     ImmediateMessagesCollector immediate_event_collector { };
 
-    AuxImmediateMessagesMapper auxImmediateEventMapper { immediate_event_collector, &host };
+    AuxImmediateMessagesMapper auxImmediateEventMapper {
+        immediate_event_collector,
+        &host
+    };
 
     MessagesCollectorsAdapter event_collectors_adapter {
         recurrent_event_collector,
         immediate_event_collector
     };
-
-    PLOGD << "[MAIN] Do work in thead: " << QThread::currentThread();
 
     PLOGI << "Startup AUX application";
     return app.exec();

@@ -1,11 +1,12 @@
 #include "messages_collectors_adapter.h"
 
+#include "database_factory.h"
 // std
 #include <chrono>
 // Qt
-#include <QThread>
 #include <QDateTime>
 #include <QList>
+#include <QThread>
 #include <QVector>
 // plog
 #include <plog/Log.h>
@@ -19,9 +20,9 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     ImmediateMessagesCollector& immediateCollector,
     QObject* parent
 ) : QObject(parent),
-    recurrentCollector(recurrentCollector),
-    immediateCollector(immediateCollector) {
-
+    saveCommand { },
+    recurrentCollector { recurrentCollector },
+    immediateCollector { immediateCollector } {
     connect(
         &immediateCollector, &ImmediateMessagesCollector::notifyMessageCollected,
 
@@ -38,11 +39,13 @@ MessagesCollectorsAdapter::collectMessages() {
 
     PLOGD << "Collected at " << QDateTime::currentDateTime().toString();
 
-    QVector<DeviceMessage> foo;
-    foo.append(immediateCollector.popMessages());
-    foo.append(recurrentCollector.popMessages());
+    QVector<DeviceMessage> messages;
+    messages.append(immediateCollector.popMessages());
+    messages.append(recurrentCollector.popMessages());
 
-    for (auto& message : foo) {
+    for (auto& message : messages) {
         PLOGD << message.moniker << " -- " << message.payload;
     }
+
+    saveCommand.execute(messages);
 }

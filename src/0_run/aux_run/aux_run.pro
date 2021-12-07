@@ -3,7 +3,7 @@ OSSDIR = $${PROJDIR}/../oss/
 
 TARGET = aux-run
 
-QT += core widgets
+QT += core widgets sql
 
 CONFIG += c++14 c++17
 
@@ -23,19 +23,23 @@ HEADERS += \
     aux_immediate_messages_mapper.h \
     aux_recurrent_messages_mapper.h \
     commands/setup_time_handler.h \
+    database_factory.h \
     device_message.h \
     immediate_messages_collector.h \
     messages_collectors_adapter.h \
-    recurrent_messages_collector.h
+    recurrent_messages_collector.h \
+    save_device_messages_command.h
 
 SOURCES += \
     aux_immediate_messages_mapper.cpp \
     aux_recurrent_messages_mapper.cpp \
     commands/setup_time_handler.cpp \
+    database_factory.cpp \
     immediate_messages_collector.cpp \
     main.cpp \
     messages_collectors_adapter.cpp \
-    recurrent_messages_collector.cpp
+    recurrent_messages_collector.cpp \
+    save_device_messages_command.cpp
 
 LIBS += -L$${PROJDIR}/binaries \
     -laux-view \
