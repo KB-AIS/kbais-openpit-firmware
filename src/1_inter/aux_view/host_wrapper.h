@@ -22,10 +22,11 @@ public:
 
     void navToDiag();
 
+    // TODO: Move back to private
+    main_presenter* m_main_presenter;
+
 private:
     QStackedWidget* m_nav_stack;
-
-    main_presenter* m_main_presenter;
 
     diag_presenter* m_diag_presenter;
 

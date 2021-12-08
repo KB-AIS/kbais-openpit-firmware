@@ -1,25 +1,45 @@
-PROJDIR = $${PWD}/../..
+PROJDIR = $${PWD}/../../
+OSSDIR = $${PROJDIR}/../oss/
 
 TARGET = aux-run
 
-QT += widgets
+QT += core widgets sql
 
-CONFIG += c++17
+CONFIG += c++14 c++17
 
 INCLUDEPATH += \
     # carrier-firmware
     $${PROJDIR}/1_infra/gps_sensor_sp \
     $${PROJDIR}/1_inter/aux_view \
     $${PROJDIR}/2_app/gps_sensor \
-    # plog
-    $${PROJDIR}/../oss/plog/include
+    # Plog
+    $${OSSDIR}/plog/include \
+    $${OSSDIR}/bodi/include
+
+include($${OSSDIR}/QDeferred/src/qdeferred.pri)
+include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 
 HEADERS += \
-    commands/setup_time_handler.h
+    aux_immediate_messages_mapper.h \
+    aux_recurrent_messages_mapper.h \
+    commands/setup_time_handler.h \
+    database_factory.h \
+    device_message.h \
+    immediate_messages_collector.h \
+    messages_collectors_adapter.h \
+    recurrent_messages_collector.h \
+    save_device_messages_command.h
 
 SOURCES += \
+    aux_immediate_messages_mapper.cpp \
+    aux_recurrent_messages_mapper.cpp \
     commands/setup_time_handler.cpp \
-    main.cpp
+    database_factory.cpp \
+    immediate_messages_collector.cpp \
+    main.cpp \
+    messages_collectors_adapter.cpp \
+    recurrent_messages_collector.cpp \
+    save_device_messages_command.cpp
 
 LIBS += -L$${PROJDIR}/binaries \
     -laux-view \

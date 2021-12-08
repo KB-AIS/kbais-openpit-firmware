@@ -7,11 +7,7 @@
 #include <QTimer>
 #include <QWidget>
 
-namespace Ui {
-
-class main_presenter;
-
-}
+namespace Ui { class main_presenter; }
 
 class main_presenter : public QWidget {
     Q_OBJECT
@@ -22,6 +18,8 @@ public:
     ~main_presenter();
 
     Q_SLOT void update_gps_data_slot(const Sensors::Gps::GpsUpdate& update);
+
+    Q_SIGNAL void notifyTestUserEvent();
 
 private:
     Ui::main_presenter* ui;

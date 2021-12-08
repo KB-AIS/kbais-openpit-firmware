@@ -1,13 +1,22 @@
+#include "aux_recurrent_messages_mapper.h"
+#include "aux_immediate_messages_mapper.h"
 #include "commands/setup_time_handler.h"
+#include "device_message.h"
+#include "messages_collectors_adapter.h"
 #include "host_wrapper.h"
-// qt
+#include "immediate_messages_collector.h"
+#include "database_factory.h"
+// Qt
 #include <QApplication>
-#include <QObject>
+#include <QHash>
+#include <QMetaType>
 // plog
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
+
+using namespace Caching::Configuration;
 
 using namespace Sensors::Gps;
 
@@ -19,24 +28,50 @@ void setupLogging() {
     init(debug).addAppender(&console_appender);
 }
 
+void setupMetaTypes() {
+    qMetaTypeId<DeviceMessage>();
+}
+
 int main(int argc, char *argv[]) {
     setupLogging();
+
+    setupMetaTypes();
 
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
-    // TODO: Move composition initialization into abstruction (DI container, mb?).
-    GpsDeviceController gpsController;
+    configureConnection();
 
-    SetupTimeHandler setupTimeHandler { };
+    GpsDeviceController gps_controller { };
 
-    HostWrapper host { gpsController };
+    SetupTimeHandler setup_time_handler { };
+
+    HostWrapper host { gps_controller };
 
     QObject::connect(
-       &gpsController, &GpsDeviceController::update_gps_data_signal,
+       &gps_controller, &GpsDeviceController::update_gps_data_signal,
 
-       &setupTimeHandler, &SetupTimeHandler::handle_slot
+       &setup_time_handler, &SetupTimeHandler::handle_slot
     );
+
+    RecurrentMessagesCollector recurrent_event_collector { };
+
+    AuxRecurrentEventMapper aux_reccurrent_event_mapper {
+        recurrent_event_collector,
+        gps_controller
+    };
+
+    ImmediateMessagesCollector immediate_event_collector { };
+
+    AuxImmediateMessagesMapper auxImmediateEventMapper {
+        immediate_event_collector,
+        &host
+    };
+
+    MessagesCollectorsAdapter event_collectors_adapter {
+        recurrent_event_collector,
+        immediate_event_collector
+    };
 
     PLOGI << "Startup AUX application";
     return app.exec();
