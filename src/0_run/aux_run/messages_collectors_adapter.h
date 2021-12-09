@@ -3,12 +3,18 @@
 
 #include "immediate_messages_collector.h"
 #include "recurrent_messages_collector.h"
-#include "save_device_messages_command.h"
 // Qt
 #include <QMutex>
 #include <QObject>
 // QDeferred
 #include <QLambdaThreadWorker>
+// OSS
+#include <rigtorp/MPMCQueue.h>
+#include <readerwriterqueue.h>
+
+using namespace moodycamel;
+
+using MessagesQueue = rigtorp::mpmc::Queue<DeviceMessage>;
 
 class MessagesCollectorsAdapter : public QObject {
     Q_OBJECT
@@ -17,6 +23,7 @@ public:
     explicit MessagesCollectorsAdapter(
         RecurrentMessagesCollector& recurrentCollector,
         ImmediateMessagesCollector& immediateCollector,
+        BlockingReaderWriterQueue<DeviceMessage>& msgsQueue,
         QObject* parent = nullptr
     );
 
@@ -25,15 +32,15 @@ public:
 private:
     void collectMessages();
 
-    QLambdaThreadWorker threadWorker;
-
-    SaveDeviceMessagesCommand saveCommand;
+    QLambdaThreadWorker _trdWorker;
 
     RecurrentMessagesCollector& recurrentCollector;
 
     ImmediateMessagesCollector& immediateCollector;
 
-    QMutex collectMessagesMtx;
+    BlockingReaderWriterQueue<DeviceMessage>& _msgsQueue;
+
+    QMutex collectMsgsMtx;
 
 };
 

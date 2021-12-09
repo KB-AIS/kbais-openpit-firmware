@@ -17,8 +17,7 @@ AuxImmediateMessagesMapper::AuxImmediateMessagesMapper(
         this, [&] {
             emit notifyMessageReceived({
                 "TEST",
-                "Some user's UI event",
-                QDateTime::currentDateTime()
+                "Some user's UI event"
             });
         }
     );

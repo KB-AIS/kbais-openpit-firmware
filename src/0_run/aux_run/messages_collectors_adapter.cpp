@@ -13,16 +13,17 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 10s };
+constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 1s };
 
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     RecurrentMessagesCollector& recurrentCollector,
     ImmediateMessagesCollector& immediateCollector,
+    BlockingReaderWriterQueue<DeviceMessage>& msgsQueue,
     QObject* parent
 ) : QObject(parent),
-    saveCommand { },
     recurrentCollector { recurrentCollector },
-    immediateCollector { immediateCollector } {
+    immediateCollector { immediateCollector },
+    _msgsQueue { msgsQueue } {
     connect(
         &immediateCollector, &ImmediateMessagesCollector::notifyMessageCollected,
 
@@ -30,12 +31,12 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     );
 
     // TODO: Setup iteration time from configuration
-    threadWorker.startLoopInThread([&] { collectMessages(); }, COLLECT_MSGS_TIMEOUT.count());
+    _trdWorker.startLoopInThread([&] { collectMessages(); }, COLLECT_MSGS_TIMEOUT.count());
 }
 
 void
 MessagesCollectorsAdapter::collectMessages() {
-    QMutexLocker lock(&collectMessagesMtx);
+    QMutexLocker lock(&collectMsgsMtx);
 
     PLOGD << "Collected at " << QDateTime::currentDateTime().toString();
 
@@ -43,9 +44,10 @@ MessagesCollectorsAdapter::collectMessages() {
     messages.append(immediateCollector.popMessages());
     messages.append(recurrentCollector.popMessages());
 
-    for (auto& message : messages) {
-        PLOGD << message.moniker << " -- " << message.payload;
+    if (messages.isEmpty()) {
+        PLOGD << "No messags has been collected to send";
+        return;
     }
 
-    saveCommand.execute(messages);
+    _msgsQueue.emplace(messages.first());
 }

@@ -2,6 +2,7 @@
 #define DEVICE_MESSAGE_H
 
 // Qt
+#include <QByteArray>
 #include <QDateTime>
 #include <QMetaType>
 #include <QString>
@@ -16,12 +17,7 @@ struct DeviceMessage {
     /*!
      * Serialized content of the message.
      */
-    QString payload;
-
-    /*!
-     * Time when message has been created by a device.
-     */
-    QDateTime createdAt;
+    QByteArray payload;
 
 };
 

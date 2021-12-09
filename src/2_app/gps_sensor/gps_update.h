@@ -14,13 +14,13 @@ struct GpsUpdate {
     /*!
      * A UTC+0 datetime when GPS read has been produced.
      */
-    const QDateTime& datetime { };
+    QDateTime datetime { };
 
-    const bool is_valid { false };
+    bool is_valid { false };
 
-    const double latitude { 0.0 };
+    double latitude { 0.0 };
 
-    const double longitude { 0.0 };
+    double longitude { 0.0 };
 
 };
 

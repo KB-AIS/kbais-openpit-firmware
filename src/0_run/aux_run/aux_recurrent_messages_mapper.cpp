@@ -2,10 +2,36 @@
 
 // Qt
 #include <QThread>
-// plog
+// OSS
 #include <plog/Log.h>
+#include <json.hpp>
+
+using json = nlohmann::json;
 
 using namespace Sensors::Gps;
+
+namespace Sensors::Gps {
+
+void to_json(json& j, const GpsUpdate& x) {
+    j = json {
+        { "datetime", x.datetime.toString().toStdString() },
+        { "is_valid", x.is_valid },
+        { "latitude", x.latitude },
+        { "longitude", x.longitude },
+    };
+}
+
+void from_json(const json& j, GpsUpdate& x) {
+    std::string dateTimeStr {};
+
+    j.at("datetime").get_to(dateTimeStr);
+    x.datetime = QDateTime::fromString(QString::fromStdString(dateTimeStr));
+    j.at("is_valid").get_to(x.is_valid);
+    j.at("latitude").get_to(x.latitude);
+    j.at("longitude").get_to(x.longitude);
+}
+
+}
 
 AuxRecurrentEventMapper::AuxRecurrentEventMapper(
     const RecurrentMessagesCollector& collector,
@@ -29,13 +55,11 @@ AuxRecurrentEventMapper::AuxRecurrentEventMapper(
 const DeviceMessage AuxRecurrentEventMapper::mapGpsUpdate(
     const GpsUpdate& gps_update
 ) {
+    auto bytes = json::to_msgpack(gps_update);
+
     return {
         "GPS",
-          QString::number(gps_update.latitude)
-        + ","
-        + QString::number(gps_update.longitude)
-        + ","
-        + gps_update.datetime.toString()
+        QByteArray(reinterpret_cast<const char*>(bytes.data()), bytes.size())
     };
 };
 

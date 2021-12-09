@@ -3,7 +3,7 @@ OSSDIR = $${PROJDIR}/../oss/
 
 TARGET = aux-run
 
-QT += core widgets sql
+QT += core network sql widgets
 
 CONFIG += c++14 c++17
 
@@ -12,9 +12,11 @@ INCLUDEPATH += \
     $${PROJDIR}/1_infra/gps_sensor_sp \
     $${PROJDIR}/1_inter/aux_view \
     $${PROJDIR}/2_app/gps_sensor \
-    # Plog
+    # OSS
     $${OSSDIR}/plog/include \
-    $${OSSDIR}/bodi/include
+    $${OSSDIR}/MPMCQueue/include \
+    $${OSSDIR}/json/include \
+    $${OSSDIR}/rwqueue/include
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
@@ -26,7 +28,9 @@ HEADERS += \
     database_factory.h \
     device_message.h \
     immediate_messages_collector.h \
+    messages_caching_service.h \
     messages_collectors_adapter.h \
+    messages_sending_service.h \
     recurrent_messages_collector.h \
     save_device_messages_command.h
 
@@ -37,7 +41,9 @@ SOURCES += \
     database_factory.cpp \
     immediate_messages_collector.cpp \
     main.cpp \
+    messages_caching_service.cpp \
     messages_collectors_adapter.cpp \
+    messages_sending_service.cpp \
     recurrent_messages_collector.cpp \
     save_device_messages_command.cpp
 
