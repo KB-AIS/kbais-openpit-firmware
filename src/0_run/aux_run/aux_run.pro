@@ -28,9 +28,12 @@ HEADERS += \
     database_factory.h \
     device_message.h \
     immediate_messages_collector.h \
+    msgcaching/get_message_batches_query.h \
+    networking/base_protocol_formatter.h \
+    networking/message_sender_client.h \
+    networking/message_senders_manager.h \
     messages_caching_service.h \
     messages_collectors_adapter.h \
-    messages_sending_service.h \
     recurrent_messages_collector.h \
     save_device_messages_command.h
 
@@ -41,9 +44,12 @@ SOURCES += \
     database_factory.cpp \
     immediate_messages_collector.cpp \
     main.cpp \
+    msgcaching/get_message_batches_query.cpp \
+    networking/base_protocol_formatter.cpp \
+    networking/message_sender_client.cpp \
+    networking/message_senders_manager.cpp \
     messages_caching_service.cpp \
     messages_collectors_adapter.cpp \
-    messages_sending_service.cpp \
     recurrent_messages_collector.cpp \
     save_device_messages_command.cpp
 

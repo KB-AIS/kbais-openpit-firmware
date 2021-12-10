@@ -1,23 +1,21 @@
 #include "messages_caching_service.h"
 
+#include "save_device_messages_command.h"
 // plog
 #include <plog/Log.h>
-#include <QThread>
 
 MessagesCachingService::MessagesCachingService(
-    MessagesQueue& msgsQueue, MessagesSendingService& msgsSendingSrv,
-    QObject* parent
+    MessagesQueue& msgsQueue, QObject* parent
 ) : QObject(parent),
     _msgsQueue { msgsQueue },
-    _msgsSendingSrv { msgsSendingSrv },
     _trdWorker { } {
+    SaveDeviceMessagesCommand saveDeviceMessagesCommand { };
 
     _trdWorker.startLoopInThread([&]() {
-        DeviceMessage msg;
+        DeviceMessage message;
 
-        _msgsQueue.pop(msg);
+        _msgsQueue.wait_dequeue(message);
 
-        _msgsSendingSrv.sendMessages({ msg });
+        saveDeviceMessagesCommand.execute({ message });
     });
-
 }

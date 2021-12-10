@@ -2,7 +2,7 @@
 #define MESSAGESCACHINGSERVICE_H
 
 #include "device_message.h"
-#include "messages_sending_service.h"
+#include "networking/message_sender_client.h"
 // Qt
 #include <QObject>
 // Qt Deferred
@@ -10,22 +10,18 @@
 #include <QEventer>
 #include <QLambdaThreadWorker>
 // OSS
-#include <rigtorp/MPMCQueue.h>
+#include <readerwriterqueue.h>
 
-using MessagesQueue = rigtorp::mpmc::Queue<DeviceMessage>;
+using MessagesQueue = moodycamel::BlockingReaderWriterQueue<DeviceMessage>;
 
 class MessagesCachingService : public QObject {
     Q_OBJECT
 
 public:
-    explicit MessagesCachingService(
-        MessagesQueue& msgsQueue, MessagesSendingService& msgsSendingSrv,
-        QObject* = nullptr);
+    explicit MessagesCachingService(MessagesQueue& msgsQueue, QObject* = nullptr);
 
 private:
     MessagesQueue& _msgsQueue;
-
-    MessagesSendingService& _msgsSendingSrv;
 
     QLambdaThreadWorker _trdWorker;
 

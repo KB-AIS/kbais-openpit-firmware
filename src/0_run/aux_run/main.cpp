@@ -5,9 +5,10 @@
 #include "device_message.h"
 #include "host_wrapper.h"
 #include "immediate_messages_collector.h"
+#include "networking/message_sender_client.h"
 #include "messages_caching_service.h"
 #include "messages_collectors_adapter.h"
-#include "messages_sending_service.h"
+#include "networking/message_sender_client.h"
 // Qt
 #include <QApplication>
 #include <QtConcurrent/QtConcurrent>
@@ -20,15 +21,14 @@
 #include <plog/Init.h>
 #include <plog/Log.h>
 // OSS
-#include <rigtorp/MPMCQueue.h>
 #include <json.hpp>
 #include <readerwriterqueue.h>
-
-using MessagesQueue = rigtorp::mpmc::Queue<DeviceMessage>;
 
 using namespace Caching::Configuration;
 
 using namespace Sensors::Gps;
+
+using namespace kbais::cfw::networking;
 
 using namespace moodycamel;
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
     SetupTimeHandler setup_time_handler { };
 
-//    HostWrapper host { gps_controller };
+    HostWrapper host { gps_controller };
 
     QObject::connect(
        &gps_controller, &GpsDeviceController::update_gps_data_signal,
@@ -75,31 +75,21 @@ int main(int argc, char *argv[]) {
 
     ImmediateMessagesCollector immediate_event_collector { };
 
-//    AuxImmediateMessagesMapper auxImmediateEventMapper {
-//        immediate_event_collector,
-//        &host
-//    };
+    AuxImmediateMessagesMapper auxImmediateEventMapper {
+        immediate_event_collector, &host
+    };
 
-    MessagesQueue msgsQueue { 5 };
-    BlockingReaderWriterQueue<DeviceMessage> q;
+    BlockingReaderWriterQueue<DeviceMessage> msgsQueue;
 
     MessagesCollectorsAdapter event_collectors_adapter {
         recurrent_event_collector,
         immediate_event_collector,
-        q
+        msgsQueue
     };
 
-    auto f = QtConcurrent::run([&] {
-        MessagesSendingService msgsSendingSrv {};
-
-        while (1) {
-            DeviceMessage v;
-            q.wait_dequeue(v);
-            msgsSendingSrv.sendMessages({ v });
-        }
-    });
-
-    //MessagesCachingService msgsCachingSrv { msgsQueue, msgsSendingSrv };
+    MessagesCachingService messgagesCachingService {
+        msgsQueue
+    };
 
     PLOGI << "Startup AUX application";
     return app.exec();
