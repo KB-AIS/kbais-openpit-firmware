@@ -1,5 +1,8 @@
 #include "message_sender_client.h"
 
+// plog
+#include <plog/Log.h>
+
 using namespace kbais::cfw::networking;
 
 const auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
@@ -13,29 +16,31 @@ MessageSenderClient::MessageSenderClient(QObject *parent) : QObject(parent) {
         if (batches.isEmpty()) {
             return ;
         }
-        // TODO: Format message
+
         socket.write(batches.first().messages.first().payload);
     });
 
-    // TODO: Use QStateMachine to switch state whether or no device is auth
     connect(&socket, &QTcpSocket::readyRead, this, [&] {
-        // Check ACK
+        PLOGD << socket.readAll();
     });
 
     connect(&socket, &QTcpSocket::connected, this, [&] {
+        PLOGD << "connected";
         sendMessagesTimer.start();
     });
 
     connect(&socket, SocketErrorSignal, this, [&](auto error) {
+        PLOGD << "error: " << QVariant::fromValue(error).toString();
         sendMessagesTimer.stop();
     });
 
     connect(&socket, SocketStateSignal, this, [&](auto state) {
-
+        PLOGD << "state: " << QVariant::fromValue(state).toString();
+        emit notifyStateChanged(state);
     });
 
     connect(&socket, &QTcpSocket::disconnected, this, [&] {
-
+        PLOGD << "disconnected";
     });
 }
 

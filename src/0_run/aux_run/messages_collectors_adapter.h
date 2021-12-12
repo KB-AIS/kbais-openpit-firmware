@@ -9,12 +9,9 @@
 // QDeferred
 #include <QLambdaThreadWorker>
 // OSS
-#include <rigtorp/MPMCQueue.h>
 #include <readerwriterqueue.h>
 
 using namespace moodycamel;
-
-using MessagesQueue = rigtorp::mpmc::Queue<DeviceMessage>;
 
 class MessagesCollectorsAdapter : public QObject {
     Q_OBJECT

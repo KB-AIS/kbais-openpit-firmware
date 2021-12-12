@@ -13,18 +13,18 @@
 using namespace kbais::cfw::msgcaching;
 
 QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
-    "SELECT"
-    "   [dmb].[id] as deviceMessageBatch_id,"
-    "   [dm].[monkier] as deviceMessage_monkier,"
-    "   [dm].[payload] as deviceMessage_payload"
-    "FROM"
-    "   [device_message_batches] AS [dmb]"
-    "LEFT JOIN"
-    "   [device_messages] AS [dm]"
-    "       ON [dmb].[id] = [dm].[batch_id]"
-    "ORDER BY"
-    "   [dmb].[id] DESC"
-    "LIMIT"
+    "SELECT "
+    "   [dmb].[id] as deviceMessageBatch_id, "
+    "   [dm].[monkier] as deviceMessage_monkier, "
+    "   [dm].[payload] as deviceMessage_payload "
+    "FROM "
+    "   [device_message_batches] AS [dmb] "
+    "LEFT JOIN "
+    "   [device_messages] AS [dm] "
+    "       ON [dmb].[id] = [dm].[batch_id] "
+    "ORDER BY "
+    "   [dmb].[id] DESC "
+    "LIMIT "
     "   :batch_count;"
 ) };
 

@@ -1,8 +1,9 @@
 #ifndef MESSAGE_SENDER_CLIENT_H
 #define MESSAGE_SENDER_CLIENT_H
 
-#include "msgcaching/get_message_batches_query.h"
 #include "base_protocol_formatter.h"
+#include "msgcaching/get_message_batches_query.h"
+#include "networking/message_sender_params.h"
 // std
 #include <chrono>
 // Qt
@@ -17,18 +18,6 @@ using SocketState = QAbstractSocket::SocketState;
 using SocketError = QAbstractSocket::SocketError;
 
 namespace kbais::cfw::networking {
-
-struct MessageSenderParams {
-
-    const QHostAddress& host;
-
-    const quint16 port;
-
-    const std::chrono::milliseconds requestInterval;
-
-    const BaseProtocolFormatter& fmt;
-
-};
 
 class MessageSenderClient : public QObject {
     Q_OBJECT

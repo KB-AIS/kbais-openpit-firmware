@@ -5,16 +5,17 @@
 #include "device_message.h"
 #include "host_wrapper.h"
 #include "immediate_messages_collector.h"
-#include "networking/message_sender_client.h"
 #include "messages_caching_service.h"
 #include "messages_collectors_adapter.h"
 #include "networking/message_sender_client.h"
+#include "networking/message_sender_params.h"
 // Qt
 #include <QApplication>
 #include <QtConcurrent/QtConcurrent>
 #include <QHash>
 #include <QMetaType>
 #include <QDateTime>
+#include <QHostAddress>
 // plog
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
-    //configureConnection();
+    configureConnection();
 
     GpsDeviceController gps_controller { };
 
@@ -90,6 +91,24 @@ int main(int argc, char *argv[]) {
     MessagesCachingService messgagesCachingService {
         msgsQueue
     };
+
+    MessageSenderClient messagesSenderClient;
+    QObject::connect(&messagesSenderClient, &MessageSenderClient::notifyStateChanged, [&](auto state) {
+        if (state != QAbstractSocket::SocketState::UnconnectedState) return;
+
+        messagesSenderClient.restart({
+            QHostAddress { "10.214.1.247" },
+            9900,
+            std::chrono::milliseconds { 5000 },
+            BaseProtocolFormatter { }
+        });
+    });
+    messagesSenderClient.restart({
+        QHostAddress { "10.214.1.247" },
+        9900,
+        std::chrono::milliseconds { 10000 },
+        BaseProtocolFormatter { }
+    });
 
     PLOGI << "Startup AUX application";
     return app.exec();
