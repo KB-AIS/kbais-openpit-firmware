@@ -6,12 +6,19 @@
 #include "networking/message_sender_params.h"
 // std
 #include <chrono>
-// Qt
+// qt
 #include <QAbstractSocket>
+#include <QFinalState>
 #include <QObject>
+#include <QState>
+#include <QStateMachine>
 #include <QTcpSocket>
 #include <QTimer>
 #include <QUuid>
+// oss
+#include <json.hpp>
+
+using json = nlohmann::json;
 
 using SocketState = QAbstractSocket::SocketState;
 
@@ -19,25 +26,46 @@ using SocketError = QAbstractSocket::SocketError;
 
 namespace kbais::cfw::networking {
 
-class MessageSenderClient : public QObject {
+struct Ack {
+    QString status;
+};
+
+class MessageSender : public QObject {
     Q_OBJECT
 
 public:
     const QUuid id { QUuid::createUuid() };
 
-    explicit MessageSenderClient(QObject* parent = nullptr);
+    explicit MessageSender(MessageSenderConfiguration configuration);
 
-    void restart(const MessageSenderParams& parms);
+    void restart();
 
-    Q_SIGNAL void notifyStateChanged(SocketState state);
+    Q_SIGNAL void notifyStateChanged(QUuid id, SocketState state);
 
 private:
-    QTcpSocket socket;
+    MessageSenderConfiguration _configuration;
 
-    QTimer sendMessagesTimer;
+    msgcaching::GetMessageBatchesQueryHandler queryHandler;
 
-    msgcaching::GetMessageBatchesQueryHandler getMessageBatchesQueryHandler;
+    QTcpSocket _socket;
 
+    QTimer _timerSendReqeust;
+
+    QStateMachine _reducer;
+
+    QState sIDLE;
+
+    QState sCONNECTING;
+
+    QState sCONNECTED;
+
+    Q_SIGNAL void eCONNECT_REQUESTED();
+
+//    QState stateAuthenticationRequested;
+
+//    QState stateAuthenticated;
+
+//    QState stateMessagesSended;
 };
 
 } // kbais::cfw::networking

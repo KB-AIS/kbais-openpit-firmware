@@ -7,9 +7,9 @@
 
 namespace kbais::cfw::networking {
 
-struct MessageSenderParams {
+struct MessageSenderConfiguration {
 
-    const QHostAddress& host;
+    const QString host;
 
     const quint16 port;
 

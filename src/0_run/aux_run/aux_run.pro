@@ -13,10 +13,10 @@ INCLUDEPATH += \
     $${PROJDIR}/1_inter/aux_view \
     $${PROJDIR}/2_app/gps_sensor \
     # OSS
-    $${OSSDIR}/plog/include \
-    $${OSSDIR}/MPMCQueue/include \
     $${OSSDIR}/json/include \
-    $${OSSDIR}/rwqueue/include
+    $${OSSDIR}/plog/include \
+    $${OSSDIR}/rwqueue/include \
+    $${OSSDIR}/tfsm/include
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)

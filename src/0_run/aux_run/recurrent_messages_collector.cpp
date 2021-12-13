@@ -13,7 +13,6 @@ RecurrentMessagesCollector::popMessages() {
 
     QVector<DeviceMessage> msgs { collectedMsgs.size() };
     qCopy(collectedMsgs.begin(), collectedMsgs.end(), msgs.begin());
-    collectedMsgs.clear();
 
     return msgs;
 }

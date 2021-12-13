@@ -13,18 +13,18 @@
 using namespace kbais::cfw::msgcaching;
 
 QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
-    "SELECT "
-    "   [dmb].[id] as deviceMessageBatch_id, "
-    "   [dm].[monkier] as deviceMessage_monkier, "
-    "   [dm].[payload] as deviceMessage_payload "
-    "FROM "
-    "   [device_message_batches] AS [dmb] "
-    "LEFT JOIN "
-    "   [device_messages] AS [dm] "
-    "       ON [dmb].[id] = [dm].[batch_id] "
-    "ORDER BY "
-    "   [dmb].[id] DESC "
-    "LIMIT "
+    "SELECT\n"
+    "   [dmb].[id] as deviceMessageBatch_id,\n"
+    "   [dm].[monkier] as deviceMessage_monkier,\n"
+    "   [dm].[payload] as deviceMessage_payload\n"
+    "FROM\n"
+    "   [device_message_batches] AS [dmb]\n"
+    "LEFT JOIN\n"
+    "   [device_messages] AS [dm]\n"
+    "       ON [dmb].[id] = [dm].[batch_id]\n"
+    "ORDER BY\n"
+    "   [dmb].[id] DESC\n"
+    "LIMIT\n"
     "   :batch_count;"
 ) };
 
@@ -42,7 +42,7 @@ GetMessageBatchesQueryHandler::query(qint32 batchCount) const {
     if (!query.exec()) {
         PLOGE << "Could not perform query: " << query.lastError().text();
 
-        return { };
+        return {};
     }
 
     QMap<quint64, DeviceMessageBatch> batches;
@@ -50,7 +50,7 @@ GetMessageBatchesQueryHandler::query(qint32 batchCount) const {
         auto batchId = query.value("deviceMessageBatch_id").toULongLong();
 
         if (!batches.contains(batchId)) {
-            batches[batchId] = { batchId, QDateTime::currentDateTime(), { } };
+            batches[batchId] = { batchId, QDateTime::currentDateTime(), {} };
         }
 
         batches[batchId].messages.push_back({
@@ -61,5 +61,3 @@ GetMessageBatchesQueryHandler::query(qint32 batchCount) const {
 
     return batches.values();
 }
-
-

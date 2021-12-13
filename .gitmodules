@@ -4,6 +4,3 @@
 [submodule "qdef"]
 	path = oss/QDeferred
 	url = https://github.com/juangburgos/QDeferred
-[submodule "oss/MPMCQueue"]
-	path = oss/MPMCQueue
-	url = https://github.com/rigtorp/MPMCQueue

@@ -25,7 +25,7 @@ struct GgaSentence : public NmeaSentence {
 
     GgaSentence(const QTime&, double, double, short, short);
 
-    const QTime time { };
+    const QTime time;
 
     const double lat { 0.0 };
 

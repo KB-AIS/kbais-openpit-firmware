@@ -8,22 +8,22 @@
 #include <plog/Log.h>
 
 QString DML_INSERT_DEVICE_MESSAGE_BATCH { QStringLiteral(
-    "INSERT INTO [device_message_batches]("
-    "    [id]"
-    ") VALUES ("
-    "    NULL"
+    "INSERT INTO [device_message_batches](\n"
+    "    [id]\n"
+    ") VALUES (\n"
+    "    NULL\n"
     ");"
 ) };
 
 QString DML_INSERT_DEVICE_MESSAGE { QStringLiteral(
-    "INSERT INTO [device_messages]("
-    "    batch_id,"
-    "    monkier,"
-    "    payload"
-    ") VALUES ("
-    "    :batch_id,"
-    "    :monkier,"
-    "    :payload"
+    "INSERT INTO [device_messages](\n"
+    "    batch_id,\n"
+    "    monkier,\n"
+    "    payload\n"
+    ") VALUES (\n"
+    "    :batch_id,\n"
+    "    :monkier,\n"
+    "    :payload\n"
     ");"
 ) };
 

@@ -9,20 +9,19 @@
 #include "messages_collectors_adapter.h"
 #include "networking/message_sender_client.h"
 #include "networking/message_sender_params.h"
-// Qt
+#include "networking/message_senders_manager.h"
+// qt
 #include <QApplication>
-#include <QtConcurrent/QtConcurrent>
-#include <QHash>
-#include <QMetaType>
 #include <QDateTime>
+#include <QHash>
 #include <QHostAddress>
-// plog
+#include <QMetaType>
+#include <QtConcurrent/QtConcurrent>
+// oss
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
-// OSS
-#include <json.hpp>
 #include <readerwriterqueue.h>
 
 using namespace Caching::Configuration;
@@ -92,23 +91,8 @@ int main(int argc, char *argv[]) {
         msgsQueue
     };
 
-    MessageSenderClient messagesSenderClient;
-    QObject::connect(&messagesSenderClient, &MessageSenderClient::notifyStateChanged, [&](auto state) {
-        if (state != QAbstractSocket::SocketState::UnconnectedState) return;
-
-        messagesSenderClient.restart({
-            QHostAddress { "10.214.1.247" },
-            9900,
-            std::chrono::milliseconds { 5000 },
-            BaseProtocolFormatter { }
-        });
-    });
-    messagesSenderClient.restart({
-        QHostAddress { "10.214.1.247" },
-        9900,
-        std::chrono::milliseconds { 10000 },
-        BaseProtocolFormatter { }
-    });
+    MessageSendersManager messageSendersManager;
+    messageSendersManager.handleConfiguratingChanged();
 
     PLOGI << "Startup AUX application";
     return app.exec();

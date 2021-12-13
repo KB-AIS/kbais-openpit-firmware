@@ -2,6 +2,6 @@
 
 using namespace kbais::cfw::networking;
 
-BaseProtocolFormatter::BaseProtocolFormatter() {
+QByteArray BaseProtocolFormatter::encode() {
 
 }
