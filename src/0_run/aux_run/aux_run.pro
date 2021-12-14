@@ -32,7 +32,6 @@ HEADERS += \
     msgcaching/get_message_batches_query.h \
     networking/base_protocol_formatter.h \
     networking/message_sender.h \
-    networking/message_sender_params.h \
     networking/message_senders_manager.h \
     recurrent_messages_collector.h \
     save_device_messages_command.h

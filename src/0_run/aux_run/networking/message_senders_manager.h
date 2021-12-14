@@ -1,9 +1,6 @@
-#ifndef MESSAGESENDERSMANAGER_H
-#define MESSAGESENDERSMANAGER_H
+#ifndef MESSAGE_SENDERS_MANAGER_H
+#define MESSAGE_SENDERS_MANAGER_H
 
-#include "networking/base_protocol_formatter.h"
-#include "networking/message_sender.h"
-#include "networking/message_sender_params.h"
 // qt
 #include <QAbstractSocket>
 #include <QHash>
@@ -12,15 +9,10 @@
 #include <QTimer>
 #include <QUuid>
 
+#include "networking/base_protocol_formatter.h"
+#include "networking/message_sender.h"
+
 namespace kbais::cfw::networking {
-
-struct MesssageSenderStatus {
-
-    SocketState lastState;
-
-    SocketError lastError;
-
-};
 
 class MessageSendersManager : public QObject{
     Q_OBJECT
@@ -28,7 +20,7 @@ class MessageSendersManager : public QObject{
 public:
     explicit MessageSendersManager(QObject* parent = nullptr);
 
-    Q_SLOT void handleConfiguratingChanged(
+    Q_SLOT void handleConfigurationChanged(
         const QList<MessageSenderConfiguration>& configurations
     );
 
@@ -41,14 +33,28 @@ private:
 
     QTimer _restartMessageSendersTimer;
 
+    /*!
+     * Restart all registered instances of \ref MessageSender that have
+     * TCP socket disconnected status.
+     */
     void restartMessageSenders();
 
+    /*!
+     * This slot reacts on socket state changing and store it as a currnet
+     * status of \ref MesssageSender in instance of \ref MessageSenderStatus.
+     * \param id
+     *      An identifier of an instance of \ref MessageSender.
+     * \param lastState
+     *      A last state of TCP socket wrapped in \ref MessageSender.
+     * \param lastError
+     *      A last error produced by TCP socket wrapped in \ref MessageSender.
+     */
     Q_SLOT void handleMessageSenderStatusChanged(
-        QUuid id, SocketState lastState, SocketError lastError
+        QUuid senderId, SocketState lastState, SocketError lastError
     );
 
 };
 
 } // kbais::cfw::networking
 
-#endif // MESSAGESENDERSMANAGER_H
+#endif // MESSAGE_SENDERS_MANAGER_H

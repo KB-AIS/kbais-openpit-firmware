@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     };
 
     MessageSendersManager messageSendersManager;
-    messageSendersManager.handleConfiguratingChanged(configurations);
+    messageSendersManager.handleConfigurationChanged(configurations);
 
     PLOGI << "Startup AUX application";
     return app.exec();

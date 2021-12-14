@@ -1,9 +1,6 @@
 #ifndef MESSAGE_SENDER_H
 #define MESSAGE_SENDER_H
 
-#include "base_protocol_formatter.h"
-#include "msgcaching/get_message_batches_query.h"
-#include "networking/message_sender_params.h"
 // std
 #include <chrono>
 // qt
@@ -15,16 +12,35 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QUuid>
-// oss
-#include <json.hpp>
 
-using json = nlohmann::json;
+#include "msgcaching/get_message_batches_query.h"
+#include "networking/base_protocol_formatter.h"
 
 using SocketState = QAbstractSocket::SocketState;
 
 using SocketError = QAbstractSocket::SocketError;
 
 namespace kbais::cfw::networking {
+
+struct MesssageSenderStatus {
+
+    SocketState lastState;
+
+    SocketError lastError;
+
+};
+
+struct MessageSenderConfiguration {
+
+    QString host;
+
+    quint16 port;
+
+    std::chrono::milliseconds intervalSendMessages;
+
+    BaseProtocolFormatter formatter;
+
+};
 
 class MessageSender : public QObject {
     Q_OBJECT
@@ -41,29 +57,27 @@ public:
     );
 
 private:
-    msgcaching::GetMessageBatchesQueryHandler queryHandler;
-
     QString host;
 
     quint16 port;
 
     QTcpSocket _socket;
 
-    QTimer _timerSendReqeust;
+    QTimer _timerSendMessages;
 
     QStateMachine _reducer;
 
-    QMetaObject::Connection _connectionReducerRestart;
+    QMetaObject::Connection _cReducerRestart;
 
     QState stateIdle;
 
-    QState sCONNECTING;
+    QState stateConnecting;
 
-    QState sCONNECTED;
+    QState stateConnected;
 
-    void restartReducer();
+    void connectSocketSignals();
 
-    Q_SIGNAL void eCONNECT_REQUESTED();
+    Q_SIGNAL void eventConnectRequested();
 };
 
 struct Ack {
