@@ -1,44 +1,70 @@
 #include "message_senders_manager.h"
 
+// std
+#include <chrono>
 // qt
 #include <QVariant>
 // oss
 #include <plog/Log.h>
 
+using namespace std::chrono_literals;
+
 using namespace kbais::cfw::networking;
 
-MessageSendersManager::MessageSendersManager(QObject* parent) : QObject(parent) {
-    _senderConfigurations.push_back({
-        "10.214.1.247",
-        9900,
-        std::chrono::milliseconds { 10000 },
-        BaseProtocolFormatter { }
-    });
+constexpr std::chrono::milliseconds RESTART_MESSAGESENDERS_INTERVAL { 5s };
 
-    _senderConfigurations.push_back({
-        "10.214.1.208",
-        9900,
-        std::chrono::milliseconds { 5000 },
-        BaseProtocolFormatter { }
-    });
+MessageSendersManager::MessageSendersManager(
+    QObject* parent
+) : QObject(parent) {
+    _restartMessageSendersTimer.setInterval(RESTART_MESSAGESENDERS_INTERVAL);
+
+    QObject::connect(
+        &_restartMessageSendersTimer, &QTimer::timeout,
+
+        this, &MessageSendersManager::restartMessageSenders
+    );
+
+    _restartMessageSendersTimer.start();
 }
 
-void MessageSendersManager::handleConfiguratingChanged() {
-    for (auto configuration : _senderConfigurations) {
-        auto sender = new MessageSender(configuration);
+void
+MessageSendersManager::handleConfiguratingChanged(
+    const QList<MessageSenderConfiguration>& configurations
+) {
+    for (const auto& configuration : configurations) {
+        auto sender = new MessageSender();
 
         QObject::connect(
-            sender, &MessageSender::notifyStateChanged,
+            sender, &MessageSender::notifyStatusChanged,
 
-            this, &MessageSendersManager::handleSenderStateChanged
+            this, &MessageSendersManager::handleMessageSenderStatusChanged
         );
 
-        _senders[sender->id] = sender;
+        _messageSenders[sender->id] = sender;
 
-        sender->restart();
+        _messageSenderConfigurations[sender->id] = configuration;
+
+        _messageSenderStatuses[sender->id] = {};
     }
 }
 
-void MessageSendersManager::handleSenderStateChanged(QUuid id, SocketState state) {
-    // TODO: Schedule restart
+void
+MessageSendersManager::restartMessageSenders() {
+    for (auto senderId : _messageSenderStatuses.keys()) {
+        auto status = _messageSenderStatuses[senderId];
+
+        auto hasSenderValidStatus = status.lastState != SocketState::UnconnectedState;
+
+        if (hasSenderValidStatus) continue;
+
+        _messageSenders[senderId]->restart(_messageSenderConfigurations[senderId]);
+    }
+}
+
+void
+MessageSendersManager::handleMessageSenderStatusChanged(
+    QUuid id, SocketState lastState, SocketError lastError
+) {
+    _messageSenderStatuses[id].lastState = lastState;
+    _messageSenderStatuses[id].lastError = lastError;
 }

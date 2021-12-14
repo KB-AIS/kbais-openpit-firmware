@@ -7,7 +7,7 @@
 #include "immediate_messages_collector.h"
 #include "messages_caching_service.h"
 #include "messages_collectors_adapter.h"
-#include "networking/message_sender_client.h"
+#include "networking/message_sender.h"
 #include "networking/message_sender_params.h"
 #include "networking/message_senders_manager.h"
 // qt
@@ -91,8 +91,23 @@ int main(int argc, char *argv[]) {
         msgsQueue
     };
 
+    QList<MessageSenderConfiguration> configurations {
+        {
+            "10.214.1.247",
+            9900,
+            std::chrono::milliseconds { 10000 },
+            BaseProtocolFormatter { }
+        },
+        {
+            "10.214.1.208",
+            9900,
+            std::chrono::milliseconds { 5000 },
+            BaseProtocolFormatter { }
+        }
+    };
+
     MessageSendersManager messageSendersManager;
-    messageSendersManager.handleConfiguratingChanged();
+    messageSendersManager.handleConfiguratingChanged(configurations);
 
     PLOGI << "Startup AUX application";
     return app.exec();

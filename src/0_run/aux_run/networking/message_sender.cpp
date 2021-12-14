@@ -1,4 +1,4 @@
-#include "message_sender_client.h"
+#include "message_sender.h"
 
 // plog
 #include <plog/Log.h>
@@ -10,6 +10,7 @@ const auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 const auto SocketStateSignal = qOverload<SocketState>(&QAbstractSocket::stateChanged);
 
 namespace kbais::cfw::networking {
+
 void to_json(json& j, const Ack& x) {
     j = json {
         { "status", x.status.toStdString() },
@@ -23,27 +24,28 @@ void from_json(const json& j, Ack& x) {
 
     x.status = QString::fromStdString(statusStr);
 }
+
 }
 
-MessageSender::MessageSender(
-    MessageSenderConfiguration configuration
-) : QObject(), _configuration { configuration } {
+MessageSender::MessageSender() : QObject() {
     QObject::connect(&_reducer, &QStateMachine::started, this, [&] {
-        PLOGD << "reducer started";
+        QObject::disconnect(_connectionReducerRestart);
 
         emit eCONNECT_REQUESTED();
     });
 
     // ON IDLE
-    sIDLE
+    stateIdle
         .addTransition(this, &MessageSender::eCONNECT_REQUESTED, &sCONNECTING);
 
-    QObject::connect(&sIDLE, &QState::exited, this, [&] {
+    QObject::connect(&stateIdle, &QState::exited, this, [&] {
         PLOGD << "IDLE exited";
 
-        _socket.connectToHost(_configuration.host, _configuration.port);
+        _socket.connectToHost(host, port);
         emit eCONNECT_REQUESTED();
     });
+
+    _reducer.addState(&stateIdle);
 
     // ON CONNECTING
     sCONNECTING
@@ -53,6 +55,8 @@ MessageSender::MessageSender(
         PLOGD << "CONNECTING entered";
     });
 
+    _reducer.addState(&sCONNECTING);
+
     // ON CONNECTED
     QObject::connect(&sCONNECTED, &QState::entered, this, [&] {
         PLOGD << "CONNECTED entered";
@@ -60,18 +64,21 @@ MessageSender::MessageSender(
         _timerSendReqeust.start();
     });
 
-    // SOCKET
+    _reducer.addState(&sCONNECTED);
+
+    // Configure 'SOCKET' events
     QObject::connect(&_socket, &QTcpSocket::connected, this, [&] {
 
     });
 
     QObject::connect(&_socket, SocketStateSignal, this, [&](auto state) {
-        emit notifyStateChanged(id, state);
+        emit notifyStatusChanged(id, state, _socket.error());
     });
 
     QObject::connect(&_socket, SocketErrorSignal, this, [&](auto error) {
-        PLOGD << "error: " << QVariant::fromValue(error).toString();
         _timerSendReqeust.stop();
+
+        emit notifyStatusChanged(id, _socket.state(), error);
     });
 
     QObject::connect(&_socket, &QTcpSocket::readyRead, this, [&] {
@@ -88,9 +95,6 @@ MessageSender::MessageSender(
 
     });
 
-    // TIMER
-    _timerSendReqeust.setInterval(_configuration.requestInterval);
-
     QObject::connect(&_timerSendReqeust, &QTimer::timeout, this, [&] {
         const auto batches = queryHandler.query(1);
 
@@ -101,17 +105,32 @@ MessageSender::MessageSender(
         _socket.write(batches.first().messages.first().payload);
     });
 
-    _reducer.addState(&sIDLE);
-    _reducer.addState(&sCONNECTING);
-    _reducer.addState(&sCONNECTED);
-    _reducer.setInitialState(&sIDLE);
+    _reducer.setInitialState(&stateIdle);
 }
 
 void
-MessageSender::restart() {
+MessageSender::restart(MessageSenderConfiguration configuration) {
     _timerSendReqeust.stop();
 
-    _reducer.stop();
+    _timerSendReqeust.setInterval(configuration.requestInterval);
 
-    _reducer.start();
+    host = configuration.host;
+
+    port = configuration.port;
+
+    // Restart reducer after full stop
+    restartReducer();
+}
+
+void
+MessageSender::restartReducer() {
+    if (!_reducer.isRunning()) {
+        return _reducer.start();
+    }
+
+    _connectionReducerRestart = QObject::connect(
+        &_reducer, &QStateMachine::stopped, this, [&] { _reducer.start(); }
+    );
+
+    _reducer.stop();
 }

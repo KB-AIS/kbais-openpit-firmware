@@ -2,16 +2,25 @@
 #define MESSAGESENDERSMANAGER_H
 
 #include "networking/base_protocol_formatter.h"
-#include "networking/message_sender_client.h"
+#include "networking/message_sender.h"
 #include "networking/message_sender_params.h"
 // qt
 #include <QAbstractSocket>
 #include <QHash>
 #include <QHostAddress>
 #include <QObject>
+#include <QTimer>
 #include <QUuid>
 
 namespace kbais::cfw::networking {
+
+struct MesssageSenderStatus {
+
+    SocketState lastState;
+
+    SocketError lastError;
+
+};
 
 class MessageSendersManager : public QObject{
     Q_OBJECT
@@ -19,16 +28,24 @@ class MessageSendersManager : public QObject{
 public:
     explicit MessageSendersManager(QObject* parent = nullptr);
 
-    Q_SLOT void handleConfiguratingChanged();
+    Q_SLOT void handleConfiguratingChanged(
+        const QList<MessageSenderConfiguration>& configurations
+    );
 
 private:
-    QHash<QUuid, MessageSender*> _senders;
+    QHash<QUuid, MessageSender*> _messageSenders;
 
-    std::vector<MessageSenderConfiguration> _senderConfigurations;
+    QHash<QUuid, MessageSenderConfiguration> _messageSenderConfigurations;
 
-    void registerSender(const MessageSenderConfiguration& params);
+    QHash<QUuid, MesssageSenderStatus> _messageSenderStatuses;
 
-    void handleSenderStateChanged(QUuid id, SocketState state);
+    QTimer _restartMessageSendersTimer;
+
+    void restartMessageSenders();
+
+    Q_SLOT void handleMessageSenderStatusChanged(
+        QUuid id, SocketState lastState, SocketError lastError
+    );
 
 };
 

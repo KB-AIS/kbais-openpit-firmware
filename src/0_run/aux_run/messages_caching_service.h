@@ -2,7 +2,7 @@
 #define MESSAGESCACHINGSERVICE_H
 
 #include "device_message.h"
-#include "networking/message_sender_client.h"
+#include "networking/message_sender.h"
 // Qt
 #include <QObject>
 // Qt Deferred

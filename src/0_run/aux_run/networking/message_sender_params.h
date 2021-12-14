@@ -9,13 +9,13 @@ namespace kbais::cfw::networking {
 
 struct MessageSenderConfiguration {
 
-    const QString host;
+    QString host;
 
-    const quint16 port;
+    quint16 port;
 
-    const std::chrono::milliseconds requestInterval;
+    std::chrono::milliseconds requestInterval;
 
-    const BaseProtocolFormatter& fmt;
+    BaseProtocolFormatter fmt;
 
 };
 

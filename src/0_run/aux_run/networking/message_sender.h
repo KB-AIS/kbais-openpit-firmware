@@ -1,5 +1,5 @@
-#ifndef MESSAGE_SENDER_CLIENT_H
-#define MESSAGE_SENDER_CLIENT_H
+#ifndef MESSAGE_SENDER_H
+#define MESSAGE_SENDER_H
 
 #include "base_protocol_formatter.h"
 #include "msgcaching/get_message_batches_query.h"
@@ -26,26 +26,26 @@ using SocketError = QAbstractSocket::SocketError;
 
 namespace kbais::cfw::networking {
 
-struct Ack {
-    QString status;
-};
-
 class MessageSender : public QObject {
     Q_OBJECT
 
 public:
     const QUuid id { QUuid::createUuid() };
 
-    explicit MessageSender(MessageSenderConfiguration configuration);
+    explicit MessageSender();
 
-    void restart();
+    void restart(MessageSenderConfiguration configuration);
 
-    Q_SIGNAL void notifyStateChanged(QUuid id, SocketState state);
+    Q_SIGNAL void notifyStatusChanged(
+        QUuid id, SocketState lastState, SocketError lastError
+    );
 
 private:
-    MessageSenderConfiguration _configuration;
-
     msgcaching::GetMessageBatchesQueryHandler queryHandler;
+
+    QString host;
+
+    quint16 port;
 
     QTcpSocket _socket;
 
@@ -53,21 +53,23 @@ private:
 
     QStateMachine _reducer;
 
-    QState sIDLE;
+    QMetaObject::Connection _connectionReducerRestart;
+
+    QState stateIdle;
 
     QState sCONNECTING;
 
     QState sCONNECTED;
 
+    void restartReducer();
+
     Q_SIGNAL void eCONNECT_REQUESTED();
+};
 
-//    QState stateAuthenticationRequested;
-
-//    QState stateAuthenticated;
-
-//    QState stateMessagesSended;
+struct Ack {
+    QString status;
 };
 
 } // kbais::cfw::networking
 
-#endif // MESSAGE_SENDER_CLIENT_H
+#endif // MESSAGE_SENDER_H
