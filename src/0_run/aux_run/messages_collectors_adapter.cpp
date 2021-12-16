@@ -38,8 +38,6 @@ void
 MessagesCollectorsAdapter::collectMessages() {
     QMutexLocker lock(&collectMsgsMtx);
 
-    PLOGD << "Collected at " << QDateTime::currentDateTime().toString();
-
     QVector<DeviceMessage> messages;
     messages.append(immediateCollector.popMessages());
     messages.append(recurrentCollector.popMessages());

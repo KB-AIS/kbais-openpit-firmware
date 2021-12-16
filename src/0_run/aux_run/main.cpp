@@ -1,15 +1,5 @@
-#include "aux_immediate_messages_mapper.h"
-#include "aux_recurrent_messages_mapper.h"
-#include "commands/setup_time_handler.h"
-#include "database_factory.h"
-#include "device_message.h"
-#include "host_wrapper.h"
-#include "immediate_messages_collector.h"
-#include "messages_caching_service.h"
-#include "messages_collectors_adapter.h"
-#include "networking/message_sender.h"
-#include "networking/message_sender_params.h"
-#include "networking/message_senders_manager.h"
+// std
+#include <memory>
 // qt
 #include <QApplication>
 #include <QDateTime>
@@ -24,11 +14,21 @@
 #include <plog/Log.h>
 #include <readerwriterqueue.h>
 
-using namespace Caching::Configuration;
+#include "aux_immediate_messages_mapper.h"
+#include "aux_recurrent_messages_mapper.h"
+#include "commands/setup_time_handler.h"
+#include "database_factory.h"
+#include "device_message.h"
+#include "host_wrapper.h"
+#include "immediate_messages_collector.h"
+#include "messages_caching_service.h"
+#include "messages_collectors_adapter.h"
+#include "networking/base_protocol_communicator.h"
+#include "networking/swom_protocol_communicator.h"
+#include "networking/message_sender.h"
+#include "networking/message_senders_manager.h"
 
-using namespace Sensors::Gps;
-
-using namespace kbais::cfw::networking;
+using namespace KbAis::Cfw::Networking;
 
 using namespace moodycamel;
 
@@ -46,48 +46,47 @@ void setupMetaTypes() {
 
 int main(int argc, char *argv[]) {
     setupLogging();
-
     setupMetaTypes();
 
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
-    configureConnection();
+    Caching::Configuration::configureConnection();
 
-    GpsDeviceController gps_controller { };
+    Sensors::Gps::GpsDeviceController gspController;
 
-    SetupTimeHandler setup_time_handler { };
+    SetupTimeHandler setupTimeHandler;
 
-    HostWrapper host { gps_controller };
+    HostWrapper host { gspController };
 
     QObject::connect(
-       &gps_controller, &GpsDeviceController::update_gps_data_signal,
+       &gspController, &Sensors::Gps::GpsDeviceController::update_gps_data_signal,
 
-       &setup_time_handler, &SetupTimeHandler::handle_slot
+       &setupTimeHandler, &SetupTimeHandler::handle_slot
     );
 
-    RecurrentMessagesCollector recurrent_event_collector { };
+    RecurrentMessagesCollector recurrentMessagesCollector;
 
-    AuxRecurrentEventMapper aux_reccurrent_event_mapper {
-        recurrent_event_collector,
-        gps_controller
+    AuxRecurrentEventMapper auxRecurrentEventMapper {
+        recurrentMessagesCollector,
+        gspController
     };
 
-    ImmediateMessagesCollector immediate_event_collector { };
+    ImmediateMessagesCollector immediateMessagesCollector { };
 
     AuxImmediateMessagesMapper auxImmediateEventMapper {
-        immediate_event_collector, &host
+        immediateMessagesCollector, &host
     };
 
     BlockingReaderWriterQueue<DeviceMessage> msgsQueue;
 
-    MessagesCollectorsAdapter event_collectors_adapter {
-        recurrent_event_collector,
-        immediate_event_collector,
+    MessagesCollectorsAdapter msgsCollectorsAdapter {
+        recurrentMessagesCollector,
+        immediateMessagesCollector,
         msgsQueue
     };
 
-    MessagesCachingService messgagesCachingService {
+    MessagesCachingService msgsCachingService {
         msgsQueue
     };
 
@@ -96,13 +95,13 @@ int main(int argc, char *argv[]) {
             "10.214.1.247",
             9900,
             std::chrono::milliseconds { 10000 },
-            BaseProtocolFormatter { }
+            std::make_shared<SwomProtocolCommunicator>()
         },
         {
             "10.214.1.208",
             9900,
             std::chrono::milliseconds { 5000 },
-            BaseProtocolFormatter { }
+            std::make_shared<SwomProtocolCommunicator>()
         }
     };
 

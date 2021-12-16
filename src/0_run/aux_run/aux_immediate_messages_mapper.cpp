@@ -1,5 +1,10 @@
 #include "aux_immediate_messages_mapper.h"
 
+// oss
+#include <json.hpp>
+
+using json = nlohmann::json;
+
 AuxImmediateMessagesMapper::AuxImmediateMessagesMapper(
     const ImmediateMessagesCollector& immediateEventCollector,
     // TODO: Provide access point to UI events
@@ -15,9 +20,11 @@ AuxImmediateMessagesMapper::AuxImmediateMessagesMapper(
     connect(
         host->m_main_presenter, &main_presenter::notifyTestUserEvent,
         this, [&] {
+            auto bytes = json::to_msgpack("Some user's UI event");
+
             emit notifyMessageReceived({
                 "TEST",
-                "Some user's UI event"
+                QByteArray(reinterpret_cast<const char*>(bytes.data()), bytes.size())
             });
         }
     );

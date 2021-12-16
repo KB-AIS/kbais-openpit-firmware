@@ -10,7 +10,7 @@
 // plog
 #include <plog/Log.h>
 
-using namespace kbais::cfw::msgcaching;
+using namespace KbAis::Cfw::msgcaching;
 
 QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "SELECT\n"

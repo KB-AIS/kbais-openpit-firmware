@@ -30,9 +30,11 @@ HEADERS += \
     messages_caching_service.h \
     messages_collectors_adapter.h \
     msgcaching/get_message_batches_query.h \
+    networking/base_protocol_communicator.h \
     networking/base_protocol_formatter.h \
     networking/message_sender.h \
     networking/message_senders_manager.h \
+    networking/swom_protocol_communicator.h \
     recurrent_messages_collector.h \
     save_device_messages_command.h
 
@@ -49,6 +51,7 @@ SOURCES += \
     networking/base_protocol_formatter.cpp \
     networking/message_sender.cpp \
     networking/message_senders_manager.cpp \
+    networking/swom_protocol_communicator.cpp \
     recurrent_messages_collector.cpp \
     save_device_messages_command.cpp
 

@@ -9,21 +9,37 @@
 
 using namespace std::chrono_literals;
 
-using namespace kbais::cfw::networking;
+using namespace KbAis::Cfw::Networking;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_INTERVAL { 5s };
 
-MessageSendersManager::MessageSendersManager(
-    QObject* parent
-) : QObject(parent) {
+MessageSendersManager::MessageSendersManager(QObject* parent) : QObject(parent) {
     _restartMessageSendersTimer.setInterval(RESTART_MESSAGE_SENDERS_INTERVAL);
 
     QObject::connect(
         &_restartMessageSendersTimer, &QTimer::timeout,
-        this, &MessageSendersManager::restartMessageSenders
+
+        this, &MessageSendersManager::handleRestartMessageSenders
     );
 
     _restartMessageSendersTimer.start();
+}
+
+void
+MessageSendersManager::handleRestartMessageSenders() {
+    for (const auto& senderId : _messageSenderStatuses.keys()) {
+        const auto status = _messageSenderStatuses[senderId];
+
+        const auto hasSenderValidStatus =
+            status.state != SocketState::UnconnectedState;
+
+        if (hasSenderValidStatus) {
+            continue;
+        }
+
+        const auto configuration = _messageSenderConfigurations[senderId];
+        _messageSenders[senderId]->restart(configuration);
+    }
 }
 
 void
@@ -46,24 +62,7 @@ MessageSendersManager::handleConfigurationChanged(
 }
 
 void
-MessageSendersManager::restartMessageSenders() {
-    for (const auto senderId : _messageSenderStatuses.keys()) {
-        const auto status = _messageSenderStatuses[senderId];
-
-        const auto hasSenderValidStatus =
-            status.lastState != SocketState::UnconnectedState;
-
-        if (hasSenderValidStatus) continue;
-
-        const auto configuration = _messageSenderConfigurations[senderId];
-        _messageSenders[senderId]->restart(configuration);
-    }
-}
-
-void
-MessageSendersManager::handleMessageSenderStatusChanged(
-    QUuid senderId, SocketState lastState, SocketError lastError
-) {
-    _messageSenderStatuses[senderId].lastState = lastState;
-    _messageSenderStatuses[senderId].lastError = lastError;
+MessageSendersManager::handleMessageSenderStatusChanged(MessageSenderStatusChanged n) {
+    _messageSenderStatuses[n.senderId].state = n.lastState;
+    _messageSenderStatuses[n.senderId].error = n.lastError;
 }

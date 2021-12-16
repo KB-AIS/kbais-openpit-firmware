@@ -15,7 +15,7 @@ namespace Sensors::Gps {
 void to_json(json& j, const GpsUpdate& x) {
     j = json {
         { "datetime", x.datetime.toString().toStdString() },
-        { "is_valid", x.is_valid },
+        { "is_valid", x.isValid },
         { "latitude", x.latitude },
         { "longitude", x.longitude },
     };
@@ -26,7 +26,7 @@ void from_json(const json& j, GpsUpdate& x) {
 
     j.at("datetime").get_to(dateTimeStr);
     x.datetime = QDateTime::fromString(QString::fromStdString(dateTimeStr));
-    j.at("is_valid").get_to(x.is_valid);
+    j.at("is_valid").get_to(x.isValid);
     j.at("latitude").get_to(x.latitude);
     j.at("longitude").get_to(x.longitude);
 }
@@ -52,7 +52,8 @@ AuxRecurrentEventMapper::AuxRecurrentEventMapper(
 }
 
 // TODO: make mappers reusable
-const DeviceMessage AuxRecurrentEventMapper::mapGpsUpdate(
+const DeviceMessage
+AuxRecurrentEventMapper::mapGpsUpdate(
     const GpsUpdate& gps_update
 ) {
     auto bytes = json::to_msgpack(gps_update);

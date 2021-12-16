@@ -9,7 +9,7 @@
 using namespace Sensors::Gps;
 
 void SetupTimeHandler::handle_slot(const GpsUpdate& update) {
-    if (!update.is_valid) {
+    if (!update.isValid) {
         return;
     }
 

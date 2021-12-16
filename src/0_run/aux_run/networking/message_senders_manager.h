@@ -12,7 +12,7 @@
 #include "networking/base_protocol_formatter.h"
 #include "networking/message_sender.h"
 
-namespace kbais::cfw::networking {
+namespace KbAis::Cfw::Networking {
 
 class MessageSendersManager : public QObject{
     Q_OBJECT
@@ -37,21 +37,13 @@ private:
      * Restart all registered instances of \ref MessageSender that have
      * TCP socket disconnected status.
      */
-    void restartMessageSenders();
+    void handleRestartMessageSenders();
 
     /*!
      * This slot reacts on socket state changing and store it as a currnet
      * status of \ref MesssageSender in instance of \ref MessageSenderStatus.
-     * \param id
-     *      An identifier of an instance of \ref MessageSender.
-     * \param lastState
-     *      A last state of TCP socket wrapped in \ref MessageSender.
-     * \param lastError
-     *      A last error produced by TCP socket wrapped in \ref MessageSender.
      */
-    Q_SLOT void handleMessageSenderStatusChanged(
-        QUuid senderId, SocketState lastState, SocketError lastError
-    );
+    void handleMessageSenderStatusChanged(MessageSenderStatusChanged notification);
 
 };
 

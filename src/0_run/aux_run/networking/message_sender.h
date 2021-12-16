@@ -3,6 +3,7 @@
 
 // std
 #include <chrono>
+#include <memory>
 // qt
 #include <QAbstractSocket>
 #include <QFinalState>
@@ -15,14 +16,25 @@
 
 #include "msgcaching/get_message_batches_query.h"
 #include "networking/base_protocol_formatter.h"
+#include "networking/base_protocol_communicator.h"
 
 using SocketState = QAbstractSocket::SocketState;
 
 using SocketError = QAbstractSocket::SocketError;
 
-namespace kbais::cfw::networking {
+namespace KbAis::Cfw::Networking {
 
 struct MesssageSenderStatus {
+
+    SocketState state;
+
+    SocketError error;
+
+};
+
+struct MessageSenderStatusChanged {
+
+    QUuid senderId;
 
     SocketState lastState;
 
@@ -38,7 +50,7 @@ struct MessageSenderConfiguration {
 
     std::chrono::milliseconds intervalSendMessages;
 
-    BaseProtocolFormatter formatter;
+    std::shared_ptr<BaseProtocolCommunicator> communicator;
 
 };
 
@@ -50,40 +62,37 @@ public:
 
     explicit MessageSender();
 
-    void restart(MessageSenderConfiguration configuration);
+    void restart(const MessageSenderConfiguration& configuration);
 
-    Q_SIGNAL void notifyStatusChanged(
-        QUuid id, SocketState lastState, SocketError lastError
-    );
+    Q_SIGNAL void notifyStatusChanged(MessageSenderStatusChanged notification);
 
 private:
     QString host;
 
     quint16 port;
 
-    QTcpSocket _socket;
+    std::shared_ptr<BaseProtocolCommunicator> communicator;
 
-    QTimer _timerSendMessages;
+    QTcpSocket socket;
 
-    QStateMachine _reducer;
+    QStateMachine reducer;
 
-    QMetaObject::Connection _cReducerRestart;
+    QMetaObject::Connection cReducerStopped;
 
-    QState stateIdle;
+    QState sIdle;
 
-    QState stateConnecting;
+    QState sConnecting;
 
-    QState stateConnected;
+    QState sConnected;
 
     void connectSocketSignals();
 
-    Q_SIGNAL void eventConnectRequested();
-};
+    Q_SIGNAL void notifyConnectRequested();
 
-struct Ack {
-    QString status;
 };
 
 } // kbais::cfw::networking
+
+Q_DECLARE_METATYPE(KbAis::Cfw::Networking::MessageSenderStatusChanged);
 
 #endif // MESSAGE_SENDER_H
