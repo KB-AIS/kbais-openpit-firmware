@@ -4,23 +4,50 @@
 // qt
 #include <QIODevice>
 #include <QObject>
+#include <QTimer>
 
+#include "msgcaching/get_message_batches_query.h"
 #include "networking/base_protocol_communicator.h"
 #include "networking/base_protocol_formatter.h"
 
 namespace KbAis::Cfw::Networking {
 
+enum class SwomProtocolCommunicatorState {
+    Stoped,
+    Authenticating,
+    ReadyToSendData,
+    WaitReplayOnDataSent,
+};
+
 class SwomProtocolCommunicator : public BaseProtocolCommunicator {
 
 public:
-    void startCommunication(QIODevice& device);
+    SwomProtocolCommunicator();
 
-    void ceaseCommunication();
+    void start(QIODevice& device);
+
+    void cease();
+
+    SwomProtocolCommunicatorState currentState() const;
 
 private:
+    KbAis::Cfw::DatabaseCaching::GetMessageBatchesQueryHandler queryHandler;
+
+    SwomProtocolCommunicatorState state;
+
     SwomProtocolFromatter formatter;
 
-    QMetaObject::Connection cReadyRead;
+    QTimer timerWaitReplay;
+
+    QTimer timerSendData;
+
+    QMetaObject::Connection connectionReadData;
+
+    QMetaObject::Connection connectionSendData;
+
+    QMetaObject::Connection connectionWaitReplay;
+
+    void requestAuthentication(QIODevice& device);
 
 };
 

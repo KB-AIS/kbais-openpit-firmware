@@ -12,9 +12,9 @@ class BaseProtocolCommunicator : public QObject {
     Q_OBJECT
 
 public:
-    virtual void startCommunication(QIODevice& device) = 0;
+    virtual void start(QIODevice& device) = 0;
 
-    virtual void ceaseCommunication() = 0;
+    virtual void cease() = 0;
 
     Q_SIGNAL void notifyDisconnectRequired();
 

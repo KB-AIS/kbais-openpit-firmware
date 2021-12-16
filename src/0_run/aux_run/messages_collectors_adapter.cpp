@@ -13,7 +13,7 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 1s };
+constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 10s };
 
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     RecurrentMessagesCollector& recurrentCollector,

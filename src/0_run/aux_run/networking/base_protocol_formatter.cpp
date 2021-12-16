@@ -24,7 +24,7 @@ void from_json(const json& j, AthData& d) {
     d.equipmentId = QString::fromStdString(equipmentIdStr);
 }
 
-void to_json(json& j, const AcknData& d) {
+void to_json(json& j, const AckData& d) {
     auto uuidBytes = d.uuid.toByteArray();
 
     j = json {
@@ -33,7 +33,7 @@ void to_json(json& j, const AcknData& d) {
     };
 }
 
-void from_json(const json& j, AcknData& d) {
+void from_json(const json& j, AckData& d) {
     std::vector<unsigned char> uuidBytes;
 
     j.at("Uuid").get_to(uuidBytes);
@@ -51,9 +51,7 @@ SwomProtocolFromatter::encodeAuthPackage(const QString &equipmentId) {
 
     QByteArray bytes;
     QDataStream bStream(&bytes, QIODevice::WriteOnly);
-    auto foo = BASE_FRAME_LENGTH + f.size();
-    bStream << foo;
-    bStream << static_cast<quint8>(DataType::ATH);
+    bStream << static_cast<quint8>(DataType::Ath);
     auto uuid = QUuid::createUuid();
     bStream << uuid;
     bStream.writeRawData(reinterpret_cast<const char*>(f.data()), f.size());

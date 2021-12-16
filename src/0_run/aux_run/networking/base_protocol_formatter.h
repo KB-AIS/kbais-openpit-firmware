@@ -11,85 +11,40 @@
 namespace KbAis::Cfw::Networking {
 
 enum class DataType : quint8 {
-    ATH = 0x00,
-    TEL = 0x01,
-    ACK = 0xFF,
+    Ath = 0x00,
+    Tel = 0x01,
+    Ack = 0xFF,
 };
 
-/*!
- * \brief The AthData struct
- */
 struct AthData {
 
-    /*!
-     * \brief equipmentId
-     */
     QString equipmentId;
 
 };
 
-/*!
- * \brief The AckData struct
- */
-struct AcknData {
+struct AckData {
 
-    /*!
-     * \brief uuid
-     */
     QUuid uuid;
 
-    /*!
-     * \brief result
-     */
     quint8 result;
 
 };
 
-/*!
- * \brief The TelData struct
- */
 struct TelData {
 
 };
 
-struct ProtocolFormatterNotifier : public QObject {
-    Q_OBJECT
-
-    Q_SIGNAL void notifyPackageAccepted();
-
-    Q_SIGNAL void notifyPackageRejected();
-
-};
-
-/*!
- * \brief The BaseProtocolFormatter class
- */
 class BaseProtocolFormatter {
 
 public:
-    // BaseProtocolFormatter(const ProtocolFormatterNotifier& notifier);
-
-    // TODO: Pass specific formatter configuration?
     virtual QByteArray encodeAuthPackage(const QString& equipmentId) = 0;
-
-    // virtual QByteArray encodeTelePackage() = 0;
-
-//private:
-//    const ProtocolFormatterNotifier& notifier;
 
 };
 
-/*!
- * \brief The SwomProtocolFromatter class
- */
-class SwomProtocolFromatter : public virtual BaseProtocolFormatter {
+class SwomProtocolFromatter : public BaseProtocolFormatter {
 
 public:
-    // SwomProtocolFromatter(const ProtocolFormatterNotifier& notifier);
-
-    QByteArray encodeAuthPackage(const QString &equipmentId);
-
-    // QByteArray encodeTelePackage();
+    QByteArray encodeAuthPackage(const QString &equipmentId) override;
 
 };
 

@@ -5,7 +5,7 @@
 // Qt
 #include <QList>
 
-namespace KbAis::Cfw::msgcaching {
+namespace KbAis::Cfw::DatabaseCaching {
 
 class GetMessageBatchesQueryHandler {
 
