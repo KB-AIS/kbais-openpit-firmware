@@ -1,5 +1,5 @@
-#ifndef DATABASEFACTORY_H
-#define DATABASEFACTORY_H
+#ifndef DATABASE_CONFIGURATION_H
+#define DATABASE_CONFIGURATION_H
 
 namespace Caching::Configuration {
 

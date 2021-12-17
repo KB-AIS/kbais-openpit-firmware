@@ -4,8 +4,13 @@
 #include <chrono>
 // qt
 #include <QVariant>
+#include <QThread>
+#include <QMutexLocker>
+#include <QSharedPointer>
 // oss
 #include <plog/Log.h>
+
+#include "networking/swom_protocol_communicator.h"
 
 using namespace std::chrono_literals;
 
@@ -13,7 +18,7 @@ using namespace KbAis::Cfw::Networking;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_INTERVAL { 5s };
 
-MessageSendersManager::MessageSendersManager(QObject* parent) : QObject(parent) {
+MessageSendersManager::MessageSendersManager() {
     _restartMessageSendersTimer.setInterval(RESTART_MESSAGE_SENDERS_INTERVAL);
 
     QObject::connect(
@@ -21,6 +26,16 @@ MessageSendersManager::MessageSendersManager(QObject* parent) : QObject(parent) 
 
         this, &MessageSendersManager::handleRestartMessageSenders
     );
+
+    this->subscribeToEvtByName("MESSAGES_SAVED", [&](auto& evt)->bool {
+        auto senders = _messageSenders.values();
+
+        for (auto x = senders.begin(); x != senders.end(); ++x) {
+            (*x)->sendMessage();
+        }
+
+        return true;
+    });
 
     _restartMessageSendersTimer.start();
 }

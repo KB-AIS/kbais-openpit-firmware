@@ -1,6 +1,6 @@
 #include "messages_collectors_adapter.h"
 
-#include "database_factory.h"
+#include "database_configuration.h"
 // std
 #include <chrono>
 // Qt
@@ -13,17 +13,19 @@
 
 using namespace std::chrono_literals;
 
+using MessagesQueue = moodycamel::BlockingReaderWriterQueue<DeviceMessage>;
+
 constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 10s };
 
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     RecurrentMessagesCollector& recurrentCollector,
     ImmediateMessagesCollector& immediateCollector,
-    BlockingReaderWriterQueue<DeviceMessage>& msgsQueue,
+    MessagesQueue& messagesQueue,
     QObject* parent
 ) : QObject(parent),
     recurrentCollector { recurrentCollector },
     immediateCollector { immediateCollector },
-    _msgsQueue { msgsQueue } {
+    messagesQueue { messagesQueue } {
     connect(
         &immediateCollector, &ImmediateMessagesCollector::notifyMessageCollected,
 
@@ -31,7 +33,7 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     );
 
     // TODO: Setup iteration time from configuration
-    _trdWorker.startLoopInThread([&] { collectMessages(); }, COLLECT_MSGS_TIMEOUT.count());
+    threadWorker.startLoopInThread([&] { collectMessages(); }, COLLECT_MSGS_TIMEOUT.count());
 }
 
 void
@@ -43,9 +45,8 @@ MessagesCollectorsAdapter::collectMessages() {
     messages.append(recurrentCollector.popMessages());
 
     if (messages.isEmpty()) {
-        PLOGD << "No messags has been collected to send";
         return;
     }
 
-    _msgsQueue.emplace(messages.first());
+    messagesQueue.emplace(messages.first());
 }

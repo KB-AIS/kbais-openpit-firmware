@@ -1,7 +1,7 @@
 #ifndef SAVEDEVICEMESSAGESCOMMAND_H
 #define SAVEDEVICEMESSAGESCOMMAND_H
 
-#include "database_factory.h"
+#include "database_configuration.h"
 #include "device_message.h"
 // Qt
 #include <QVector>

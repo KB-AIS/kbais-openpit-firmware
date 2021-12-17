@@ -1,17 +1,16 @@
 #ifndef MESSAGESCOLLECTORSADAPTER_H
 #define MESSAGESCOLLECTORSADAPTER_H
 
-#include "immediate_messages_collector.h"
-#include "recurrent_messages_collector.h"
-// Qt
+// qt
 #include <QMutex>
 #include <QObject>
-// QDeferred
+// qt deferred
 #include <QLambdaThreadWorker>
-// OSS
+// oss
 #include <readerwriterqueue.h>
 
-using namespace moodycamel;
+#include "immediate_messages_collector.h"
+#include "recurrent_messages_collector.h"
 
 class MessagesCollectorsAdapter : public QObject {
     Q_OBJECT
@@ -20,7 +19,7 @@ public:
     explicit MessagesCollectorsAdapter(
         RecurrentMessagesCollector& recurrentCollector,
         ImmediateMessagesCollector& immediateCollector,
-        BlockingReaderWriterQueue<DeviceMessage>& msgsQueue,
+        moodycamel::BlockingReaderWriterQueue<DeviceMessage>& messagesQueue,
         QObject* parent = nullptr
     );
 
@@ -29,13 +28,13 @@ public:
 private:
     void collectMessages();
 
-    QLambdaThreadWorker _trdWorker;
+    QLambdaThreadWorker threadWorker;
 
     RecurrentMessagesCollector& recurrentCollector;
 
     ImmediateMessagesCollector& immediateCollector;
 
-    BlockingReaderWriterQueue<DeviceMessage>& _msgsQueue;
+    moodycamel::BlockingReaderWriterQueue<DeviceMessage>& messagesQueue;
 
     QMutex collectMsgsMtx;
 

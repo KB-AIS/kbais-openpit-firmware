@@ -19,12 +19,13 @@ INCLUDEPATH += \
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
+include($${OSSDIR}/libgitlevtbus/src/src.pri)
 
 HEADERS += \
     aux_immediate_messages_mapper.h \
     aux_recurrent_messages_mapper.h \
     commands/setup_time_handler.h \
-    database_factory.h \
+    database_configuration.h \
     device_message.h \
     immediate_messages_collector.h \
     messages_caching_service.h \
@@ -42,7 +43,7 @@ SOURCES += \
     aux_immediate_messages_mapper.cpp \
     aux_recurrent_messages_mapper.cpp \
     commands/setup_time_handler.cpp \
-    database_factory.cpp \
+    database_configuration.cpp \
     immediate_messages_collector.cpp \
     main.cpp \
     messages_caching_service.cpp \

@@ -48,9 +48,9 @@ struct MessageSenderConfiguration {
 
     quint16 port;
 
-    std::chrono::milliseconds intervalSendMessages;
+    std::chrono::milliseconds dataSendInterval;
 
-    std::shared_ptr<BaseProtocolCommunicator> communicator;
+    QSharedPointer<BaseProtocolCommunicator> communicator;
 
 };
 
@@ -64,30 +64,16 @@ public:
 
     void restart(const MessageSenderConfiguration& configuration);
 
+    void sendMessage();
+
     Q_SIGNAL void notifyStatusChanged(MessageSenderStatusChanged notification);
 
 private:
-    QString host;
-
-    quint16 port;
-
-    std::shared_ptr<BaseProtocolCommunicator> communicator;
+    QSharedPointer<BaseProtocolCommunicator> communicator;
 
     QTcpSocket socket;
 
-    QStateMachine reducer;
-
-    QMetaObject::Connection cReducerStopped;
-
-    QState sIdle;
-
-    QState sConnecting;
-
-    QState sConnected;
-
     void connectSocketSignals();
-
-    Q_SIGNAL void notifyConnectRequested();
 
 };
 

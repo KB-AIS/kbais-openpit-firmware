@@ -1,4 +1,4 @@
- #include "database_factory.h"
+ #include "database_configuration.h"
 
 // Qt
 #include <QtSql>

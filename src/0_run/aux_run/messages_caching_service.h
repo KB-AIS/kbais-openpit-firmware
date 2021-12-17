@@ -1,29 +1,31 @@
 #ifndef MESSAGESCACHINGSERVICE_H
 #define MESSAGESCACHINGSERVICE_H
 
-#include "device_message.h"
-#include "networking/message_sender.h"
-// Qt
+// qt
 #include <QObject>
-// Qt Deferred
+// qt defferred
 #include <QDeferred>
 #include <QEventer>
 #include <QLambdaThreadWorker>
-// OSS
+// oss
 #include <readerwriterqueue.h>
+#include <gitlmodule.h>
+
+#include "device_message.h"
+#include "networking/message_sender.h"
 
 using MessagesQueue = moodycamel::BlockingReaderWriterQueue<DeviceMessage>;
 
-class MessagesCachingService : public QObject {
+class MessagesCachingService : public QObject, public GitlModule {
     Q_OBJECT
 
 public:
-    explicit MessagesCachingService(MessagesQueue& msgsQueue, QObject* = nullptr);
+    explicit MessagesCachingService(MessagesQueue& msgsQueue);
 
 private:
-    MessagesQueue& _msgsQueue;
+    MessagesQueue& messagesQueue;
 
-    QLambdaThreadWorker _trdWorker;
+    QLambdaThreadWorker threadWorker;
 
 };
 

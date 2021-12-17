@@ -4,6 +4,7 @@
 #include <QUuid>
 // oss
 #include <json.hpp>
+#include <QThread>
 #include <plog/Log.h>
 
 using namespace std::chrono_literals;
@@ -41,8 +42,7 @@ SwomProtocolCommunicator::start(QIODevice& device) {
         }
     });
 
-    // Periodically send cached data
-    connectionSendData = QObject::connect(&timerSendData, &QTimer::timeout, [&] {
+    auto sendDataHandler = [&] {
         auto state = currentState();
 
         if (state != SwomProtocolCommunicatorState::ReadyToSendData) {
@@ -50,7 +50,7 @@ SwomProtocolCommunicator::start(QIODevice& device) {
         }
 
         // TODO: Process result with formatter
-        const auto batches = queryHandler.query(1);
+        const auto batches = queryHandler.query(3);
         if (batches.isEmpty()) return;
 
         QByteArray bytes;
@@ -68,7 +68,15 @@ SwomProtocolCommunicator::start(QIODevice& device) {
         device.write(bytes);
 
         timerWaitReplay.stop();
-    });
+    };
+
+    connectionSendData = QObject::connect(&timerSendData, &QTimer::timeout, sendDataHandler);
+
+    QObject::connect(
+        this, &SwomProtocolCommunicator::notifyNeedSend,
+
+        this, sendDataHandler, Qt::BlockingQueuedConnection
+    );
 
     // Process
     connectionWaitReplay = QObject::connect(&timerWaitReplay, &QTimer::timeout, [&] {
@@ -91,6 +99,11 @@ SwomProtocolCommunicator::cease() {
     QObject::disconnect(connectionSendData);
 
     QObject::disconnect(connectionWaitReplay);
+}
+
+void
+SwomProtocolCommunicator::sendMessage() {
+    emit notifyNeedSend();
 }
 
 SwomProtocolCommunicatorState

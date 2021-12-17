@@ -8,23 +8,33 @@
 #include <QObject>
 #include <QTimer>
 #include <QUuid>
+// oss
+#include <gitlmodule.h>
+#include <gitleventbus.h>
 
 #include "networking/base_protocol_formatter.h"
 #include "networking/message_sender.h"
 
 namespace KbAis::Cfw::Networking {
 
-class MessageSendersManager : public QObject{
+class MessageSendersManager : public QObject, public GitlModule {
     Q_OBJECT
 
 public:
-    explicit MessageSendersManager(QObject* parent = nullptr);
+    MessageSendersManager();
 
     Q_SLOT void handleConfigurationChanged(
         const QList<MessageSenderConfiguration>& configurations
     );
 
+    Q_SIGNAL void foo();
+
 private:
+    QMutex lock;
+    bool needSend;
+
+    QList<MessageSenderConfiguration> _configs;
+
     QHash<QUuid, MessageSender*> _messageSenders;
 
     QHash<QUuid, MessageSenderConfiguration> _messageSenderConfigurations;

@@ -4,18 +4,20 @@
 // plog
 #include <plog/Log.h>
 
-MessagesCachingService::MessagesCachingService(
-    MessagesQueue& msgsQueue, QObject* parent
-) : QObject(parent),
-    _msgsQueue { msgsQueue },
-    _trdWorker { } {
-    SaveDeviceMessagesCommand saveDeviceMessagesCommand { };
+MessagesCachingService::MessagesCachingService(MessagesQueue& messagesQueue) :
+    messagesQueue { messagesQueue },
+    threadWorker {} {
+    SaveDeviceMessagesCommand saveDeviceMessagesCommand;
 
-    _trdWorker.startLoopInThread([&]() {
+    auto handler = [&] {
         DeviceMessage message;
-
-        _msgsQueue.wait_dequeue(message);
+        messagesQueue.wait_dequeue(message);
 
         saveDeviceMessagesCommand.execute({ message });
-    });
+
+        GitlEvent event("MESSAGES_SAVED");
+        dispatchEvt(event);
+    };
+
+    threadWorker.startLoopInThread(handler);
 }

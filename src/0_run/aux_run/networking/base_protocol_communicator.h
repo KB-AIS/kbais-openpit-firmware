@@ -16,7 +16,9 @@ public:
 
     virtual void cease() = 0;
 
-    Q_SIGNAL void notifyDisconnectRequired();
+    virtual void sendMessage() = 0;
+
+    Q_SIGNAL void notifyNeedSend();
 
 };
 

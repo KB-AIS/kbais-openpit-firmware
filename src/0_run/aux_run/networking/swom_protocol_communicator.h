@@ -5,6 +5,8 @@
 #include <QIODevice>
 #include <QObject>
 #include <QTimer>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "msgcaching/get_message_batches_query.h"
 #include "networking/base_protocol_communicator.h"
@@ -21,6 +23,7 @@ enum class SwomProtocolCommunicatorState {
 
 class SwomProtocolCommunicator : public BaseProtocolCommunicator {
 
+
 public:
     SwomProtocolCommunicator();
 
@@ -28,9 +31,15 @@ public:
 
     void cease();
 
+    void sendMessage();
+
     SwomProtocolCommunicatorState currentState() const;
 
 private:
+    bool fire;
+
+    QMutex fireMtx;
+
     KbAis::Cfw::DatabaseCaching::GetMessageBatchesQueryHandler queryHandler;
 
     SwomProtocolCommunicatorState state;
