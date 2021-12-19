@@ -28,7 +28,6 @@ FORMS += \
     main_view.ui
 
 LIBS += -L$${PROJDIR}/binaries \
-    -lgps-sensor \
     -lgps-sensor-sp
 
 message(1_inter/aux_view proj dir: $${PWD})

@@ -14,12 +14,12 @@ class RecurrentMessagesCollector : public QObject {
 public:
     explicit RecurrentMessagesCollector(QObject *parent = nullptr);
 
-    QVector<DeviceMessage> popMessages();
+    QVector<Message> popMessages();
 
-    Q_SLOT void handleMessageReceived(const DeviceMessage& msg);
+    Q_SLOT void handleMessageReceived(const Message& msg);
 
 private:
-    QHash<QString, DeviceMessage> collectedMsgs;
+    QHash<QString, Message> collectedMsgs;
 
     QMutex internalStoreMtx;
 

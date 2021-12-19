@@ -1,4 +1,5 @@
-PROJDIR = $${PWD}/../../
+PRJDIR = $${PWD}/../../
+OSSDIR = $${PRJDIR}/../oss/
 
 TARGET = gps-sensor-sp
 
@@ -9,14 +10,14 @@ TEMPLATE = lib
 CONFIG += c++17
 
 INCLUDEPATH += \
-    # carrier-firmware project
-    $${PROJDIR}/2_app/gps_sensor \
-    $${PROJDIR}/_utils \
-    # plog
-    $${PROJDIR}/../oss/plog/include
+    # cfw
+    $${PRJDIR}/_utils \
+    # oss
+    $${OSSDIR}/plog/include
 
 HEADERS += \
     gps_device_controller.h \
+    gps_update.h \
     nmea/nmea_parser.h \
     nmea/nmea_sentence.h
 
@@ -25,13 +26,12 @@ SOURCES += \
     nmea/nmea_parser.cpp \
     nmea/nmea_sentence.cpp
 
-LIBS += -L$${PROJDIR}/binaries \
-    -lutils \
-    -lgps-sensor
+LIBS += -L$${PRJDIR}/binaries \
+    -lutils
 
 message(1_infra/gps_sensor_sp proj dir: $${PWD})
 
-DESTDIR     = $${PROJDIR}/binaries
+DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj
 MOC_DIR     = $${PWD}/build/.moc
 RCC_DIR     = $${PWD}/build/.qrc

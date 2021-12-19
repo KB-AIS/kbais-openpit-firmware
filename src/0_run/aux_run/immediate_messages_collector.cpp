@@ -17,18 +17,18 @@ ImmediateMessagesCollector::ImmediateMessagesCollector(
     setupFireMessageCollectorTimer();
 }
 
-QVector<DeviceMessage>
+QVector<Message>
 ImmediateMessagesCollector::popMessages() {
     QMutexLocker lock(&internalStoreMtx);
 
-    QVector<DeviceMessage> msgs(collectedMsgs);
+    QVector<Message> msgs(collectedMsgs);
     collectedMsgs.clear();
 
     return msgs;
 }
 
 void
-ImmediateMessagesCollector::handleMessageReceived(const DeviceMessage& event) {
+ImmediateMessagesCollector::handleMessageReceived(const Message& event) {
     QMutexLocker lock(&internalStoreMtx);
 
     collectedMsgs.append(event);

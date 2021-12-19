@@ -7,18 +7,18 @@ RecurrentMessagesCollector::RecurrentMessagesCollector(
     QObject* parent
 ) : QObject(parent) {}
 
-QVector<DeviceMessage>
+QVector<Message>
 RecurrentMessagesCollector::popMessages() {
     QMutexLocker locker(&internalStoreMtx);
 
-    QVector<DeviceMessage> msgs { collectedMsgs.size() };
+    QVector<Message> msgs { collectedMsgs.size() };
     qCopy(collectedMsgs.begin(), collectedMsgs.end(), msgs.begin());
 
     return msgs;
 }
 
 void
-RecurrentMessagesCollector::handleMessageReceived(const DeviceMessage& event) {
+RecurrentMessagesCollector::handleMessageReceived(const Message& event) {
     QMutexLocker locker(&internalStoreMtx);
 
     collectedMsgs.insert(event.moniker, event);

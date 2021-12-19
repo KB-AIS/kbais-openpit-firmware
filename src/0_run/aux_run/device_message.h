@@ -7,7 +7,7 @@
 #include <QMetaType>
 #include <QString>
 
-struct DeviceMessage {
+struct Message {
 
     /*!
      * \brief Unique name use to group messages of same type.
@@ -41,11 +41,11 @@ struct DeviceMessageBatch {
     /*!
      * \brief Messages has been collected to the batch.
      */
-    QList<DeviceMessage> messages;
+    QList<Message> messages;
 
 };
 
-Q_DECLARE_METATYPE(DeviceMessage);
+Q_DECLARE_METATYPE(Message);
 
 Q_DECLARE_METATYPE(DeviceMessageBatch);
 

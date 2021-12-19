@@ -28,7 +28,7 @@ QString DML_INSERT_DEVICE_MESSAGE { QStringLiteral(
 ) };
 
 void
-SaveDeviceMessagesCommand::execute(const QVector<DeviceMessage> &messages) {
+SaveDeviceMessagesCommand::execute(const QVector<Message> &messages) {
     auto conn = QSqlDatabase::database();
 
     if (!conn.transaction()) {
@@ -57,7 +57,7 @@ SaveDeviceMessagesCommand::getNextBatchId(const QSqlDatabase &connection) {
 void
 SaveDeviceMessagesCommand::saveMessagesAsBatch(
     const QSqlDatabase& connection,
-    const QVector<DeviceMessage>& messages,
+    const QVector<Message>& messages,
     const qint64 batchId
 ) {
     const QString POS_BATCH_ID { QStringLiteral(":batch_id") };

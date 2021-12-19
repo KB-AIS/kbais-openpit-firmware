@@ -18,7 +18,7 @@ AuxImmediateMessagesMapper::AuxImmediateMessagesMapper(
     );
 
     connect(
-        host->m_main_presenter, &main_presenter::notifyTestUserEvent,
+        host->mainPresenter, &main_presenter::notifyTestUserEvent,
         this, [&] {
             auto bytes = json::to_msgpack("Some user's UI event");
 

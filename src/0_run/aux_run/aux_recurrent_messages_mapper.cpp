@@ -1,16 +1,14 @@
 #include "aux_recurrent_messages_mapper.h"
 
-// Qt
-#include <QThread>
-// OSS
-#include <plog/Log.h>
+// oss
 #include <json.hpp>
 
 using json = nlohmann::json;
 
-using namespace Sensors::Gps;
+using namespace KbAis::Cfw::Sensors::Gps;
 
-namespace Sensors::Gps {
+// TODO: To mapping configuration file
+namespace KbAis::Cfw::Sensors::Gps {
 
 void to_json(json& j, const GpsUpdate& x) {
     j = json {
@@ -35,32 +33,29 @@ void from_json(const json& j, GpsUpdate& x) {
 
 AuxRecurrentEventMapper::AuxRecurrentEventMapper(
     const RecurrentMessagesCollector& collector,
-    const GpsDeviceController& gps_sensor,
+    const SerialPortGpsDeviceController& gps_sensor,
     QObject* parent
 ): QObject(parent) {
     connect(
         this, &AuxRecurrentEventMapper::notifyEventPlaced,
-        &collector, &RecurrentMessagesCollector::handleMessageReceived
-    );
+        &collector, &RecurrentMessagesCollector::handleMessageReceived);
 
-    connect(
-        &gps_sensor, &GpsDeviceController::update_gps_data_signal,
-        this, [&](const GpsUpdate& gps_update) {
-            emit notifyEventPlaced(mapGpsUpdate(gps_update));
-        }
-    );
+    connect(&gps_sensor, &BaseGpsDeviceController::notifyGpsDataUpdated, this, [&](auto x) {
+        emit notifyEventPlaced(mapGpsUpdate(x));
+    });
 }
 
 // TODO: make mappers reusable
-const DeviceMessage
+const Message
 AuxRecurrentEventMapper::mapGpsUpdate(
-    const GpsUpdate& gps_update
+    const GpsUpdate& gpsUpdate
 ) {
-    auto bytes = json::to_msgpack(gps_update);
+    auto bytes = json::to_msgpack(gpsUpdate);
 
     return {
         "GPS",
-        QByteArray(reinterpret_cast<const char*>(bytes.data()), bytes.size())
+        QByteArray(reinterpret_cast<const char*>(bytes.data()), bytes.size()),
+        gpsUpdate.datetime
     };
 };
 

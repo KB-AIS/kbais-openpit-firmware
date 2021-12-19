@@ -19,7 +19,7 @@ public:
     explicit MessagesCollectorsAdapter(
         RecurrentMessagesCollector& recurrentCollector,
         ImmediateMessagesCollector& immediateCollector,
-        moodycamel::BlockingReaderWriterQueue<DeviceMessage>& messagesQueue,
+        moodycamel::BlockingReaderWriterQueue<Message>& messagesQueue,
         QObject* parent = nullptr
     );
 
@@ -34,7 +34,7 @@ private:
 
     ImmediateMessagesCollector& immediateCollector;
 
-    moodycamel::BlockingReaderWriterQueue<DeviceMessage>& messagesQueue;
+    moodycamel::BlockingReaderWriterQueue<Message>& messagesQueue;
 
     QMutex collectMsgsMtx;
 

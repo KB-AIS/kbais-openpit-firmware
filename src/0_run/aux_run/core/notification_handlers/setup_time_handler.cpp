@@ -4,11 +4,10 @@
 #include <cmath>
 // qt
 #include <QDateTime>
-#include <plog/Log.h>
 
-using namespace Sensors::Gps;
+using namespace KbAis::Cfw::Core;
 
-void SetupTimeHandler::handle_slot(const GpsUpdate& update) {
+void SetupTimeHandlerImpl::handleGpsDataUdpated(const Sensors::Gps::GpsUpdate& update) {
     if (!update.isValid) {
         return;
     }

@@ -10,7 +10,7 @@ MessagesCachingService::MessagesCachingService(MessagesQueue& messagesQueue) :
     SaveDeviceMessagesCommand saveDeviceMessagesCommand;
 
     auto handler = [&] {
-        DeviceMessage message;
+        Message message;
         messagesQueue.wait_dequeue(message);
 
         saveDeviceMessagesCommand.execute({ message });

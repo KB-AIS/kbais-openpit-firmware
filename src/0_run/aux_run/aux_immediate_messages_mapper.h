@@ -1,25 +1,26 @@
-#ifndef AUXIMMEDIATEMESSAGESCOLLECTOR_H
-#define AUXIMMEDIATEMESSAGESCOLLECTOR_H
+#ifndef AUX_IMMEDIATE_MESSAGES_COLLECTOR_H
+#define AUX_IMMEDIATE_MESSAGES_COLLECTOR_H
+
+// qt
+#include <QObject>
 
 #include "device_message.h"
 #include "host_wrapper.h"
 #include "immediate_messages_collector.h"
-// Qt
-#include <QObject>
 
 class AuxImmediateMessagesMapper : public QObject {
     Q_OBJECT
 
 public:
-    explicit AuxImmediateMessagesMapper(
+    AuxImmediateMessagesMapper(
         const ImmediateMessagesCollector& collector,
         const HostWrapper* host,
         QObject *parent = nullptr
     );
 
 private:
-    Q_SIGNAL void notifyMessageReceived(const DeviceMessage& msg);
+    Q_SIGNAL void notifyMessageReceived(const Message& msg);
 
 };
 
-#endif // AUXIMMEDIATEMESSAGESCOLLECTOR_H
+#endif // AUX_IMMEDIATE_MESSAGES_COLLECTOR_H

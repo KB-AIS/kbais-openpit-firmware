@@ -7,3 +7,6 @@
 [submodule "oss/libgitlevtbus"]
 	path = oss/libgitlevtbus
 	url = https://github.com/lheric/libgitlevtbus
+[submodule "oss/di"]
+	path = oss/di
+	url = https://github.com/boost-ext/di

@@ -12,18 +12,18 @@
 class SaveDeviceMessagesCommand {
 
 public:
-    void execute(const QVector<DeviceMessage>& msgs);
+    void execute(const QVector<Message>& msgs);
 
 private:
     qint64 getNextBatchId(const QSqlDatabase& connection);
 
     void saveMessagesAsBatch(
         const QSqlDatabase& connection,
-        const QVector<DeviceMessage>& messages,
+        const QVector<Message>& messages,
         const qint64 batchId
     );
 
-    static void bindMessage(QSqlQuery& query, const DeviceMessage& message);
+    static void bindMessage(QSqlQuery& query, const Message& message);
 
 };
 

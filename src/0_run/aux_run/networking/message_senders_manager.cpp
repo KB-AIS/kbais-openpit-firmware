@@ -2,11 +2,6 @@
 
 // std
 #include <chrono>
-// qt
-#include <QVariant>
-#include <QThread>
-#include <QMutexLocker>
-#include <QSharedPointer>
 // oss
 #include <plog/Log.h>
 
@@ -18,32 +13,25 @@ using namespace KbAis::Cfw::Networking;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_INTERVAL { 5s };
 
-MessageSendersManager::MessageSendersManager() {
-    _restartMessageSendersTimer.setInterval(RESTART_MESSAGE_SENDERS_INTERVAL);
+TcpMessageSendersManager::TcpMessageSendersManager() {
+    restartMessageSendersTimer.setInterval(RESTART_MESSAGE_SENDERS_INTERVAL);
 
     QObject::connect(
-        &_restartMessageSendersTimer, &QTimer::timeout,
+        &restartMessageSendersTimer, &QTimer::timeout,
 
-        this, &MessageSendersManager::handleRestartMessageSenders
+        this, &TcpMessageSendersManager::handleRestartMessageSenders
     );
 
-    this->subscribeToEvtByName("MESSAGES_SAVED", [&](auto& evt)->bool {
-        auto senders = _messageSenders.values();
-
-        for (auto x = senders.begin(); x != senders.end(); ++x) {
-            (*x)->sendMessage();
-        }
-
-        return true;
-    });
-
-    _restartMessageSendersTimer.start();
+    restartMessageSendersTimer.start();
 }
 
 void
-MessageSendersManager::handleRestartMessageSenders() {
-    for (const auto& senderId : _messageSenderStatuses.keys()) {
-        const auto status = _messageSenderStatuses[senderId];
+TcpMessageSendersManager::handleRestartMessageSenders() {
+    QHash<QUuid, MesssageSenderStatus>::iterator iter;
+    for (iter = messageSenderStatuses.begin(); iter != messageSenderStatuses.end(); ++iter) {
+        auto senderId = iter.key();
+
+        const auto status = messageSenderStatuses[senderId];
 
         const auto hasSenderValidStatus =
             status.state != SocketState::UnconnectedState;
@@ -52,13 +40,13 @@ MessageSendersManager::handleRestartMessageSenders() {
             continue;
         }
 
-        const auto configuration = _messageSenderConfigurations[senderId];
-        _messageSenders[senderId]->restart(configuration);
+        const auto configuration = messageSenderConfigurations[senderId];
+        messageSenders[senderId]->restart(configuration);
     }
 }
 
 void
-MessageSendersManager::handleConfigurationChanged(
+TcpMessageSendersManager::handleConfigurationChanged(
     const QList<MessageSenderConfiguration>& configurations
 ) {
     for (const auto& configuration : configurations) {
@@ -67,17 +55,17 @@ MessageSendersManager::handleConfigurationChanged(
         QObject::connect(
             sender, &MessageSender::notifyStatusChanged,
 
-            this, &MessageSendersManager::handleMessageSenderStatusChanged
+            this, &TcpMessageSendersManager::handleMessageSenderStatusChanged
         );
 
-        _messageSenders[sender->id] = sender;
-        _messageSenderConfigurations[sender->id] = configuration;
-        _messageSenderStatuses[sender->id] = {};
+        messageSenders[sender->id] = sender;
+        messageSenderConfigurations[sender->id] = configuration;
+        messageSenderStatuses[sender->id] = {};
     }
 }
 
 void
-MessageSendersManager::handleMessageSenderStatusChanged(MessageSenderStatusChanged n) {
-    _messageSenderStatuses[n.senderId].state = n.lastState;
-    _messageSenderStatuses[n.senderId].error = n.lastError;
+TcpMessageSendersManager::handleMessageSenderStatusChanged(MessageSenderStatusChanged n) {
+    messageSenderStatuses[n.senderId].state = n.lastState;
+    messageSenderStatuses[n.senderId].error = n.lastError;
 }

@@ -11,35 +11,40 @@
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
 
-namespace Sensors::Gps {
+namespace KbAis::Cfw::Sensors::Gps {
 
-class GpsDeviceController : public QObject {
-    Q_OBJECT;
+class BaseGpsDeviceController : public QObject {
+    Q_OBJECT
 
 public:
-    GpsDeviceController(QObject *parent = nullptr);
-
-    ~GpsDeviceController();
-
     /*!
-     * \brief Emit singal on GPS data update from device.
+     * Emit singal on GPS data update from device.
      */
-    Q_SIGNAL void update_gps_data_signal(const GpsUpdate&);
+    Q_SIGNAL void notifyGpsDataUpdated(const GpsUpdate&);
+};
+
+class SerialPortGpsDeviceController : public BaseGpsDeviceController {
+    Q_OBJECT
+
+public:
+    SerialPortGpsDeviceController();
+
+    ~SerialPortGpsDeviceController();
 
 private:
-    QSerialPort m_gps_device;
+    QSerialPort* spGpsDevice;
 
-    std::vector<std::shared_ptr<Nmea::NmeaSentence>> m_sentences;
+    std::vector<std::shared_ptr<Nmea::NmeaSentence>> sentences;
 
-    std::shared_ptr<Nmea::GgaSentence> m_gga_sentence;
+    std::shared_ptr<Nmea::GgaSentence> ggaSentence;
 
-    std::shared_ptr<Nmea::RmcSentence> m_rmc_sentence;  
+    std::shared_ptr<Nmea::RmcSentence> rmcSentence;
 
-    void setup_gps_device();
+    void setupGpsDevice();
 
-    bool reset_gps_device();
+    bool resetGpsDevice();
 
-    void on_gps_device_read_ready();
+    void handleGpsDeviceReadyRead();
 
 };
 

@@ -7,7 +7,7 @@
 // qt
 #include <QDateTime>
 
-namespace Sensors::Gps::Nmea {
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 /*!
  * \brief Interface to mark NMEA sentences.
@@ -37,7 +37,7 @@ struct GgaSentence : public NmeaSentence {
 
 };
 
-std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes);
+std::shared_ptr<GgaSentence> parseGgaSentence(const QByteArray& sentenceBytes);
 
 struct RmcSentence : public NmeaSentence {
 
@@ -47,7 +47,7 @@ struct RmcSentence : public NmeaSentence {
 
     const QDateTime datetime;
 
-    const bool is_valid { false };
+    const bool isValid { false };
 
     const double lat { 0.0 };
 
@@ -56,12 +56,12 @@ struct RmcSentence : public NmeaSentence {
     /*!
      * \brief Speed over ground in knots
      */
-    const double spd { 0.0 };
+    const double speed { 0.0 };
 
 };
 
-std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes);
+std::shared_ptr<RmcSentence> parseRmcSentence(const QByteArray& sentenceBytes);
 
-} // Sensors::Gps::Nmea
+}
 
 #endif // NMEA_SENTENCE_H

@@ -1,36 +1,37 @@
 #ifndef HOST_WRAPPER_H
 #define HOST_WRAPPER_H
 
-#include "gps_device_controller.h"
-#include "diag_presenter.h"
-#include "main_presenter.h"
 // qt
 #include <QObject>
 #include <QStackedWidget>
 
-enum class nav_stack_idx { main = 0, diag = 1, };
+#include "diag_presenter.h"
+#include "gps_device_controller.h"
+#include "main_presenter.h"
 
 class HostWrapper : public QObject {
     Q_OBJECT
 
 public:
-    HostWrapper(const Sensors::Gps::GpsDeviceController&);
+    HostWrapper(const KbAis::Cfw::Sensors::Gps::BaseGpsDeviceController&);
+
+    // Copy constructor to satisfy boost::di
+    HostWrapper(const HostWrapper&) {}
 
     ~HostWrapper();
 
-    void navToMain();
+    void navigateToMain();
 
-    void navToDiag();
+    void navigateToDiag();
 
-    QStackedWidget* m_nav_stack;
+    QStackedWidget* navigationStack;
 
-    main_presenter* m_main_presenter;
+    main_presenter* mainPresenter;
 
-    diag_presenter* m_diag_presenter;
+    diag_presenter* diagPresenter;
 
 private:
-
-    const Sensors::Gps::GpsDeviceController& m_gps_controller;
+    enum class NavStackIdx { main = 0, diag = 1, };
 };
 
 #endif // HOST_WRAPPER_H

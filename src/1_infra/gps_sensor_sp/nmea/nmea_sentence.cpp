@@ -1,18 +1,14 @@
 #include "nmea_sentence.h"
 
-
-// plog
-#include <plog/Log.h>
-
-namespace Sensors::Gps::Nmea {
+using namespace KbAis::Cfw::Sensors::Gps::Nmea;
 
 constexpr char FIELDS_SEP { ',' };
 
 constexpr char CHKSUM_SEP { '*' };
 
-const QString TIME_FORMAT = QString("HHmmss.z");
+QString TIME_FORMAT { "HHmmss.z" };
 
-const QString DATE_FORMAT = QString("ddMMyy");
+QString DATE_FORMAT { "ddMMyy" };
 
 // Utility functions
 std::pair<double, double> parse_lat_lon(
@@ -82,8 +78,8 @@ RmcSentence::RmcSentence() {}
 RmcSentence::RmcSentence(
     const QDateTime& datetime,
     double lat, double lon, double spd
-) : datetime { datetime }, is_valid { true },
-    lat { lat }, lon { lon }, spd { spd } {}
+) : datetime { datetime }, isValid { true },
+    lat { lat }, lon { lon }, speed { spd } {}
 
 std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes) {
     constexpr int FP_TIME               { 1 };
@@ -121,5 +117,3 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
         QDateTime(date, time, Qt::UTC), lat, lon, speed
     });
 }
-
-} // Sensors::Gps::Nmea

@@ -1,37 +1,32 @@
 #include "host_wrapper.h"
 
-using namespace Sensors::Gps;
+using namespace KbAis::Cfw::Sensors::Gps;
 
 constexpr int SCREEN_W { 1024 }, SCREEN_H { 640 };
 
-HostWrapper::HostWrapper(const GpsDeviceController& gps_controller) :
-    m_nav_stack(new QStackedWidget),
-    m_main_presenter(new main_presenter(m_nav_stack)),
-    m_diag_presenter(new diag_presenter(m_nav_stack)),
-    m_gps_controller(gps_controller) {
-
-    m_nav_stack->setGeometry(0, 0, SCREEN_W, SCREEN_H);
-    m_nav_stack->setStyleSheet("QWidget { background-color: black; color: white }");
-    m_nav_stack->insertWidget(static_cast<int>(nav_stack_idx::main), m_main_presenter);
-    m_nav_stack->insertWidget(static_cast<int>(nav_stack_idx::diag), m_diag_presenter);
-    m_nav_stack->setCurrentIndex(static_cast<int>(nav_stack_idx::main));
-    m_nav_stack->show();
+HostWrapper::HostWrapper(const BaseGpsDeviceController& gps_controller) :
+    navigationStack(new QStackedWidget),
+    mainPresenter(new main_presenter(navigationStack)),
+    diagPresenter(new diag_presenter(navigationStack)) {
+    navigationStack->setGeometry(0, 0, SCREEN_W, SCREEN_H);
+    navigationStack->setStyleSheet("QWidget { background-color: black; color: white }");
+    navigationStack->insertWidget(static_cast<int>(NavStackIdx::main), mainPresenter);
+    navigationStack->insertWidget(static_cast<int>(NavStackIdx::diag), diagPresenter);
+    navigationStack->setCurrentIndex(static_cast<int>(NavStackIdx::main));
+    navigationStack->show();
 
     connect(
-        &m_gps_controller, &GpsDeviceController::update_gps_data_signal,
-
-        m_main_presenter, &main_presenter::update_gps_data_slot
+        &gps_controller, &BaseGpsDeviceController::notifyGpsDataUpdated,
+        mainPresenter, &main_presenter::handleGpsDataUpdated
     );
 }
 
-HostWrapper::~HostWrapper() {
-    delete m_nav_stack;
+HostWrapper::~HostWrapper() {}
+
+void HostWrapper::navigateToMain() {
+    navigationStack->setCurrentIndex(static_cast<int>(NavStackIdx::main));
 }
 
-void HostWrapper::navToMain() {
-    m_nav_stack->setCurrentIndex(static_cast<int>(nav_stack_idx::main));
-}
-
-void HostWrapper::navToDiag() {
-    m_nav_stack->setCurrentIndex(static_cast<int>(nav_stack_idx::diag));
+void HostWrapper::navigateToDiag() {
+    navigationStack->setCurrentIndex(static_cast<int>(NavStackIdx::diag));
 }

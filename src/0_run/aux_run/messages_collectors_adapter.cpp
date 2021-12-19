@@ -13,7 +13,7 @@
 
 using namespace std::chrono_literals;
 
-using MessagesQueue = moodycamel::BlockingReaderWriterQueue<DeviceMessage>;
+using MessagesQueue = moodycamel::BlockingReaderWriterQueue<Message>;
 
 constexpr std::chrono::milliseconds COLLECT_MSGS_TIMEOUT { 10s };
 
@@ -40,7 +40,7 @@ void
 MessagesCollectorsAdapter::collectMessages() {
     QMutexLocker lock(&collectMsgsMtx);
 
-    QVector<DeviceMessage> messages;
+    QVector<Message> messages;
     messages.append(immediateCollector.popMessages());
     messages.append(recurrentCollector.popMessages());
 

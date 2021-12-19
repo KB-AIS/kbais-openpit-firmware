@@ -1,5 +1,4 @@
 #include "main_presenter.h"
-#include "ui_main_view.h"
 
 // std
 #include <chrono>
@@ -8,7 +7,9 @@
 #include <QLabel>
 #include <QStringBuilder>
 
-using Sensors::Gps::GpsUpdate;
+#include "ui_main_view.h"
+
+using KbAis::Cfw::Sensors::Gps::GpsUpdate;
 
 const QString TIME_EVEN_FMT { "hh:mm" };
 
@@ -19,10 +20,10 @@ main_presenter::main_presenter(QWidget *parent) : QWidget(parent),
     ui->setupUi(this);
 
     // Setup on screen timer update with 1 second interval.
-    m_timer_update_time = new QTimer(this);
+    timerUpdateTime = new QTimer(this);
 
     connect(
-        m_timer_update_time, &QTimer::timeout,
+        timerUpdateTime, &QTimer::timeout,
         this, [&] {
             const auto now { QDateTime::currentDateTime() };
 
@@ -37,21 +38,19 @@ main_presenter::main_presenter(QWidget *parent) : QWidget(parent),
 
     const auto timer_update_interval { std::chrono::seconds(1) };
 
-    m_timer_update_time->start(timer_update_interval);
+    timerUpdateTime->start(timer_update_interval);
 
     connect(
         ui->btn_nav_to_stop, &QPushButton::released,
-
         this, [&] { emit notifyTestUserEvent(); }
     );
-
 }
 
 main_presenter::~main_presenter() {
     delete ui;
 }
 
-void main_presenter::update_gps_data_slot(const GpsUpdate& update) {
+void main_presenter::handleGpsDataUpdated(const GpsUpdate& update) {
     const auto text = QString("Time %1 Coords %2 %3")
             .arg(update.datetime.toString("d M yyyy hh:mm:ss"))
             .arg(update.latitude)

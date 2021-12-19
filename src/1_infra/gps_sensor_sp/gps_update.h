@@ -5,7 +5,7 @@
 #include <QMetaType>
 #include <QDateTime>
 
-namespace Sensors::Gps {
+namespace KbAis::Cfw::Sensors::Gps {
 
 /*!
  * A DTO object holds general GPS data.
@@ -26,6 +26,6 @@ struct GpsUpdate {
 
 } // Sensors::Gps
 
-Q_DECLARE_METATYPE(Sensors::Gps::GpsUpdate);
+Q_DECLARE_METATYPE(KbAis::Cfw::Sensors::Gps::GpsUpdate);
 
 #endif // GPS_UPDATE_H

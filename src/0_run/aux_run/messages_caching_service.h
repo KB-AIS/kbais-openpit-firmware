@@ -14,7 +14,7 @@
 #include "device_message.h"
 #include "networking/message_sender.h"
 
-using MessagesQueue = moodycamel::BlockingReaderWriterQueue<DeviceMessage>;
+using MessagesQueue = moodycamel::BlockingReaderWriterQueue<Message>;
 
 class MessagesCachingService : public QObject, public GitlModule {
     Q_OBJECT

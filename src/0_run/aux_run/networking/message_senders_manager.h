@@ -12,36 +12,29 @@
 #include <gitlmodule.h>
 #include <gitleventbus.h>
 
-#include "networking/base_protocol_formatter.h"
+#include "networking/base_message_senders_manager.h"
 #include "networking/message_sender.h"
 
 namespace KbAis::Cfw::Networking {
 
-class MessageSendersManager : public QObject, public GitlModule {
+class TcpMessageSendersManager : public BaseMessageSendersManager, public GitlModule {
     Q_OBJECT
 
 public:
-    MessageSendersManager();
+    TcpMessageSendersManager();
 
     Q_SLOT void handleConfigurationChanged(
         const QList<MessageSenderConfiguration>& configurations
-    );
-
-    Q_SIGNAL void foo();
+    ) override;
 
 private:
-    QMutex lock;
-    bool needSend;
+    QHash<QUuid, MessageSender*> messageSenders;
 
-    QList<MessageSenderConfiguration> _configs;
+    QHash<QUuid, MessageSenderConfiguration> messageSenderConfigurations;
 
-    QHash<QUuid, MessageSender*> _messageSenders;
+    QHash<QUuid, MesssageSenderStatus> messageSenderStatuses;
 
-    QHash<QUuid, MessageSenderConfiguration> _messageSenderConfigurations;
-
-    QHash<QUuid, MesssageSenderStatus> _messageSenderStatuses;
-
-    QTimer _restartMessageSendersTimer;
+    QTimer restartMessageSendersTimer;
 
     /*!
      * Restart all registered instances of \ref MessageSender that have
