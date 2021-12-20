@@ -1,7 +1,7 @@
 #include "aux_recurrent_messages_mapper.h"
 
 // oss
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 

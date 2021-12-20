@@ -1,4 +1,4 @@
-PROJDIR = $${PWD}/../..
+PROJDIR = $${PWD}/../../
 
 TARGET = aux-view
 

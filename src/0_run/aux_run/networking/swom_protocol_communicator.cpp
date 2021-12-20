@@ -2,8 +2,9 @@
 
 // qt
 #include <QUuid>
+#include <QDataStream>
 // oss
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <QThread>
 #include <plog/Log.h>
 

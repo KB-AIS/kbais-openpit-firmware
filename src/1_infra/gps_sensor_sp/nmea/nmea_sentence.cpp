@@ -1,6 +1,6 @@
 #include "nmea_sentence.h"
 
-using namespace KbAis::Cfw::Sensors::Gps::Nmea;
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 constexpr char FIELDS_SEP { ',' };
 
@@ -40,7 +40,7 @@ GgaSentence::GgaSentence(
 ) : time { time },
     lat { lat }, lon { lon }, qal { qal }, sat { sat } {}
 
-std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes) {
+std::shared_ptr<GgaSentence> parseGgaSentence(const QByteArray& sentenceBytes) {
     constexpr int FP_TIME               { 1 };
     constexpr int FP_LAT                { 2 };
     constexpr int FP_LAT_DIR            { 3 };
@@ -50,7 +50,7 @@ std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes
     constexpr int FP_SATELLITES         { 7 };
 
     bool is_conv_ok;
-    const auto fields_chksum = sentence_bytes.split(CHKSUM_SEP);
+    const auto fields_chksum = sentenceBytes.split(CHKSUM_SEP);
     const auto fields = fields_chksum[0].split(FIELDS_SEP);
 
     const auto pos_time = QTime::fromString(fields[FP_TIME], TIME_FORMAT);
@@ -81,7 +81,7 @@ RmcSentence::RmcSentence(
 ) : datetime { datetime }, isValid { true },
     lat { lat }, lon { lon }, speed { spd } {}
 
-std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes) {
+std::shared_ptr<RmcSentence> parseRmcSentence(const QByteArray& sentenceBytes) {
     constexpr int FP_TIME               { 1 };
     constexpr int FP_STATUS             { 2 };
     constexpr int FP_LAT                { 3 };
@@ -92,7 +92,7 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
     constexpr int FP_DATE               { 9 };
 
     bool is_conv_ok;
-    const auto fields_chksum = sentence_bytes.split(CHKSUM_SEP);
+    const auto fields_chksum = sentenceBytes.split(CHKSUM_SEP);
     const auto fields = fields_chksum[0].split(FIELDS_SEP);
 
     const auto& time = QTime::fromString(fields[FP_TIME], TIME_FORMAT);
@@ -116,4 +116,6 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
     return std::make_shared<RmcSentence>(RmcSentence {
         QDateTime(date, time, Qt::UTC), lat, lon, speed
     });
+}
+
 }

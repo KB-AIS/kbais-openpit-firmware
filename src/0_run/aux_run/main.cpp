@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QThread>
 // oss
-#include <di.hpp>
+#include <boost/di.hpp>
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
@@ -22,7 +22,6 @@
 namespace di = boost::di;
 
 using namespace Caching::Configuration;
-
 using namespace KbAis::Cfw::Core;
 using namespace KbAis::Cfw::Networking;
 using namespace KbAis::Cfw::Sensors::Gps;
@@ -40,7 +39,7 @@ public:
             hostThread, &QThread::started,
             &messageSendersManager, [&] {
             QList<MessageSenderConfiguration> configurations {
-                {
+                MessageSenderConfiguration {
                     "10.214.1.208",
                     9900,
                     std::chrono::milliseconds { 10000 },

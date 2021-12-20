@@ -41,3 +41,9 @@ Thumbs.db
 */binaries
 */build
 build*
+
+# Conan files
+conan.lock
+conanbuildinfo.*
+conaninfo.txt
+graph_info.json

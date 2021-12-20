@@ -16,7 +16,7 @@ public:
     HostWrapper(const KbAis::Cfw::Sensors::Gps::BaseGpsDeviceController&);
 
     // Copy constructor to satisfy boost::di
-    HostWrapper(const HostWrapper&) {}
+    HostWrapper(const HostWrapper&) : QObject() {}
 
     ~HostWrapper();
 

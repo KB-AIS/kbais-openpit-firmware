@@ -4,13 +4,12 @@
 #include <functional>
 #include <map>
 // qt
+#include <QDebug>
 #include <QTime>
-// oss
-#include <plog/Log.h>
 
 using std::shared_ptr, std::vector;
 
-using namespace KbAis::Cfw::Sensors::Gps::Nmea;
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 constexpr int PEEK_SIZE { 8096 };
 
@@ -44,7 +43,7 @@ void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_s
         if (sentence_fin_pos == -1) break;
 
         if (sentence_fin_pos <= sentence_beg_pos) {
-            PLOGE << "Invalid state during processing NMEA input";
+            qFatal("Invalid state during processing NMEA input");
 
             throw 0;
         }
@@ -65,3 +64,5 @@ void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_s
     // Mark scaned bytes as processed and move device's buffer forward.
     device.read(bytes_scaned);
 };
+
+}

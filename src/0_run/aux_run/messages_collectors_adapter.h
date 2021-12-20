@@ -7,7 +7,7 @@
 // qt deferred
 #include <QLambdaThreadWorker>
 // oss
-#include <readerwriterqueue.h>
+#include <readerwriterqueue/readerwriterqueue.h>
 
 #include "immediate_messages_collector.h"
 #include "recurrent_messages_collector.h"

@@ -1,25 +1,21 @@
-PROJDIR = $${PWD}/../../
-OSSDIR = $${PROJDIR}/../oss/
+PRJDIR = $${PWD}/../../
+OSSDIR = $${PRJDIR}/../oss/
 
 TARGET = aux-run
 
 QT += core network sql widgets
 
-CONFIG += c++14 c++17
+CONFIG += c++14 c++17 conan_basic_setup
 
 INCLUDEPATH += \
-    # carrier-firmware
-    $${PROJDIR}/1_infra/gps_sensor_sp \
-    $${PROJDIR}/1_inter/aux_view \
-    # OSS
-    $${OSSDIR}/json/include \
-    $${OSSDIR}/plog/include \
-    $${OSSDIR}/rwqueue/include \
-    $${OSSDIR}/di/include/boost
+    # cfw
+    $${PRJDIR}/1_infra/gps_sensor_sp \
+    $${PRJDIR}/1_inter/aux_view
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
-include($${OSSDIR}/libgitlevtbus/src/src.pri)
+include($${OSSDIR}/libgitlevtbus/src/ebus.pri)
+include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
     aux_immediate_messages_mapper.h \
@@ -57,13 +53,13 @@ SOURCES += \
     recurrent_messages_collector.cpp \
     save_device_messages_command.cpp
 
-LIBS += -L$${PROJDIR}/binaries \
+LIBS += -L$${PRJDIR}/binaries \
     -laux-view \
     -lgps-sensor-sp
 
 message(0_run/aux_run proj dir: $${PWD})
 
-DESTDIR     = $${PROJDIR}/binaries
+DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj
 MOC_DIR     = $${PWD}/build/.moc
 RCC_DIR     = $${PWD}/build/.qrc

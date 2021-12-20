@@ -8,8 +8,8 @@
 #include <QEventer>
 #include <QLambdaThreadWorker>
 // oss
-#include <readerwriterqueue.h>
 #include <gitlmodule.h>
+#include <readerwriterqueue/readerwriterqueue.h>
 
 #include "device_message.h"
 #include "networking/message_sender.h"

@@ -11,9 +11,7 @@ CONFIG += c++17
 
 INCLUDEPATH += \
     # cfw
-    $${PRJDIR}/_utils \
-    # oss
-    $${OSSDIR}/plog/include
+    $${PRJDIR}/_utils
 
 HEADERS += \
     gps_device_controller.h \
@@ -26,8 +24,7 @@ SOURCES += \
     nmea/nmea_parser.cpp \
     nmea/nmea_sentence.cpp
 
-LIBS += -L$${PRJDIR}/binaries \
-    -lutils
+LIBS += -L$${PRJDIR}/binaries -lutils
 
 message(1_infra/gps_sensor_sp proj dir: $${PWD})
 
