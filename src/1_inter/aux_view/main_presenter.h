@@ -17,7 +17,7 @@ public:
 
     ~main_presenter();
 
-    Q_SLOT void handleGpsDataUpdated(const KbAis::Cfw::Sensors::Gps::GpsUpdate& update);
+    Q_SLOT void handleGpsDataUpdated(const KbAis::Cfw::Sensors::Gps::GpsUpdate& gpsUpdate);
 
     Q_SIGNAL void notifyTestUserEvent();
 
