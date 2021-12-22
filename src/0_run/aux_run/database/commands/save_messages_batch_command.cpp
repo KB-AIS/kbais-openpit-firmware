@@ -5,72 +5,89 @@
 // qt sql
 #include <QSqlError>
 // oss
-#include <plog/Log.h>
+#include <spdlog/spdlog.h>
+
+#include "utils/spdlog_qt_support.h"
 
 QString DML_INSERT_DEVICE_MESSAGE_BATCH { QStringLiteral(
-    "INSERT INTO [device_message_batches](\n"
-    "    [id]\n"
+    "INSERT INTO [messages_batches](\n"
+    "    [collected_at]\n"
     ") VALUES (\n"
-    "    NULL\n"
+    "    :collected_at\n"
     ");"
 ) };
 
 QString DML_INSERT_DEVICE_MESSAGE { QStringLiteral(
-    "INSERT INTO [device_messages](\n"
-    "    batch_id,\n"
-    "    monkier,\n"
-    "    payload\n"
+    "INSERT INTO [messages](\n"
+    "    [messages_batch_id],\n"
+    "    [monkier],\n"
+    "    [payload],\n"
+    "    [produced_at]\n"
     ") VALUES (\n"
-    "    :batch_id,\n"
+    "    :messages_batch_id,\n"
     "    :monkier,\n"
-    "    :payload\n"
+    "    :payload,"
+    "    :produced_at\n"
     ");"
 ) };
 
 void
-SaveMessagesBatchCommand::handle(const MessagesBatch& messsagesBatch) {
+SaveMessagesBatchCommand::handle(const MessagesBatch& messagesBatch) {
     auto connection = QSqlDatabase::database();
 
     if (!connection.transaction()) {
-        PLOGE << "Could not start transaction: \n" << connection.lastError().text();;
+        spdlog::error("Could not start transaction: {0}", connection.lastError().text());
 
         return;
     }
 
-    auto [success, messageBatchId] = insertMessagesBatch(connection);
+    auto [success, messageBatchId] = insertMessagesBatch(connection, messagesBatch);
     if (!success) {
-        PLOGE << "Could not insert message batch: \n" << connection.lastError().text();
-
         connection.rollback();
 
         return;
     }
 
-    if (!insertMessages(connection, messageBatchId, messsagesBatch.messages)) {
-        PLOGD << "Could not insert message: \n" << connection.lastError().text();
-
+    if (!insertMessages(connection, messageBatchId, messagesBatch.messages)) {
         connection.rollback();
 
         return;
     }
 
     if (!connection.commit()) {
-        PLOGE << "Could not commit transaction: \n" << connection.lastError().text();
+        spdlog::error("Could not commit transaction: {0}", connection.lastError().text());
 
         connection.rollback();
     }
 }
 
+const QString POS_COLLECTED_AT { QStringLiteral(":collected_at") };
+
 QPair<bool, quint32>
-SaveMessagesBatchCommand::insertMessagesBatch(const QSqlDatabase &connection) {
+SaveMessagesBatchCommand::insertMessagesBatch(
+    const QSqlDatabase& connection,
+    const MessagesBatch& messagesBatch
+) {
+
     QSqlQuery query { connection };
 
-    if (!query.exec(DML_INSERT_DEVICE_MESSAGE_BATCH)) {
+    query.prepare(DML_INSERT_DEVICE_MESSAGE_BATCH);
+
+    query.bindValue(POS_COLLECTED_AT, messagesBatch.collectedAt);
+
+    if (!query.exec()) {
+        spdlog::error("Could not insert message batch: {0}", query.lastError().text());
+
         return { false, 0 };
     }
 
     return { true, query.lastInsertId().toUInt() };
 }
+
+const QString POS_MESSAGES_BATCH_ID { QStringLiteral(":messages_batch_id") };
+const QString POS_MONKIER { QStringLiteral(":monkier") };
+const QString POS_PAYLOAD { QStringLiteral(":payload") };
+const QString POS_PRODUCED_AT { QStringLiteral(":produced_at") };
 
 bool
 SaveMessagesBatchCommand::insertMessages(
@@ -78,22 +95,23 @@ SaveMessagesBatchCommand::insertMessages(
     const qint64 messagesBatchId,
     const QVector<Message>& messages
 ) {
-    const QString POS_BATCH_ID { QStringLiteral(":batch_id") };
-    const QString POS_MONKIER  { QStringLiteral(":monkier") };
-    const QString POS_PAYLOAD  { QStringLiteral(":payload") };
-
     QSqlQuery query { connection };
 
     query.prepare(DML_INSERT_DEVICE_MESSAGE);
 
-    query.bindValue(POS_BATCH_ID, messagesBatchId);
+    query.bindValue(POS_MESSAGES_BATCH_ID, messagesBatchId);
 
     for (const auto& message : messages) {
         query.bindValue(POS_MONKIER, message.moniker);
         query.bindValue(POS_PAYLOAD, message.payload);
+        query.bindValue(POS_PRODUCED_AT, message.producedAt);
 
-        if (!query.exec()) {
-            return false;
-        }
+        if (query.exec()) continue;
+
+        spdlog::error("Could not insert message: {0}", query.lastError().text());
+
+        return false;
     }
+
+    return true;
 }

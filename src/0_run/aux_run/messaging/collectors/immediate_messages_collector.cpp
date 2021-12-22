@@ -4,8 +4,6 @@
 #include <chrono>
 // qt
 #include <QThread>
-// plog
-#include <plog/Log.h>
 
 using namespace std::chrono_literals;
 

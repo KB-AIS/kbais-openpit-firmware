@@ -4,7 +4,7 @@ using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch
 
 MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
     queue { queue }, threadWorker { } {
-    auto getNextMessagesBatch = [&] {
+    auto handleNextMessagesBatch = [&] {
         MessagesBatch messagesBatch;
 
         // Blockingly get the next messages batch.
@@ -15,7 +15,7 @@ MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
         dispatchMessagesBatchCreated();
     };
 
-    threadWorker.startLoopInThread(getNextMessagesBatch);
+    threadWorker.startLoopInThread(handleNextMessagesBatch);
 }
 
 void

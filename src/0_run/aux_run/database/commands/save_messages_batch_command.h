@@ -17,7 +17,10 @@ public:
     void handle(const MessagesBatch& messagesBatch);
 
 private:
-    QPair<bool, quint32> insertMessagesBatch(const QSqlDatabase &connection);
+    QPair<bool, quint32> insertMessagesBatch(
+        const QSqlDatabase &connection,
+        const MessagesBatch& messagesBatch
+    );
 
     bool insertMessages(
         const QSqlDatabase& connection,

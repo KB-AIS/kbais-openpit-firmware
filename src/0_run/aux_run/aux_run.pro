@@ -38,7 +38,9 @@ HEADERS += \
 #    networking/senders/message_sender.h \
 #    networking/senders/message_senders_manager.h \
     system/notification_handlers/setup_time_handler.h \
+    utils/boost_di_extensions.h \
     utils/mapper_qt_types.h \
+    utils/spdlog_qt_support.h
 
 SOURCES += \
     caching/messages_caching_service.cpp \
@@ -56,6 +58,7 @@ SOURCES += \
 #    networking/senders/message_sender.cpp \
 #    networking/senders/message_senders_manager.cpp \
     system/notification_handlers/setup_time_handler.cpp \
+    utils/spdlog_qt_support.cpp
 
 LIBS += -L$${PRJDIR}/binaries \
     -laux-view \

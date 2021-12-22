@@ -1,14 +1,12 @@
 #include "get_messages_batches_query.h"
 
-// Qt
+// qt
 #include <QMap>
 #include <QVariant>
-// Qt SQL
+// qt sql
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
-// plog
-#include <plog/Log.h>
 
 QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "SELECT\n"
@@ -38,9 +36,9 @@ GetMessagesBatchesQuery::handle(qint32 batchCount) const {
 
     // TODO: Process error with result monodik
     if (!query.exec()) {
-        PLOGE << "Could not perform query: " << query.lastError().text();
+        //PLOGE << "Could not perform query: " << query.lastError().text();
 
-        return {};
+        return { };
     }
 
     QMap<quint64, MessagesBatch> batches;
