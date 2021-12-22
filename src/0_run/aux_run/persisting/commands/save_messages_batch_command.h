@@ -14,6 +14,7 @@
 class SaveMessagesBatchCommand {
 
 public:
+    // TODO: add sender
     void handle(const MessagesBatch& messagesBatch);
 
 private:

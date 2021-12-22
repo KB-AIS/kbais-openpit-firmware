@@ -7,16 +7,15 @@
 #include <QObject>
 
 class BaseProtocolCommunicator : public QObject {
-    Q_OBJECT
-
 public:
-    virtual void start(QIODevice& device) = 0;
+    virtual ~BaseProtocolCommunicator() noexcept = default;
 
-    virtual void cease() = 0;
+    virtual void beginCommunication(QIODevice& device) = 0;
+
+    virtual void interruptCommunication() = 0;
 
     virtual void sendMessage() = 0;
 
-    Q_SIGNAL void notifyNeedSend();
 
 };
 

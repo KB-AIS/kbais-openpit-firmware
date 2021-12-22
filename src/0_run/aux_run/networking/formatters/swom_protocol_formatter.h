@@ -6,7 +6,7 @@
 #include <QString>
 #include <QUuid>
 
-#include "networking/formatters/base_protocol_formatter.h"
+#include "persisting/queries/get_messages_batches_query.h"
 
 enum class SwomFrameType : quint8 {
     Ath = 0x00,
@@ -14,10 +14,16 @@ enum class SwomFrameType : quint8 {
     Ack = 0xFF,
 };
 
-class SwomProtocolFormatter : public BaseProtocolFormatter {
+struct AthData {
+    QString equipmentId;
+};
+
+class SwomProtocolFormatter {
 
 public:
-    QByteArray encodeAuthPackage(const QString& equipmentId) override;
+    QByteArray encodeAthFrame(const QString& equipmentId) const;
+
+    QByteArray encodeTelFrame(const QList<MessagesBatchDto>& messageBatches) const;
 
 };
 

@@ -68,11 +68,9 @@ SaveMessagesBatchCommand::insertMessagesBatch(
     const QSqlDatabase& connection,
     const MessagesBatch& messagesBatch
 ) {
-
     QSqlQuery query { connection };
 
     query.prepare(DML_INSERT_DEVICE_MESSAGE_BATCH);
-
     query.bindValue(POS_COLLECTED_AT, messagesBatch.collectedAt);
 
     if (!query.exec()) {

@@ -12,8 +12,8 @@
 #include <gitlmodule.h>
 #include <gitleventbus.h>
 
-#include "networking/base_message_senders_manager.h"
-#include "networking/message_sender.h"
+#include "networking/senders/base_message_senders_manager.h"
+#include "networking/senders/message_sender.h"
 
 class TcpMessageSendersManager : public BaseMessageSendersManager, public GitlModule {
     Q_OBJECT

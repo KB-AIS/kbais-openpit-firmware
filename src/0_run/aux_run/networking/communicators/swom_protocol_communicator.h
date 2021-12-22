@@ -6,9 +6,10 @@
 #include <QObject>
 #include <QTimer>
 
-#include "database/queries/get_messages_batches_query.h"
 #include "networking/communicators/base_protocol_communicator.h"
 #include "networking/formatters/swom_protocol_formatter.h"
+#include "persisting/commands/set_last_sent_messages_batch_id_command.h"
+#include "persisting/queries/get_messages_batches_query.h"
 
 enum class SwomProtocolCommunicatorState {
     Stoped,
@@ -18,6 +19,7 @@ enum class SwomProtocolCommunicatorState {
 };
 
 class SwomProtocolCommunicator : public BaseProtocolCommunicator {
+    Q_OBJECT
 
 public:
     SwomProtocolCommunicator();
@@ -28,18 +30,23 @@ public:
 
     void sendMessage();
 
-    SwomProtocolCommunicatorState currentState() const;
+    SwomProtocolCommunicatorState getCurrentState() const;
+
+    // TODO: Remove
+    Q_SIGNAL void notifyNeedSend();
 
 private:
     SwomProtocolCommunicatorState state;
 
-    GetMessagesBatchesQuery getMessagesBatchesQuery;
-
     SwomProtocolFormatter formatter;
 
-    QTimer timerWaitReplay;
+    GetMessagesBatchesQuery getMessagesBatchesQuery;
 
-    QTimer timerSendData;
+    SetLastSentMessagesBatchIdCommand setLastSentMessagesBatchIdCommand;
+
+    QTimer timerWaitAcknowledge;
+
+    QTimer timerSendMessagesBatches;
 
     QMetaObject::Connection connectionReadData;
 

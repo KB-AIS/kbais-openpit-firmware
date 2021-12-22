@@ -1,5 +1,5 @@
-#ifndef MAPPER_QT_TYPES_H
-#define MAPPER_QT_TYPES_H
+#ifndef JSON_QT_SUPPORT_H
+#define JSON_QT_SUPPORT_H
 
 // qt
 #include <QDateTime>
@@ -41,4 +41,4 @@ struct adl_serializer<QDateTime> {
 
 }
 
-#endif // MAPPER_QT_TYPES_H
+#endif // JSON_QT_SUPPORT_H

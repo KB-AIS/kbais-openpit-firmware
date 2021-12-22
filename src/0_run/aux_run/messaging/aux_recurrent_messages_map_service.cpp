@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include "messaging/mappers/mapper_gps_update.h"
-#include "utils/mapper_qt_types.h"
+#include "utils/json_qt_support.h"
 
 using json = nlohmann::json;
 

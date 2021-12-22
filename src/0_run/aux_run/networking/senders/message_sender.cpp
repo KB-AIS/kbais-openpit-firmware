@@ -11,7 +11,7 @@ MessageSender::MessageSender() : QObject() {
 void
 MessageSender::connectSocketSignals() {
     QObject::connect(&socket, &QTcpSocket::connected, [&] {
-        communicator->start(socket);
+        communicator->beginCommunication(socket);
     });
 
     QObject::connect(&socket, SocketStateSignal, [&](auto state) {
@@ -23,7 +23,7 @@ MessageSender::connectSocketSignals() {
     });
 
     QObject::connect(&socket, &QTcpSocket::disconnected, [&] {
-        communicator->cease();
+        communicator->interruptCommunication();
     });
 }
 
@@ -39,7 +39,7 @@ MessageSender::restart(const MessageSenderConfiguration& configuration) {
     // Ask a communicator to stop if restart has been called before socket
     // disconnected from a host.
     if (communicator) {
-        communicator->cease();
+        communicator->interruptCommunication();
     }
 
     communicator = configuration.communicator;

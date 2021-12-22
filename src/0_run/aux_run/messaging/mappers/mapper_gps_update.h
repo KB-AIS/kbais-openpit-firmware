@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 
 #include "gps_update.h"
-#include "utils/mapper_qt_types.h"
+#include "utils/json_qt_support.h"
 
 namespace KbAis::Cfw::Sensors::Gps {
 

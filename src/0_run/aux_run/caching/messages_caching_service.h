@@ -10,7 +10,7 @@
 #include <gitlmodule.h>
 #include <readerwriterqueue/readerwriterqueue.h>
 
-#include "database/commands/save_messages_batch_command.h"
+#include "persisting/commands/save_messages_batch_command.h"
 #include "messaging/messages_batch.h"
 
 class IMessagesCachingService : public QObject {
