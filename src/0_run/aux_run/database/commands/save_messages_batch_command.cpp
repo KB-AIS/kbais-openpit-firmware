@@ -28,7 +28,7 @@ QString DML_INSERT_DEVICE_MESSAGE { QStringLiteral(
 ) };
 
 void
-SaveMessagesBatchCommandHandler::handle(const MessagesBatch& messsagesBatch) {
+SaveMessagesBatchCommand::handle(const MessagesBatch& messsagesBatch) {
     auto connection = QSqlDatabase::database();
 
     if (!connection.transaction()) {
@@ -62,7 +62,7 @@ SaveMessagesBatchCommandHandler::handle(const MessagesBatch& messsagesBatch) {
 }
 
 QPair<bool, quint32>
-SaveMessagesBatchCommandHandler::insertMessagesBatch(const QSqlDatabase &connection) {
+SaveMessagesBatchCommand::insertMessagesBatch(const QSqlDatabase &connection) {
     QSqlQuery query { connection };
 
     if (!query.exec(DML_INSERT_DEVICE_MESSAGE_BATCH)) {
@@ -73,7 +73,7 @@ SaveMessagesBatchCommandHandler::insertMessagesBatch(const QSqlDatabase &connect
 }
 
 bool
-SaveMessagesBatchCommandHandler::insertMessages(
+SaveMessagesBatchCommand::insertMessages(
     const QSqlDatabase& connection,
     const qint64 messagesBatchId,
     const QVector<Message>& messages

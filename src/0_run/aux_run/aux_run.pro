@@ -30,13 +30,13 @@ HEADERS += \
     messaging/mappers/mapper_gps_update.h \
     messaging/message.h \
     messaging/messages_batch.h \
-    networking/communicators/base_protocol_communicator.h \
-    networking/communicators/swom_protocol_communicator.h \
-    networking/formatters/base_protocol_formatter.h \
-    networking/formatters/swom_protocol_formatter.h \
-    networking/senders/base_message_senders_manager.h \
-    networking/senders/message_sender.h \
-    networking/senders/message_senders_manager.h \
+#    networking/communicators/base_protocol_communicator.h \
+#    networking/communicators/swom_protocol_communicator.h \
+#    networking/formatters/base_protocol_formatter.h \
+#    networking/formatters/swom_protocol_formatter.h \
+#    networking/senders/base_message_senders_manager.h \
+#    networking/senders/message_sender.h \
+#    networking/senders/message_senders_manager.h \
     system/notification_handlers/setup_time_handler.h \
     utils/mapper_qt_types.h \
 
@@ -51,10 +51,10 @@ SOURCES += \
     messaging/collectors/immediate_messages_collector.cpp \
     messaging/collectors/messages_collectors_adapter.cpp \
     messaging/collectors/recurrent_messages_collector.cpp \
-    networking/communicators/swom_protocol_communicator.cpp \
-    networking/formatters/swom_protocol_formatter.cpp \
-    networking/senders/message_sender.cpp \
-    networking/senders/message_senders_manager.cpp \
+#    networking/communicators/swom_protocol_communicator.cpp \
+#    networking/formatters/swom_protocol_formatter.cpp \
+#    networking/senders/message_sender.cpp \
+#    networking/senders/message_senders_manager.cpp \
     system/notification_handlers/setup_time_handler.cpp \
 
 LIBS += -L$${PRJDIR}/binaries \

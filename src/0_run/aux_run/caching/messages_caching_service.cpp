@@ -1,10 +1,10 @@
 #include "messages_caching_service.h"
 
+using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+
 MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
     queue { queue }, threadWorker { } {
-
-
-    auto handler = [&] {
+    auto getNextMessagesBatch = [&] {
         MessagesBatch messagesBatch;
 
         // Blockingly get the next messages batch.
@@ -15,11 +15,12 @@ MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
         dispatchMessagesBatchCreated();
     };
 
-    threadWorker.startLoopInThread(handler);
+    threadWorker.startLoopInThread(getNextMessagesBatch);
 }
 
 void
 MessagesCachingService::dispatchMessagesBatchCreated() {
     GitlEvent event("MESSAGES_BATCH_SAVED");
+
     dispatchEvt(event);
 }

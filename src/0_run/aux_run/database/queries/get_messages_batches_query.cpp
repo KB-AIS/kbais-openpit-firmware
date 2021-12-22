@@ -10,8 +10,6 @@
 // plog
 #include <plog/Log.h>
 
-using namespace KbAis::Cfw::DatabaseCaching;
-
 QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "SELECT\n"
     "   [dmb].[id] as deviceMessageBatch_id,\n"
@@ -28,7 +26,7 @@ QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "   :batch_count;"
 ) };
 
-QList<DeviceMessageBatch>
+QList<MessagesBatch>
 GetMessagesBatchesQuery::handle(qint32 batchCount) const {
     auto connection = QSqlDatabase::database();
 
@@ -45,12 +43,12 @@ GetMessagesBatchesQuery::handle(qint32 batchCount) const {
         return {};
     }
 
-    QMap<quint64, DeviceMessageBatch> batches;
+    QMap<quint64, MessagesBatch> batches;
     while (query.next()) {
         auto batchId = query.value("deviceMessageBatch_id").toULongLong();
 
         if (!batches.contains(batchId)) {
-            batches[batchId] = { batchId, QDateTime::currentDateTime(), {} };
+            batches[batchId] = { { }, QDateTime::currentDateTime() };
         }
 
         batches[batchId].messages.push_back({

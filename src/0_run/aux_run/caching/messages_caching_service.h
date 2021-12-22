@@ -13,20 +13,24 @@
 #include "database/commands/save_messages_batch_command.h"
 #include "messaging/messages_batch.h"
 
-using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+class IMessagesCachingService : public QObject {
 
-class MessagesCachingService : public QObject, public GitlModule {
+public:
+    virtual ~IMessagesCachingService() noexcept = default;
+};
+
+class MessagesCachingService : public IMessagesCachingService, public GitlModule {
     Q_OBJECT
 
 public:
-    explicit MessagesCachingService(MessagesBatchesQueue& queue);
+    MessagesCachingService(moodycamel::BlockingReaderWriterQueue<MessagesBatch>& queue);
 
 private:
-    MessagesBatchesQueue& queue;
+    moodycamel::BlockingReaderWriterQueue<MessagesBatch>& queue;
 
     QLambdaThreadWorker threadWorker;
 
-    SaveMessagesBatchCommandHandler saveMessagesBatchCommand;
+    SaveMessagesBatchCommand saveMessagesBatchCommand;
 
     void dispatchMessagesBatchCreated();
 

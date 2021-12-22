@@ -14,7 +14,7 @@ class AuxImmediateMessagesMapService : public QObject {
 public:
     AuxImmediateMessagesMapService(
         const ImmediateMessagesCollector& messagesCollector,
-        const HostWrapper* host
+        const HostWrapper& host
     );
 
 private:
