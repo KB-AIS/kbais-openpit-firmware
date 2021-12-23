@@ -14,8 +14,7 @@ public:
 
     virtual void interruptCommunication() = 0;
 
-    virtual void sendMessage() = 0;
-
+    virtual void sendDataImmediatly() = 0;
 
 };
 

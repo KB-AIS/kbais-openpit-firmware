@@ -1,5 +1,6 @@
 // qt
 #include <QApplication>
+#include <QMetaType>
 // oss
 #include <boost/di.hpp>
 #include <readerwriterqueue/readerwriterqueue.h>
@@ -14,8 +15,9 @@
 #include "messaging/collectors/messages_collectors_adapter.h"
 #include "messaging/collectors/recurrent_messages_collector.h"
 #include "messaging/messages_batch.h"
-#include "networking/senders/message_senders_manager.h"
+#include "networking/senders/tcp_message_senders_manager.h"
 #include "networking/communicators/swom_protocol_communicator.h"
+#include "networking/senders/message_sender.h"
 #include "persisting/configuration/database_configuration.h"
 #include "utils/boost_di_extensions.h"
 
@@ -24,45 +26,25 @@ namespace di = boost::di;
 using namespace KbAis::Cfw::Sensors::Gps;
 
 // TODO: Remove
-struct ThreadWrapper {
+struct MessageSendersManagerBootstraper {
 
-public:
-    ThreadWrapper(BaseMessageSendersManager& messageSendersManager) {
-        hostThread = new QThread();
-        hostThread->setObjectName("Wrapper host thread");
+    MessageSendersManagerBootstraper(BaseMessageSendersManager& manager) {
+        QList<MessageSenderConfiguration> configurations {
+            {
+                "10.214.1.208",
+                9900,
+                "SWOM",
+                std::chrono::milliseconds { 10000 },
+            },
+        };
 
-        messageSendersManager.moveToThread(hostThread);
-
-        QObject::connect(
-            hostThread, &QThread::started,
-            &messageSendersManager, [&] {
-            QList<MessageSenderConfiguration> configurations {
-                {
-                    "10.214.1.208",
-                    9900,
-                    std::chrono::milliseconds { 10000 },
-                    QSharedPointer<SwomProtocolCommunicator>::create()
-                },
-            };
-
-            messageSendersManager.handleConfigurationChanged(configurations);
-        });
-
-        QObject::connect(
-            hostThread, &QThread::finished,
-            &messageSendersManager, &QThread::deleteLater);
-
-        hostThread->start();
+        manager.handleConfigurationChanged(configurations);
     }
-
-private:
-    QThread* hostThread;
 
 };
 
-
 int main(int argc, char* argv[]) {
-    spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^%L%$] [thread %t] %v");
+    spdlog::set_pattern("[%T %z][%^%L%$][trd %t][%@][%u] %v");
     spdlog::set_level(spdlog::level::trace);
 
     spdlog::info("Setup AUX application");
@@ -70,28 +52,36 @@ int main(int argc, char* argv[]) {
 
     Caching::Configuration::configureConnection();
 
+    qMetaTypeId<MessageSenderStatusChanged>();
+
     const auto services = di::make_injector(
+        di::bind<AuxImmediateMessagesMapService>()
+            .in(di::singleton),
+        di::bind<AuxRecurrentMessagesMapService>()
+            .in(di::singleton),
         di::bind<BaseGpsDeviceController>()
-            .to<SerialPortGpsDeviceController>().in(di::singleton),
-
-        di::bind<HostWrapper>(),
-
-        di::bind<moodycamel::BlockingReaderWriterQueue<MessagesBatch>>().in(di::singleton),
-
-        di::bind<ImmediateMessagesCollector>().in(di::singleton),
-        di::bind<RecurrentMessagesCollector>().in(di::singleton),
-        di::bind<MessagesCollectorsAdapter>().in(di::singleton),
-        di::bind<AuxImmediateMessagesMapService>().in(di::singleton),
-        di::bind<AuxRecurrentMessagesMapService>().in(di::singleton),
-
+            .to<SerialPortGpsDeviceController>()
+            .in(di::singleton),
+        di::bind<BaseMessageSendersManager>()
+            .to<TcpMessageSendersManager>()
+            .in(di::singleton),
+        di::bind<HostWrapper>()
+            .in(di::singleton),
         di::bind<IMessagesCachingService>()
-            .to<MessagesCachingService>().in(di::singleton),
-
-        di::bind<BaseMessageSendersManager>().to<TcpMessageSendersManager>().in(di::singleton)
+            .to<MessagesCachingService>()
+            .in(di::singleton),
+        di::bind<ImmediateMessagesCollector>()
+            .in(di::singleton),
+        di::bind<MessagesCollectorsAdapter>()
+            .in(di::singleton),
+        di::bind<RecurrentMessagesCollector>()
+            .in(di::singleton),
+        di::bind<moodycamel::BlockingReaderWriterQueue<MessagesBatch>>()
+            .in(di::singleton)
     );
 
-    services.create<ThreadWrapper>();
     eagerSingletons(services);
+    services.create<MessageSendersManagerBootstraper>();
 
     spdlog::info("Startup AUX application");
     return app.exec();

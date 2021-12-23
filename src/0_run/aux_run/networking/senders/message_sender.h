@@ -6,15 +6,14 @@
 #include <memory>
 // qt
 #include <QAbstractSocket>
-#include <QFinalState>
 #include <QObject>
-#include <QState>
-#include <QStateMachine>
+#include <QSharedPointer>
 #include <QTcpSocket>
 #include <QTimer>
 #include <QUuid>
 
 #include "networking/communicators/base_protocol_communicator.h"
+#include "networking/communicators/swom_protocol_communicator.h"
 
 using SocketState = QAbstractSocket::SocketState;
 
@@ -44,9 +43,9 @@ struct MessageSenderConfiguration {
 
     quint16 port;
 
-    std::chrono::milliseconds dataSendInterval;
+    QString protocol;
 
-    QSharedPointer<BaseProtocolCommunicator> communicator;
+    std::chrono::milliseconds sendInterval;
 
 };
 
@@ -56,7 +55,7 @@ class MessageSender : public QObject {
 public:
     const QUuid id { QUuid::createUuid() };
 
-    explicit MessageSender();
+    MessageSender(QSharedPointer<BaseProtocolCommunicator> communicator);
 
     void restart(const MessageSenderConfiguration& configuration);
 
@@ -65,9 +64,9 @@ public:
     Q_SIGNAL void notifyStatusChanged(MessageSenderStatusChanged notification);
 
 private:
-    QSharedPointer<BaseProtocolCommunicator> communicator;
-
     QTcpSocket socket;
+
+    QSharedPointer<BaseProtocolCommunicator> communicator;
 
     void connectSocketSignals();
 

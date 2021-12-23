@@ -19,6 +19,7 @@ include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
     caching/messages_caching_service.h \
+    networking/senders/tcp_message_senders_manager.h \
     persisting/commands/save_messages_batch_command.h \
     persisting/commands/set_last_sent_messages_batch_id_command.h \
     persisting/configuration/database_configuration.h \
@@ -36,14 +37,14 @@ HEADERS += \
     networking/formatters/swom_protocol_formatter.h \
     networking/senders/base_message_senders_manager.h \
     networking/senders/message_sender.h \
-    networking/senders/message_senders_manager.h \
-    system/notification_handlers/setup_time_handler.h \
+    system/notification_handlers/setup_datetime_handler.h \
     utils/boost_di_extensions.h \
     utils/json_qt_support.h \
     utils/spdlog_qt_support.h
 
 SOURCES += \
     caching/messages_caching_service.cpp \
+    networking/senders/tcp_message_senders_manager.cpp \
     persisting/commands/save_messages_batch_command.cpp \
     persisting/commands/set_last_sent_messages_batch_id_command.cpp \
     persisting/configuration/database_configuration.cpp \
@@ -57,8 +58,7 @@ SOURCES += \
     networking/communicators/swom_protocol_communicator.cpp \
     networking/formatters/swom_protocol_formatter.cpp \
     networking/senders/message_sender.cpp \
-    networking/senders/message_senders_manager.cpp \
-    system/notification_handlers/setup_time_handler.cpp \
+    system/notification_handlers/setup_datetime_handler.cpp \
     utils/spdlog_qt_support.cpp
 
 LIBS += -L$${PRJDIR}/binaries \

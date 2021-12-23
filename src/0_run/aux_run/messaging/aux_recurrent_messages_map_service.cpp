@@ -31,7 +31,7 @@ AuxRecurrentMessagesMapService::AuxRecurrentMessagesMapService(
             Message message {
                 MESSAGE_MONKIER_GPS_UPDATE,
                 QByteArray(reinterpret_cast<const char*>(payload.data()), payload.size()),
-                gpsUpdate.datetime
+                QDateTime::currentDateTimeUtc(),
             };
 
             emit notifyIncommingMessageMapped(message);

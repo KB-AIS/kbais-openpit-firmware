@@ -14,10 +14,6 @@ enum class SwomFrameType : quint8 {
     Ack = 0xFF,
 };
 
-struct AthData {
-    QString equipmentId;
-};
-
 class SwomProtocolFormatter {
 
 public:

@@ -1,7 +1,12 @@
-#include "message_senders_manager.h"
+#include "tcp_message_senders_manager.h"
 
 // std
 #include <chrono>
+// oss
+#include <spdlog/spdlog.h>
+
+#include "networking/communicators/swom_protocol_communicator.h"
+#include "networking/communicators/base_protocol_communicator.h"
 
 using namespace std::chrono_literals;
 
@@ -15,8 +20,20 @@ TcpMessageSendersManager::TcpMessageSendersManager() {
 
         this, &TcpMessageSendersManager::handleRestartMessageSenders
     );
+//    threadWorker.startLoopInThread([&] {
+//        QMutexLocker locker(&mutex);
 
-    restartMessageSendersTimer.start();
+//        handleRestartMessageSenders();
+//    }, RESTART_MESSAGE_SENDERS_INTERVAL.count());
+
+    subscribeToEvtByName("MESSAGES_BATCH_SAVED", [&](auto event)->bool {
+        QHash<QUuid, MessageSender*>::iterator iter;
+        for (iter = messageSenders.begin(); iter != messageSenders.end(); ++iter) {
+            auto senderId = iter.key();
+
+            messageSenders[senderId]->sendMessage();
+        }
+    });
 }
 
 void
@@ -35,7 +52,10 @@ TcpMessageSendersManager::handleRestartMessageSenders() {
         }
 
         const auto configuration = messageSenderConfigurations[senderId];
-        messageSenders[senderId]->restart(configuration);
+
+        threadWorker.execInThread([&] {
+            messageSenders[senderId]->restart(configuration);
+        });
     }
 }
 
@@ -43,8 +63,14 @@ void
 TcpMessageSendersManager::handleConfigurationChanged(
     const QList<MessageSenderConfiguration>& configurations
 ) {
+    restartMessageSendersTimer.stop();
     for (const auto& configuration : configurations) {
-        const auto sender = new MessageSender();
+        auto const communicator =
+            QSharedPointer<SwomProtocolCommunicator>::create();
+        threadWorker.moveQObjectToThread(communicator.data());
+
+        const auto sender = new MessageSender(communicator);
+        threadWorker.moveQObjectToThread(sender);
 
         QObject::connect(
             sender, &MessageSender::notifyStatusChanged,
@@ -53,9 +79,11 @@ TcpMessageSendersManager::handleConfigurationChanged(
         );
 
         messageSenders[sender->id] = sender;
+        protocolCommunicators[sender->id] = communicator;
         messageSenderConfigurations[sender->id] = configuration;
         messageSenderStatuses[sender->id] = {};
     }
+    restartMessageSendersTimer.start();
 }
 
 void

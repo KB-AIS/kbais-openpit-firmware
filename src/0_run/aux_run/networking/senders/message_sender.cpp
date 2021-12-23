@@ -4,7 +4,9 @@ static const auto SocketStateSignal = qOverload<SocketState>(&QAbstractSocket::s
 
 static const auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
-MessageSender::MessageSender() : QObject() {
+MessageSender::MessageSender(QSharedPointer<BaseProtocolCommunicator> communicator) : QObject(),
+    socket(this),
+    communicator { communicator } {
     connectSocketSignals();
 }
 
@@ -30,7 +32,7 @@ MessageSender::connectSocketSignals() {
 void
 MessageSender::sendMessage() {
     if (communicator) {
-        communicator->sendMessage();
+        communicator->sendDataImmediatly();
     }
 }
 
@@ -38,11 +40,7 @@ void
 MessageSender::restart(const MessageSenderConfiguration& configuration) {
     // Ask a communicator to stop if restart has been called before socket
     // disconnected from a host.
-    if (communicator) {
-        communicator->interruptCommunication();
-    }
-
-    communicator = configuration.communicator;
+    communicator->interruptCommunication();
 
     socket.connectToHost(configuration.host, configuration.port);
 }

@@ -23,10 +23,10 @@ static QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "   [messages_batches] AS [mb]\n"
     "LEFT JOIN\n"
     "   [messages] AS [m] ON [mb].[id] = [m].[messages_batch_id]\n"
-    "WHERE"
-    "   [mb].id > :last_sent_messages_batch_id"
+    "WHERE\n"
+    "   [mb].[id] > :last_sent_messages_batch_id\n"
     "ORDER BY\n"
-    "   [mb].[id] DESC\n"
+    "   [mb].[id] ASC\n"
     "LIMIT\n"
     "   :messages_batches_count;"
 ) };
@@ -45,7 +45,7 @@ GetMessagesBatchesQuery::handle(qint32 messagesBatchesCount) const {
     auto c = QSqlDatabase::database();
 
     quint64 lastSentMessagesBatchId;
-    if (!getLastSentMessagesBatchId(c, &lastSentMessagesBatchId)) {
+    if (!getLastSentMessagesBatchId(c, lastSentMessagesBatchId)) {
         return { };
     }
 
@@ -60,7 +60,7 @@ GetMessagesBatchesQuery::handle(qint32 messagesBatchesCount) const {
 bool
 GetMessagesBatchesQuery::getLastSentMessagesBatchId(
     const QSqlDatabase& connection,
-    quint64* messageBatchIdOut
+    quint64& messageBatchIdOut
 ) const {
     Q_UNUSED(messageBatchIdOut)
 
@@ -74,10 +74,11 @@ GetMessagesBatchesQuery::getLastSentMessagesBatchId(
 
         return false;
     }
+    query.first();
 
     bool queryFieldConverted;
     auto lastSentMessagesBatchId =
-        query.value("last_sent_messages_batch_id").toULongLong(&queryFieldConverted);
+        query.value("sender_lastSentMessagesBatchId").toULongLong(&queryFieldConverted);
 
     if (!queryFieldConverted) {
         spdlog::warn("Could not convert last sent messages batch id to uint64");
@@ -85,7 +86,7 @@ GetMessagesBatchesQuery::getLastSentMessagesBatchId(
         return false;
     }
 
-    messageBatchIdOut = &lastSentMessagesBatchId;
+    messageBatchIdOut = lastSentMessagesBatchId;
 
     return true;
 }

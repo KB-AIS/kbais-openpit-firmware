@@ -1,13 +1,18 @@
-#ifndef MESSAGE_SENDERS_MANAGER_H
-#define MESSAGE_SENDERS_MANAGER_H
+#ifndef TCP_MESSAGE_SENDERS_MANAGER_H
+#define TCP_MESSAGE_SENDERS_MANAGER_H
 
 // qt
 #include <QAbstractSocket>
 #include <QHash>
 #include <QHostAddress>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QObject>
+#include <QSharedPointer>
 #include <QTimer>
 #include <QUuid>
+// qt deferred
+#include <QLambdaThreadWorker>
 // oss
 #include <gitlmodule.h>
 #include <gitleventbus.h>
@@ -28,11 +33,17 @@ public:
 private:
     QHash<QUuid, MessageSender*> messageSenders;
 
+    QHash<QUuid, QSharedPointer<BaseProtocolCommunicator>> protocolCommunicators;
+
     QHash<QUuid, MessageSenderConfiguration> messageSenderConfigurations;
 
     QHash<QUuid, MesssageSenderStatus> messageSenderStatuses;
 
+    QLambdaThreadWorker threadWorker;
+
     QTimer restartMessageSendersTimer;
+
+    QMutex mutex;
 
     /*!
      * Restart all registered instances of \ref MessageSender that have
@@ -48,4 +59,4 @@ private:
 
 };
 
-#endif // MESSAGE_SENDERS_MANAGER_H
+#endif // TCP_MESSAGE_SENDERS_MANAGER_H

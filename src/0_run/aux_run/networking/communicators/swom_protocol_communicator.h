@@ -5,6 +5,7 @@
 #include <QIODevice>
 #include <QObject>
 #include <QTimer>
+#include <QDebug>
 
 #include "networking/communicators/base_protocol_communicator.h"
 #include "networking/formatters/swom_protocol_formatter.h"
@@ -15,7 +16,7 @@ enum class SwomProtocolCommunicatorState {
     Stoped,
     Authenticating,
     ReadyToSendData,
-    WaitReplayOnDataSent,
+    WaitAcknowledge,
 };
 
 class SwomProtocolCommunicator : public BaseProtocolCommunicator {
@@ -28,31 +29,32 @@ public:
 
     void interruptCommunication();
 
-    void sendMessage();
+    void sendDataImmediatly();
 
     SwomProtocolCommunicatorState getCurrentState() const;
 
-    // TODO: Remove
-    Q_SIGNAL void notifyNeedSend();
+    Q_SIGNAL void notifySendDataImmediatlyRequired();
 
 private:
     SwomProtocolCommunicatorState state;
 
     SwomProtocolFormatter formatter;
 
-    GetMessagesBatchesQuery getMessagesBatchesQuery;
+    GetMessagesBatchesQuery qryGetMessagesBatches;
 
-    SetLastSentMessagesBatchIdCommand setLastSentMessagesBatchIdCommand;
+    SetLastSentMessagesBatchIdCommand cmdSetLastSentMessagesBatchId;
 
-    QTimer timerWaitAcknowledge;
+    QTimer tWaitAcknowledge;
 
-    QTimer timerSendMessagesBatches;
+    QTimer tSendDataReccurently;
 
-    QMetaObject::Connection connectionReadData;
+    QMetaObject::Connection cReadData;
 
-    QMetaObject::Connection connectionSendData;
+    QMetaObject::Connection cSendDataReccurently;
 
-    QMetaObject::Connection connectionWaitReplay;
+    QMetaObject::Connection cSendDataImmediately;
+
+    QMetaObject::Connection cWaitAcknowldege;
 
     void requestAuthentication(QIODevice& device);
 

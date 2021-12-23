@@ -11,14 +11,14 @@ namespace KbAis::Cfw::Core {
 /*!
  * Used to setup system time by GPS update.
  */
-class SetupTimerHandler : public QObject {
+class SetupDateTimerHandler : public QObject {
     Q_OBJECT
 
 public:
     Q_SLOT virtual void handleGpsDataUdpated(const Sensors::Gps::GpsUpdate& update) = 0;
 };
 
-class SetupTimeHandlerImpl : public SetupTimerHandler {
+class SetupTimeHandlerImpl : public SetupDateTimerHandler {
     Q_OBJECT
 
 public:

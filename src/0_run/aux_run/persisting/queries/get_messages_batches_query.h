@@ -33,7 +33,7 @@ public:
 private:
     bool getLastSentMessagesBatchId(
         const QSqlDatabase& connection,
-        quint64* messageBatchIdOut
+        quint64& messageBatchIdOut
     ) const;
 
     bool getMessagesBatches(
