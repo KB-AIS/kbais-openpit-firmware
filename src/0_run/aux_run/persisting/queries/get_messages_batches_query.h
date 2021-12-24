@@ -1,34 +1,15 @@
 #ifndef GET_MESSAGES_BATCHES_QUERY_H
 #define GET_MESSAGES_BATCHES_QUERY_H
 
-// qt
-#include <QDateTime>
-#include <QVector>
 // qt sql
 #include <QSqlDatabase>
 
-struct MessageDto {
-    quint64 id;
-
-    QString moniker;
-
-    QByteArray payload;
-
-    QDateTime producedAt;
-};
-
-struct MessagesBatchDto {
-    quint64 id;
-
-    QVector<MessageDto> messages;
-
-    QDateTime collectedAt;
-};
+#include "persisting/queries/dtos.h"
 
 class GetMessagesBatchesQuery {
 
 public:
-    QList<MessagesBatchDto> handle(qint32 count) const;
+    QVector<MessagesBatchDto> handle(qint32 count) const;
 
 private:
     bool getLastSentMessagesBatchId(

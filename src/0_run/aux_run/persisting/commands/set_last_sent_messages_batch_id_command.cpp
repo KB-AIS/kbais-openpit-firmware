@@ -7,9 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 // oss
-#include <spdlog/spdlog.h>
-
-#include "utils/spdlog_qt_support.h"
+#include <plog/Log.h>
 
 const QString DML_UPDATE_SENDER { QStringLiteral(
     "UPDATE [senders]\n"
@@ -28,6 +26,6 @@ void SetLastSentMessagesBatchIdCommand::handle(quint64 messagesBatchId) const {
     query.bindValue(":messages_batch_id", messagesBatchId);
 
     if (!query.exec()) {
-        spdlog::error("Could not update sender: {0}", query.lastError().text());
+        PLOGE << "Could not update sender: {0}" << query.lastError().text();
     }
 }

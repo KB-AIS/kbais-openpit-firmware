@@ -3,8 +3,11 @@
 #include <QMetaType>
 // oss
 #include <boost/di.hpp>
+#include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Init.h>
+#include <plog/Log.h>
 #include <readerwriterqueue/readerwriterqueue.h>
-#include <spdlog/spdlog.h>
 
 #include "caching/messages_caching_service.h"
 #include "gps_device_controller.h"
@@ -43,11 +46,18 @@ struct MessageSendersManagerBootstraper {
 
 };
 
-int main(int argc, char* argv[]) {
-    spdlog::set_pattern("[%T %z][%^%L%$][trd %t][%@][%u] %v");
-    spdlog::set_level(spdlog::level::trace);
+void setupLogging() {
+    using namespace plog;
 
-    spdlog::info("Setup AUX application");
+    static ConsoleAppender<TxtFormatter> console_appender;
+
+    init(debug).addAppender(&console_appender);
+}
+
+int main(int argc, char* argv[]) {
+    setupLogging();
+
+    PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
 
     Caching::Configuration::configureConnection();
@@ -83,6 +93,6 @@ int main(int argc, char* argv[]) {
     eagerSingletons(services);
     services.create<MessageSendersManagerBootstraper>();
 
-    spdlog::info("Startup AUX application");
+    PLOGI << "Startup AUX application";
     return app.exec();
 }

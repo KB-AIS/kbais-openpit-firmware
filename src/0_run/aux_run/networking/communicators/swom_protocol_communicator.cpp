@@ -1,114 +1,107 @@
 #include "swom_protocol_communicator.h"
 
-// qt
-#include <QDataStream>
-#include <QThread>
-#include <QUuid>
-#include <QDebug>
 // oss
 #include <nlohmann/json.hpp>
-#include <spdlog/spdlog.h>
+#include <plog/Log.h>
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::milliseconds REPLAY_TIMEOUT { 30s };
+constexpr qint32 MESSAGES_BATCHES_QUEUE_CAPACITY { 100 };
+
+constexpr qint32 MESSAGES_BATCHES_TO_PEEK { 5 };
+
+constexpr std::chrono::milliseconds WAIT_ACKNOWLEDGE_TIMEOUT { 30s };
+
+constexpr std::chrono::milliseconds ENEQUE_RECCURENTLY_INTERVAL { 10s };
 
 SwomProtocolCommunicator::SwomProtocolCommunicator() :
-    tWaitAcknowledge { this },
-    tSendDataReccurently { this } {
-    tWaitAcknowledge.setInterval(REPLAY_TIMEOUT);
+        messagesBatchesQueue { MESSAGES_BATCHES_QUEUE_CAPACITY, this }
+    ,   timerWaitAcknowledge { this }
+    ,   timerEnequeReccurently { this }
+{
+    timerWaitAcknowledge.setInterval(WAIT_ACKNOWLEDGE_TIMEOUT);
+
+    cEnqueuReccurently = QObject::connect(
+        &timerEnequeReccurently, &QTimer::timeout,
+        &SwomProtocolCommunicator::enequeNextMessagesBatches);
 }
 
 void
 SwomProtocolCommunicator::beginCommunication(QIODevice& device) {
-    // Read incomming data from server side.
-    cReadData = QObject::connect(&device, &QIODevice::readyRead, [&] {
-        tWaitAcknowledge.stop();
+    cReadData = QObject::connect(
+        &device, &QIODevice::readyRead,
+        [&] {
+            timerWaitAcknowledge.stop();
+            PLOGD << "Communicator has recived incomming bytes";
 
-        auto state = getCurrentState();
+            constexpr quint32 BYTES_TO_PEEK = 1024;
+            const auto bytesToDecode = device.peek(BYTES_TO_PEEK);
 
-        if (state == SwomProtocolCommunicatorState::Authenticating) {
-            // TODO: Process result with formatter
-            auto uuid = QUuid::fromRfc4122(device.read(1024));
+            if (state() == SwomProtocolCommunicatorState::Authenticating) {
 
-            this->state = SwomProtocolCommunicatorState::ReadyToSendData;
-            return tSendDataReccurently.start(10s);
+            }
+
+            if (state() == SwomProtocolCommunicatorState::WaitAcknowledge) {
+
+            }
+
+            // messagesBatchesQueue.dequeueVoid();
+            device.readAll();
+            messagesBatchesQueue.requestPeek(MESSAGES_BATCHES_TO_PEEK);
         }
-
-        if (state == SwomProtocolCommunicatorState::WaitAcknowledge) {
-            // TODO: Decode ACK
-            auto uuid = QUuid::fromRfc4122(device.read(1024));
-            qDebug() << uuid;
-
-            this->state = SwomProtocolCommunicatorState::ReadyToSendData;
-            return tSendDataReccurently.start(10s);
-        }
-    });
-
-    auto sendDataHandler = [&] {
-        tSendDataReccurently.stop();
-
-        this->state = SwomProtocolCommunicatorState::WaitAcknowledge;
-        tWaitAcknowledge.start(10s);
-
-        const auto batches = qryGetMessagesBatches.handle(10);
-        if (batches.isEmpty()) {
-            return;
-        }
-
-        device.write(formatter.encodeTelFrame(batches));
-
-        QList<MessagesBatchDto>::ConstIterator result;
-        result = std::max_element(batches.begin(), batches.end(), [](auto a, auto b)->bool {
-            return a.id < b.id;
-        });
-
-        cmdSetLastSentMessagesBatchId.handle(result->id);
-    };
-
-    cSendDataImmediately = QObject::connect(
-        this, &SwomProtocolCommunicator::notifySendDataImmediatlyRequired,
-        sendDataHandler
     );
 
-    cSendDataReccurently = QObject::connect(
-        &tSendDataReccurently, &QTimer::timeout,
-        sendDataHandler
+    QObject::connect(
+        &messagesBatchesQueue, &MessagesBatchesQueue::notifyPeeked,
+        [&](auto messagesBatches) {
+            PLOGV << "Communicator peeked messages batches to send as a frame";
+
+            QUuid frameUuid;
+            device.write(formatter.encodeTelFrame(messagesBatches, frameUuid));
+
+            timerWaitAcknowledge.start();
+        }
     );
-
-    cWaitAcknowldege = QObject::connect(&tWaitAcknowledge, &QTimer::timeout, [&] {
-        spdlog::warn("Waiting for acknowldege timed out");
-
-        device.close();
-    });
-
-    requestAuthentication(device);
 }
 
 void
-SwomProtocolCommunicator::interruptCommunication() {
-    tWaitAcknowledge.stop();
-    tSendDataReccurently.stop();
-
-    QObject::disconnect(cReadData);
-    QObject::disconnect(cSendDataImmediately);
-    QObject::disconnect(cSendDataReccurently);
-    QObject::disconnect(cWaitAcknowldege);
-}
+SwomProtocolCommunicator::endCommunication() { }
 
 void
-SwomProtocolCommunicator::sendDataImmediatly() {
-    // emit notifySendDataImmediatlyRequired();
+SwomProtocolCommunicator::requestSendImmediatly() {
+    PLOGV << "Communicator has been requested to send immediatly";
+    enequeNextMessagesBatches();
 }
-
-SwomProtocolCommunicatorState
-SwomProtocolCommunicator::getCurrentState() const { return state; }
 
 void
 SwomProtocolCommunicator::requestAuthentication(QIODevice &device) {
-    device.write(formatter.encodeAthFrame("104"));
+    PLOGV << "Communicator has requested authentication";
 
-    tWaitAcknowledge.start();
+    QUuid frameUuid;
+    device.write(formatter.encodeAthFrame("104", frameUuid));
 
-    state = SwomProtocolCommunicatorState::Authenticating;
+    currentState = SwomProtocolCommunicatorState::Authenticating;
+    PLOGV << "Communicator's state changed to 'Authenticating'";
 }
+
+void
+SwomProtocolCommunicator::enequeNextMessagesBatches() {
+    if (messagesBatchesQueue.remaningCapacity() == 0) {
+        PLOGV << "Communicator has no room left for the next messages batches";
+        // TODO: Schedule task to eneque as soon as batches dequeued
+        return;
+    }
+
+    const auto messagesBatches =
+        getMessagesBatchesQuery.handle(messagesBatchesQueue.remaningCapacity());
+
+    PLOGV << "Communicator took messages batches to enqueu: " << messagesBatches.size();
+    if (messagesBatches.size() == 0) {
+        PLOGV << "Nothing to enequeu";
+        return;
+    }
+
+    messagesBatchesQueue.enqueue(messagesBatches);
+    PLOGV << "Communicator enqueued messages batches";
+}
+

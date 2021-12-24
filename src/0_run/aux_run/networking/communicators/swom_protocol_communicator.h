@@ -2,62 +2,60 @@
 #define SWOM_PROTOCOL_COMMUNICATOR_H
 
 // qt
-#include <QIODevice>
-#include <QObject>
 #include <QTimer>
-#include <QDebug>
 
 #include "networking/communicators/base_protocol_communicator.h"
-#include "networking/formatters/swom_protocol_formatter.h"
+#include "networking/communicators/messages_batches_queue.h"
+#include "networking/communicators/swom_protocol_formatter.h"
 #include "persisting/commands/set_last_sent_messages_batch_id_command.h"
 #include "persisting/queries/get_messages_batches_query.h"
 
 enum class SwomProtocolCommunicatorState {
-    Stoped,
+    Stoped = 0,
     Authenticating,
     ReadyToSendData,
     WaitAcknowledge,
 };
 
+struct SwomCurrentTelFrame {
+
+};
+
 class SwomProtocolCommunicator : public BaseProtocolCommunicator {
     Q_OBJECT
-
 public:
     SwomProtocolCommunicator();
 
     void beginCommunication(QIODevice& device);
 
-    void interruptCommunication();
+    void endCommunication();
 
-    void sendDataImmediatly();
+    void requestSendImmediatly();
 
-    SwomProtocolCommunicatorState getCurrentState() const;
-
-    Q_SIGNAL void notifySendDataImmediatlyRequired();
+    SwomProtocolCommunicatorState state() const;
 
 private:
-    SwomProtocolCommunicatorState state;
+    GetMessagesBatchesQuery getMessagesBatchesQuery;
 
-    SwomProtocolFormatter formatter;
+    MessagesBatchesQueue messagesBatchesQueue;
 
-    GetMessagesBatchesQuery qryGetMessagesBatches;
-
-    SetLastSentMessagesBatchIdCommand cmdSetLastSentMessagesBatchId;
-
-    QTimer tWaitAcknowledge;
-
-    QTimer tSendDataReccurently;
+    QMetaObject::Connection cEnqueuReccurently;
 
     QMetaObject::Connection cReadData;
 
-    QMetaObject::Connection cSendDataReccurently;
-
-    QMetaObject::Connection cSendDataImmediately;
-
     QMetaObject::Connection cWaitAcknowldege;
+
+    QTimer timerEnequeReccurently;
+
+    QTimer timerWaitAcknowledge;
+
+    SwomProtocolCommunicatorState currentState;
+
+    SwomProtocolFormatter formatter;
 
     void requestAuthentication(QIODevice& device);
 
+    void enequeNextMessagesBatches();
 };
 
 #endif // SWOM_PROTOCOL_COMMUNICATOR_H

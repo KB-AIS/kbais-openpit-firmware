@@ -25,14 +25,14 @@ MessageSender::connectSocketSignals() {
     });
 
     QObject::connect(&socket, &QTcpSocket::disconnected, [&] {
-        communicator->interruptCommunication();
+        communicator->endCommunication();
     });
 }
 
 void
 MessageSender::sendMessage() {
     if (communicator) {
-        communicator->sendDataImmediatly();
+        communicator->requestSendImmediatly();
     }
 }
 
@@ -40,7 +40,7 @@ void
 MessageSender::restart(const MessageSenderConfiguration& configuration) {
     // Ask a communicator to stop if restart has been called before socket
     // disconnected from a host.
-    communicator->interruptCommunication();
+    communicator->endCommunication();
 
     socket.connectToHost(configuration.host, configuration.port);
 }

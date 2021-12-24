@@ -3,7 +3,7 @@
 // std
 #include <chrono>
 // oss
-#include <spdlog/spdlog.h>
+#include <plog/Log.h>
 
 #include "networking/communicators/swom_protocol_communicator.h"
 #include "networking/communicators/base_protocol_communicator.h"
@@ -20,11 +20,6 @@ TcpMessageSendersManager::TcpMessageSendersManager() {
 
         this, &TcpMessageSendersManager::handleRestartMessageSenders
     );
-//    threadWorker.startLoopInThread([&] {
-//        QMutexLocker locker(&mutex);
-
-//        handleRestartMessageSenders();
-//    }, RESTART_MESSAGE_SENDERS_INTERVAL.count());
 
     subscribeToEvtByName("MESSAGES_BATCH_SAVED", [&](auto event)->bool {
         QHash<QUuid, MessageSender*>::iterator iter;

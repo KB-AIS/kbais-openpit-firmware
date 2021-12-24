@@ -5,9 +5,7 @@
 // qt sql
 #include <QSqlError>
 // oss
-#include <spdlog/spdlog.h>
-
-#include "utils/spdlog_qt_support.h"
+#include <plog/Log.h>
 
 QString DML_INSERT_DEVICE_MESSAGE_BATCH { QStringLiteral(
     "INSERT INTO [messages_batches](\n"
@@ -36,7 +34,7 @@ SaveMessagesBatchCommand::handle(const MessagesBatch& messagesBatch) {
     auto connection = QSqlDatabase::database();
 
     if (!connection.transaction()) {
-        spdlog::error("Could not start transaction: {0}", connection.lastError().text());
+        PLOGE << "Could not start transaction: " << connection.lastError().text();
 
         return;
     }
@@ -55,7 +53,7 @@ SaveMessagesBatchCommand::handle(const MessagesBatch& messagesBatch) {
     }
 
     if (!connection.commit()) {
-        spdlog::error("Could not commit transaction: {0}", connection.lastError().text());
+        PLOGE << "Could not commit transaction: " << connection.lastError().text();
 
         connection.rollback();
     }
@@ -74,7 +72,7 @@ SaveMessagesBatchCommand::insertMessagesBatch(
     query.bindValue(POS_COLLECTED_AT, messagesBatch.collectedAt);
 
     if (!query.exec()) {
-        spdlog::error("Could not insert message batch: {0}", query.lastError().text());
+        PLOGE << "Could not insert message batch: " << query.lastError().text();
 
         return { false, 0 };
     }
@@ -106,7 +104,7 @@ SaveMessagesBatchCommand::insertMessages(
 
         if (query.exec()) continue;
 
-        spdlog::error("Could not insert message: {0}", query.lastError().text());
+        PLOGE << "Could not insert message: " << query.lastError().text();
 
         return false;
     }

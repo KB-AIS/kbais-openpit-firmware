@@ -19,10 +19,12 @@ include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
     caching/messages_caching_service.h \
+    networking/communicators/messages_batches_queue.h \
     networking/senders/tcp_message_senders_manager.h \
     persisting/commands/save_messages_batch_command.h \
     persisting/commands/set_last_sent_messages_batch_id_command.h \
     persisting/configuration/database_configuration.h \
+    persisting/queries/dtos.h \
     persisting/queries/get_messages_batches_query.h \
     messaging/aux_immediate_messages_map_service.h \
     messaging/aux_recurrent_messages_map_service.h \
@@ -34,16 +36,16 @@ HEADERS += \
     messaging/messages_batch.h \
     networking/communicators/base_protocol_communicator.h \
     networking/communicators/swom_protocol_communicator.h \
-    networking/formatters/swom_protocol_formatter.h \
+    networking/communicators/swom_protocol_formatter.h \
     networking/senders/base_message_senders_manager.h \
     networking/senders/message_sender.h \
     system/notification_handlers/setup_datetime_handler.h \
     utils/boost_di_extensions.h \
-    utils/json_qt_support.h \
-    utils/spdlog_qt_support.h
+    utils/json_qt_support.h
 
 SOURCES += \
     caching/messages_caching_service.cpp \
+    networking/communicators/messages_batches_queue.cpp \
     networking/senders/tcp_message_senders_manager.cpp \
     persisting/commands/save_messages_batch_command.cpp \
     persisting/commands/set_last_sent_messages_batch_id_command.cpp \
@@ -56,10 +58,9 @@ SOURCES += \
     messaging/collectors/messages_collectors_adapter.cpp \
     messaging/collectors/recurrent_messages_collector.cpp \
     networking/communicators/swom_protocol_communicator.cpp \
-    networking/formatters/swom_protocol_formatter.cpp \
+    networking/communicators/swom_protocol_formatter.cpp \
     networking/senders/message_sender.cpp \
-    system/notification_handlers/setup_datetime_handler.cpp \
-    utils/spdlog_qt_support.cpp
+    system/notification_handlers/setup_datetime_handler.cpp
 
 LIBS += -L$${PRJDIR}/binaries \
     -laux-view \

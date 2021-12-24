@@ -7,9 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 // oss
-#include <spdlog/spdlog.h>
-
-#include "utils/spdlog_qt_support.h"
+#include <plog/Log.h>
 
 static QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
     "SELECT\n"
@@ -40,7 +38,7 @@ const QString QML_SELECT_LAST_SENT_MESSAGES_BATCH_ID { QStringLiteral(
     "   [s].[host] = '10.214.1.208' AND [s].[port] = 9900;"
 ) };
 
-QList<MessagesBatchDto>
+QVector<MessagesBatchDto>
 GetMessagesBatchesQuery::handle(qint32 messagesBatchesCount) const {
     auto c = QSqlDatabase::database();
 
@@ -54,7 +52,7 @@ GetMessagesBatchesQuery::handle(qint32 messagesBatchesCount) const {
         return { };
     }
 
-    return messagesBatches;
+    return messagesBatches.toVector();
 }
 
 bool
@@ -69,8 +67,7 @@ GetMessagesBatchesQuery::getLastSentMessagesBatchId(
     query.prepare(QML_SELECT_LAST_SENT_MESSAGES_BATCH_ID);
 
     if (!query.exec()) {
-        spdlog::error("Could not select last sent messages batch id: {0}",
-                      query.lastError().text());
+        PLOGE << "Could not select last sent messages batch id: " << query.lastError().text();
 
         return false;
     }
@@ -81,7 +78,7 @@ GetMessagesBatchesQuery::getLastSentMessagesBatchId(
         query.value("sender_lastSentMessagesBatchId").toULongLong(&queryFieldConverted);
 
     if (!queryFieldConverted) {
-        spdlog::warn("Could not convert last sent messages batch id to uint64");
+        PLOGW << "Could not convert last sent messages batch id to uint64";
 
         return false;
     }
@@ -105,7 +102,7 @@ GetMessagesBatchesQuery::getMessagesBatches(
     query.bindValue(":messages_batches_count", messagesBatchesCount);
 
     if (!query.exec()) {
-        spdlog::error("Could not select messages batches: {0}", query.lastError().text());
+        PLOGE << "Could not select messages batches: " << query.lastError().text();
 
         return false;
     }

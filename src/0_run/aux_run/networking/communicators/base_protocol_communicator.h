@@ -12,9 +12,9 @@ public:
 
     virtual void beginCommunication(QIODevice& device) = 0;
 
-    virtual void interruptCommunication() = 0;
+    virtual void endCommunication() = 0;
 
-    virtual void sendDataImmediatly() = 0;
+    virtual void requestSendImmediatly() = 0;
 
 };
 
