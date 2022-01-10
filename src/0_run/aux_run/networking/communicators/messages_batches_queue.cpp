@@ -5,35 +5,35 @@
 
 using namespace std::chrono;
 
-MessagesBatchesQueue::MessagesBatchesQueue(qint32 capacity, QObject *parent) :
+MessagesBatchesSendQueue::MessagesBatchesSendQueue(qint32 capacity, QObject *parent) :
     capacity { capacity },
     internalQueue { QVector<MessagesBatchDto>(capacity) },
     QObject(parent) { }
 
 void
-MessagesBatchesQueue::requestPeek(quint32 size) const {
+MessagesBatchesSendQueue::requestPeek(quint32 size) const {
     if (size > capacity) {
         size -= size - capacity;
     }
 
-    const auto peekedMssagesBatches = QVector<MessagesBatchDto>(size);
-    std::copy_n(internalQueue.begin(), size, peekedMssagesBatches);
+    auto peekedMssagesBatches = QVector<MessagesBatchDto>(size);
+    std::copy_n(internalQueue.begin(), size, std::back_inserter(peekedMssagesBatches));
 
     emit notifyPeeked(peekedMssagesBatches);
 }
 
 void
-MessagesBatchesQueue::enqueue(const QVector<MessagesBatchDto>& messagesBatches) {
+MessagesBatchesSendQueue::enqueue(const QVector<MessagesBatchDto>& messagesBatches) {
     auto size = remaningCapacity();
     if (messagesBatches.size() > size) {
         size = messagesBatches.size();
     }
 
-    std::copy_n(messagesBatches.begin(), size, internalQueue);
+    std::copy_n(messagesBatches.begin(), size, std::back_inserter(internalQueue));
 }
 
 void
-MessagesBatchesQueue::dequeueVoid(quint32 size) {
+MessagesBatchesSendQueue::dequeueVoid(quint32 size) {
     if (size > capacity) {
         size -= size - capacity;
     }
@@ -42,6 +42,6 @@ MessagesBatchesQueue::dequeueVoid(quint32 size) {
 }
 
 qint32
-MessagesBatchesQueue::remaningCapacity() const noexcept {
+MessagesBatchesSendQueue::remaningCapacity() const noexcept {
     return capacity - internalQueue.size();
 }

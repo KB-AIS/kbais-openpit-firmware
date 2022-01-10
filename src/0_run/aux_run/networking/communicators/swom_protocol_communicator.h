@@ -37,7 +37,7 @@ public:
 private:
     GetMessagesBatchesQuery getMessagesBatchesQuery;
 
-    MessagesBatchesQueue messagesBatchesQueue;
+    MessagesBatchesSendQueue sendQueue;
 
     QMetaObject::Connection cEnqueuReccurently;
 
@@ -55,7 +55,7 @@ private:
 
     void requestAuthentication(QIODevice& device);
 
-    void enequeNextMessagesBatches();
+    Q_SLOT void enequeNextMessagesBatches();
 };
 
 #endif // SWOM_PROTOCOL_COMMUNICATOR_H

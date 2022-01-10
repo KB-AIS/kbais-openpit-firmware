@@ -20,15 +20,6 @@ TcpMessageSendersManager::TcpMessageSendersManager() {
 
         this, &TcpMessageSendersManager::handleRestartMessageSenders
     );
-
-    subscribeToEvtByName("MESSAGES_BATCH_SAVED", [&](auto event)->bool {
-        QHash<QUuid, MessageSender*>::iterator iter;
-        for (iter = messageSenders.begin(); iter != messageSenders.end(); ++iter) {
-            auto senderId = iter.key();
-
-            messageSenders[senderId]->sendMessage();
-        }
-    });
 }
 
 void

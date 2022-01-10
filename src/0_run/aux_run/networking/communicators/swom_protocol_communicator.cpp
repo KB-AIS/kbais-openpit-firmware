@@ -15,7 +15,7 @@ constexpr std::chrono::milliseconds WAIT_ACKNOWLEDGE_TIMEOUT { 30s };
 constexpr std::chrono::milliseconds ENEQUE_RECCURENTLY_INTERVAL { 10s };
 
 SwomProtocolCommunicator::SwomProtocolCommunicator() :
-        messagesBatchesQueue { MESSAGES_BATCHES_QUEUE_CAPACITY, this }
+        sendQueue { MESSAGES_BATCHES_QUEUE_CAPACITY, this }
     ,   timerWaitAcknowledge { this }
     ,   timerEnequeReccurently { this }
 {
@@ -23,7 +23,12 @@ SwomProtocolCommunicator::SwomProtocolCommunicator() :
 
     cEnqueuReccurently = QObject::connect(
         &timerEnequeReccurently, &QTimer::timeout,
-        &SwomProtocolCommunicator::enequeNextMessagesBatches);
+        this, &SwomProtocolCommunicator::enequeNextMessagesBatches);
+}
+
+SwomProtocolCommunicatorState
+SwomProtocolCommunicator::state() const {
+    return currentState;
 }
 
 void
@@ -45,14 +50,13 @@ SwomProtocolCommunicator::beginCommunication(QIODevice& device) {
 
             }
 
-            // messagesBatchesQueue.dequeueVoid();
             device.readAll();
-            messagesBatchesQueue.requestPeek(MESSAGES_BATCHES_TO_PEEK);
+            sendQueue.requestPeek(MESSAGES_BATCHES_TO_PEEK);
         }
     );
 
     QObject::connect(
-        &messagesBatchesQueue, &MessagesBatchesQueue::notifyPeeked,
+        &sendQueue, &MessagesBatchesSendQueue::notifyPeeked,
         [&](auto messagesBatches) {
             PLOGV << "Communicator peeked messages batches to send as a frame";
 
@@ -86,14 +90,14 @@ SwomProtocolCommunicator::requestAuthentication(QIODevice &device) {
 
 void
 SwomProtocolCommunicator::enequeNextMessagesBatches() {
-    if (messagesBatchesQueue.remaningCapacity() == 0) {
+    if (sendQueue.remaningCapacity() == 0) {
         PLOGV << "Communicator has no room left for the next messages batches";
         // TODO: Schedule task to eneque as soon as batches dequeued
         return;
     }
 
     const auto messagesBatches =
-        getMessagesBatchesQuery.handle(messagesBatchesQueue.remaningCapacity());
+        getMessagesBatchesQuery.handle(sendQueue.remaningCapacity());
 
     PLOGV << "Communicator took messages batches to enqueu: " << messagesBatches.size();
     if (messagesBatches.size() == 0) {
@@ -101,7 +105,7 @@ SwomProtocolCommunicator::enequeNextMessagesBatches() {
         return;
     }
 
-    messagesBatchesQueue.enqueue(messagesBatches);
+    sendQueue.enqueue(messagesBatches);
     PLOGV << "Communicator enqueued messages batches";
 }
 

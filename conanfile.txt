@@ -1,8 +1,0 @@
-[requires]
-di/1.2.0
-nlohmann_json/3.10.4
-spdlog/1.9.2
-readerwriterqueue/1.0.5
-
-[generators]
-qmake

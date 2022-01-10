@@ -13,14 +13,11 @@
 #include <QUuid>
 // qt deferred
 #include <QLambdaThreadWorker>
-// oss
-#include <gitlmodule.h>
-#include <gitleventbus.h>
 
 #include "networking/senders/base_message_senders_manager.h"
 #include "networking/senders/message_sender.h"
 
-class TcpMessageSendersManager : public BaseMessageSendersManager, public GitlModule {
+class TcpMessageSendersManager : public BaseMessageSendersManager {
     Q_OBJECT
 
 public:

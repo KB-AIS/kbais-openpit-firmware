@@ -7,7 +7,6 @@
 #include <QDeferred>
 #include <QLambdaThreadWorker>
 // oss
-#include <gitlmodule.h>
 #include <readerwriterqueue/readerwriterqueue.h>
 
 #include "persisting/commands/save_messages_batch_command.h"
@@ -19,7 +18,7 @@ public:
     virtual ~IMessagesCachingService() noexcept = default;
 };
 
-class MessagesCachingService : public IMessagesCachingService, public GitlModule {
+class MessagesCachingService : public IMessagesCachingService {
     Q_OBJECT
 
 public:
@@ -31,8 +30,6 @@ private:
     QLambdaThreadWorker threadWorker;
 
     SaveMessagesBatchCommand saveMessagesBatchCommand;
-
-    void dispatchMessagesBatchCreated();
 
 };
 

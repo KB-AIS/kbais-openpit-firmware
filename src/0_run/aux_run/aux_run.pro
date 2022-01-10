@@ -14,18 +14,10 @@ INCLUDEPATH += \
 
 include($${OSSDIR}/QDeferred/src/qdeferred.pri)
 include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
-include($${OSSDIR}/libgitlevtbus/src/ebus.pri)
 include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
     caching/messages_caching_service.h \
-    networking/communicators/messages_batches_queue.h \
-    networking/senders/tcp_message_senders_manager.h \
-    persisting/commands/save_messages_batch_command.h \
-    persisting/commands/set_last_sent_messages_batch_id_command.h \
-    persisting/configuration/database_configuration.h \
-    persisting/queries/dtos.h \
-    persisting/queries/get_messages_batches_query.h \
     messaging/aux_immediate_messages_map_service.h \
     messaging/aux_recurrent_messages_map_service.h \
     messaging/collectors/immediate_messages_collector.h \
@@ -35,31 +27,38 @@ HEADERS += \
     messaging/message.h \
     messaging/messages_batch.h \
     networking/communicators/base_protocol_communicator.h \
+    networking/communicators/messages_batches_queue.h \
     networking/communicators/swom_protocol_communicator.h \
     networking/communicators/swom_protocol_formatter.h \
     networking/senders/base_message_senders_manager.h \
     networking/senders/message_sender.h \
+    networking/senders/tcp_message_senders_manager.h \
+    persisting/commands/save_messages_batch_command.h \
+    persisting/commands/set_last_sent_messages_batch_id_command.h \
+    persisting/configuration/database_configuration.h \
+    persisting/queries/dtos.h \
+    persisting/queries/get_messages_batches_query.h \
     system/notification_handlers/setup_datetime_handler.h \
     utils/boost_di_extensions.h \
     utils/json_qt_support.h
 
 SOURCES += \
     caching/messages_caching_service.cpp \
-    networking/communicators/messages_batches_queue.cpp \
-    networking/senders/tcp_message_senders_manager.cpp \
-    persisting/commands/save_messages_batch_command.cpp \
-    persisting/commands/set_last_sent_messages_batch_id_command.cpp \
-    persisting/configuration/database_configuration.cpp \
-    persisting/queries/get_messages_batches_query.cpp \
     main.cpp \
     messaging/aux_immediate_messages_map_service.cpp \
     messaging/aux_recurrent_messages_map_service.cpp \
     messaging/collectors/immediate_messages_collector.cpp \
     messaging/collectors/messages_collectors_adapter.cpp \
     messaging/collectors/recurrent_messages_collector.cpp \
+    networking/communicators/messages_batches_queue.cpp \
     networking/communicators/swom_protocol_communicator.cpp \
     networking/communicators/swom_protocol_formatter.cpp \
     networking/senders/message_sender.cpp \
+    networking/senders/tcp_message_senders_manager.cpp \
+    persisting/commands/save_messages_batch_command.cpp \
+    persisting/commands/set_last_sent_messages_batch_id_command.cpp \
+    persisting/configuration/database_configuration.cpp \
+    persisting/queries/get_messages_batches_query.cpp \
     system/notification_handlers/setup_datetime_handler.cpp
 
 LIBS += -L$${PRJDIR}/binaries \

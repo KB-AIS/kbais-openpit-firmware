@@ -7,11 +7,11 @@
 
 #include "persisting/queries/get_messages_batches_query.h"
 
-class MessagesBatchesQueue : public QObject {
+class MessagesBatchesSendQueue : public QObject {
     Q_OBJECT
 
 public:
-    explicit MessagesBatchesQueue(qint32 capacity, QObject *parent = nullptr);
+    explicit MessagesBatchesSendQueue(qint32 capacity, QObject *parent = nullptr);
 
     void requestPeek(quint32 size) const;
 

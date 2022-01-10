@@ -1,6 +1,3 @@
 [submodule "oss/QDeferred"]
 	path = oss/QDeferred
 	url = https://github.com/juangburgos/QDeferred
-[submodule "oss/libgitlevtbus"]
-	path = oss/libgitlevtbus
-	url = https://github.com/lheric/libgitlevtbus
