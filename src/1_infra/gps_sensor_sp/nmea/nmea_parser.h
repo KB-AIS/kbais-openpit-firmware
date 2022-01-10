@@ -1,9 +1,6 @@
 #ifndef NMEA_PARSER_H
 #define NMEA_PARSER_H
 
-
-#include "nmea/nmea_sentence.h"
-
 // std
 #include <memory>
 #include <vector>
@@ -11,7 +8,9 @@
 #include <QDateTime>
 #include <QIODevice>
 
-namespace Sensors::Gps::Nmea {
+#include "nmea/nmea_sentence.h"
+
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 /*!
  *  \brief Indicate NMEA sentence begining.
@@ -40,6 +39,6 @@ void process_input(
     std::vector<std::shared_ptr<NmeaSentence>>& output_sentences
 );
 
-} // Sensors::Gps::Nmea
+}
 
 #endif // NMEA_PARSER_H

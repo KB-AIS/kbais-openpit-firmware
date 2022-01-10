@@ -1,17 +1,15 @@
 #include "nmea_parser.h"
 
-
 // std
 #include <functional>
 #include <map>
 // qt
+#include <QDebug>
 #include <QTime>
-// plog
-#include <plog/Log.h>
 
 using std::shared_ptr, std::vector;
 
-namespace Sensors::Gps::Nmea {
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 constexpr int PEEK_SIZE { 8096 };
 
@@ -22,8 +20,8 @@ constexpr int CMD_POS { 3 };
 typedef std::function<shared_ptr<NmeaSentence>(const QByteArray&)> sentence_parser;
 
 static const std::map<QString, sentence_parser> sentence_parsers {
-    { "GGA", parse_gga_sentence },
-    { "RMC", parse_rmc_sentence },
+    { "GGA", parseGgaSentence },
+    { "RMC", parseRmcSentence },
 };
 
 void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_sentences) {
@@ -45,7 +43,7 @@ void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_s
         if (sentence_fin_pos == -1) break;
 
         if (sentence_fin_pos <= sentence_beg_pos) {
-            PLOGE << "Invalid state during processing NMEA input";
+            qFatal("Invalid state during processing NMEA input");
 
             throw 0;
         }
@@ -67,4 +65,4 @@ void process_input(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_s
     device.read(bytes_scaned);
 };
 
-} // Sensors::Gps::Nmea
+}

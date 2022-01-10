@@ -1,6 +1,3 @@
-[submodule "plog"]
-	path = oss/plog
-	url = https://github.com/SergiusTheBest/plog
-[submodule "qdef"]
+[submodule "oss/QDeferred"]
 	path = oss/QDeferred
 	url = https://github.com/juangburgos/QDeferred

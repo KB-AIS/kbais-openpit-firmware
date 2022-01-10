@@ -1,3 +1,7 @@
+# Microsoft Visual Code
+.vscode/
+
+# Qt
 *~
 *.autosave
 *.a
@@ -41,3 +45,9 @@ Thumbs.db
 */binaries
 */build
 build*
+
+# Conan files
+conan.lock
+conanbuildinfo.*
+conaninfo.txt
+graph_info.json

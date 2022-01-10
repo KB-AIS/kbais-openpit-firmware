@@ -1,18 +1,14 @@
 #include "nmea_sentence.h"
 
-
-// plog
-#include <plog/Log.h>
-
-namespace Sensors::Gps::Nmea {
+namespace KbAis::Cfw::Sensors::Gps::Nmea {
 
 constexpr char FIELDS_SEP { ',' };
 
 constexpr char CHKSUM_SEP { '*' };
 
-const QString TIME_FORMAT = QString("HHmmss.z");
+QString TIME_FORMAT { "HHmmss.z" };
 
-const QString DATE_FORMAT = QString("ddMMyy");
+QString DATE_FORMAT { "ddMMyy" };
 
 // Utility functions
 std::pair<double, double> parse_lat_lon(
@@ -44,7 +40,7 @@ GgaSentence::GgaSentence(
 ) : time { time },
     lat { lat }, lon { lon }, qal { qal }, sat { sat } {}
 
-std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes) {
+std::shared_ptr<GgaSentence> parseGgaSentence(const QByteArray& sentenceBytes) {
     constexpr int FP_TIME               { 1 };
     constexpr int FP_LAT                { 2 };
     constexpr int FP_LAT_DIR            { 3 };
@@ -54,7 +50,7 @@ std::shared_ptr<GgaSentence> parse_gga_sentence(const QByteArray& sentence_bytes
     constexpr int FP_SATELLITES         { 7 };
 
     bool is_conv_ok;
-    const auto fields_chksum = sentence_bytes.split(CHKSUM_SEP);
+    const auto fields_chksum = sentenceBytes.split(CHKSUM_SEP);
     const auto fields = fields_chksum[0].split(FIELDS_SEP);
 
     const auto pos_time = QTime::fromString(fields[FP_TIME], TIME_FORMAT);
@@ -82,10 +78,10 @@ RmcSentence::RmcSentence() {}
 RmcSentence::RmcSentence(
     const QDateTime& datetime,
     double lat, double lon, double spd
-) : datetime { datetime }, is_valid { true },
-    lat { lat }, lon { lon }, spd { spd } {}
+) : datetime { datetime }, isValid { true },
+    lat { lat }, lon { lon }, speed { spd } {}
 
-std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes) {
+std::shared_ptr<RmcSentence> parseRmcSentence(const QByteArray& sentenceBytes) {
     constexpr int FP_TIME               { 1 };
     constexpr int FP_STATUS             { 2 };
     constexpr int FP_LAT                { 3 };
@@ -96,7 +92,7 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
     constexpr int FP_DATE               { 9 };
 
     bool is_conv_ok;
-    const auto fields_chksum = sentence_bytes.split(CHKSUM_SEP);
+    const auto fields_chksum = sentenceBytes.split(CHKSUM_SEP);
     const auto fields = fields_chksum[0].split(FIELDS_SEP);
 
     const auto& time = QTime::fromString(fields[FP_TIME], TIME_FORMAT);
@@ -122,4 +118,4 @@ std::shared_ptr<RmcSentence> parse_rmc_sentence(const QByteArray& sentence_bytes
     });
 }
 
-} // Sensors::Gps::Nmea
+}

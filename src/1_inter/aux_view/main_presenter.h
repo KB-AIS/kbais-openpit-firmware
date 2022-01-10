@@ -1,11 +1,11 @@
 #ifndef MAIN_PRESENTER_H
 #define MAIN_PRESENTER_H
 
-#include "gps_update.h"
-
 // qt
 #include <QTimer>
 #include <QWidget>
+
+#include "gps_update.h"
 
 namespace Ui { class main_presenter; }
 
@@ -17,7 +17,7 @@ public:
 
     ~main_presenter();
 
-    Q_SLOT void update_gps_data_slot(const Sensors::Gps::GpsUpdate& update);
+    Q_SLOT void handleGpsDataUpdated(const KbAis::Cfw::Sensors::Gps::GpsUpdate& gpsUpdate);
 
     Q_SIGNAL void notifyTestUserEvent();
 
@@ -27,7 +27,7 @@ private:
     /*!
      * \brief Timer to update current time on screen.
      */
-    QTimer* m_timer_update_time;
+    QTimer* timerUpdateTime;
 
 };
 
