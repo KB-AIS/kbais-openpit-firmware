@@ -28,7 +28,7 @@ HEADERS += \
     messaging/message.h \
     messaging/messages_batch.h \
     networking/communicators/base_protocol_communicator.h \
-    networking/communicators/messages_batches_queue.h \
+    networking/communicators/messages_batches_send_queue.h \
     networking/communicators/swom_protocol_communicator.h \
     networking/communicators/swom_protocol_formatter.h \
     networking/senders/base_message_senders_manager.h \
@@ -52,7 +52,7 @@ SOURCES += \
     messaging/collectors/immediate_messages_collector.cpp \
     messaging/collectors/messages_collectors_adapter.cpp \
     messaging/collectors/recurrent_messages_collector.cpp \
-    networking/communicators/messages_batches_queue.cpp \
+    networking/communicators/messages_batches_send_queue.cpp \
     networking/communicators/swom_protocol_communicator.cpp \
     networking/communicators/swom_protocol_formatter.cpp \
     networking/senders/message_sender.cpp \

@@ -12,7 +12,8 @@ using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_INTERVAL { 5s };
 
-TcpMessageSendersManager::TcpMessageSendersManager() {
+TcpMessageSendersManager::TcpMessageSendersManager(const RxEventBus& eventBus)
+    : RxEventModule(eventBus) {
     restartMessageSendersTimer.setInterval(RESTART_MESSAGE_SENDERS_INTERVAL);
 
     QObject::connect(
@@ -20,6 +21,15 @@ TcpMessageSendersManager::TcpMessageSendersManager() {
 
         this, &TcpMessageSendersManager::handleRestartMessageSenders
     );
+
+    subscribe("MESSAGES_BATCH_SAVED", [&](const RxEvent& event) {
+        QHash<QUuid, MessageSender*>::iterator itr;
+        for (itr = messageSenders.begin(); itr != messageSenders.end(); ++itr) {
+           auto senderId = itr.key();
+
+           messageSenders[senderId]->sendMessage();
+        }
+    });
 }
 
 void

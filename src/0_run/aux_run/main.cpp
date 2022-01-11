@@ -1,6 +1,7 @@
 // qt
 #include <QApplication>
 #include <QMetaType>
+#include <QSharedPointer>
 // oss
 #include <boost/di.hpp>
 #include <fmt/core.h>
@@ -53,6 +54,8 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup AUX application";
     QApplication app(argc, argv);
+
+    Caching::Configuration::configureConnection();
 
     qMetaTypeId<MessageSenderStatusChanged>();
 

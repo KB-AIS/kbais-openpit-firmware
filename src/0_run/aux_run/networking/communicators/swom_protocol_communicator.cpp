@@ -66,6 +66,8 @@ SwomProtocolCommunicator::beginCommunication(QIODevice& device) {
             timerWaitAcknowledge.start();
         }
     );
+
+    timerEnequeReccurently.start(ENEQUE_RECCURENTLY_INTERVAL);
 }
 
 void

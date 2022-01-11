@@ -5,6 +5,8 @@
 #include <functional>
 // qt
 #include <QMap>
+#include <QMutex>
+#include <QObject>
 #include <QString>
 // oss
 #include <rxcpp/rx.hpp>
@@ -12,12 +14,12 @@
 class RxEvent {
 
 public:
-    RxEvent(const QString& eventName);
+    RxEvent(const QString& name);
 
-    const QString& getEventName() const;
+    const QString& getName() const;
 
 private:
-    const QString eventName;
+    const QString name;
 
 };
 
@@ -26,11 +28,17 @@ typedef std::function<void(const RxEvent&)> EventHandler;
 class RxEventBus {
 
 public:
+    RxEventBus(const QString& name);
+
     void post(const RxEvent& event) const;
 
-    const rxcpp::observable<RxEvent>& getObservable() const;
+    const QString& getName() const;
+
+    const rxcpp::observable<RxEvent> getObservable() const;
 
 private:
+    const QString name;
+
     rxcpp::subjects::subject<RxEvent> subject;
 
 };
@@ -38,7 +46,11 @@ private:
 class RxEventModule {
 
 public:
-    void attach(RxEventBus& bus);
+    RxEventModule(const RxEventBus& bus);
+
+    ~RxEventModule() noexcept;
+
+    void attach(const RxEventBus& bus);
 
     void detach();
 

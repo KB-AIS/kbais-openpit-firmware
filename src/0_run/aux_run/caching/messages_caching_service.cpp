@@ -2,8 +2,12 @@
 
 using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
 
-MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
-    queue { queue }, threadWorker { } {
+MessagesCachingService::MessagesCachingService(
+    MessagesBatchesQueue& queue, RxEventBus& bus
+)
+    : RxEventModule(bus)
+    , messagesBatchQueue { queue }
+    , eventBus { bus } {
     auto handleNextMessagesBatch = [&] {
         MessagesBatch messagesBatch;
 
@@ -11,7 +15,14 @@ MessagesCachingService::MessagesCachingService(MessagesBatchesQueue& queue) :
         queue.wait_dequeue(messagesBatch);
 
         saveMessagesBatchCommand.handle(messagesBatch);
+
+        publishMessagesBatchSaved();
     };
 
     threadWorker.startLoopInThread(handleNextMessagesBatch);
+}
+
+void
+MessagesCachingService::publishMessagesBatchSaved() {
+    eventBus.post(RxEvent { "MESSAGES_BATCH_SAVED" });
 }

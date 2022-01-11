@@ -5,7 +5,7 @@
 #include <QTimer>
 
 #include "networking/communicators/base_protocol_communicator.h"
-#include "networking/communicators/messages_batches_queue.h"
+#include "networking/communicators/messages_batches_send_queue.h"
 #include "networking/communicators/swom_protocol_formatter.h"
 #include "persisting/commands/set_last_sent_messages_batch_id_command.h"
 #include "persisting/queries/get_messages_batches_query.h"
