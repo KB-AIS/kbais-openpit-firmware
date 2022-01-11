@@ -17,6 +17,7 @@ include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
+    RxEventBus.h \
     caching/messages_caching_service.h \
     messaging/aux_immediate_messages_map_service.h \
     messaging/aux_recurrent_messages_map_service.h \
@@ -43,6 +44,7 @@ HEADERS += \
     utils/json_qt_support.h
 
 SOURCES += \
+    RxEventBus.cpp \
     caching/messages_caching_service.cpp \
     main.cpp \
     messaging/aux_immediate_messages_map_service.cpp \
