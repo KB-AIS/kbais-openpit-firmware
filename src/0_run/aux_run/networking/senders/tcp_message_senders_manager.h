@@ -16,12 +16,13 @@
 
 #include "networking/senders/base_message_senders_manager.h"
 #include "networking/senders/message_sender.h"
+#include "RxEventBus.h"
 
-class TcpMessageSendersManager : public BaseMessageSendersManager {
+class TcpMessageSendersManager : public BaseMessageSendersManager, public RxEventModule {
     Q_OBJECT
 
 public:
-    TcpMessageSendersManager();
+    TcpMessageSendersManager(const RxEventBus& eventBus);
 
     Q_SLOT void handleConfigurationChanged(
         const QList<MessageSenderConfiguration>& configurations

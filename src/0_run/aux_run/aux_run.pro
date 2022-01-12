@@ -17,6 +17,7 @@ include($${OSSDIR}/QDeferred/src/qlambdathreadworker.pri)
 include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
+    RxEventBus.h \
     caching/messages_caching_service.h \
     messaging/aux_immediate_messages_map_service.h \
     messaging/aux_recurrent_messages_map_service.h \
@@ -27,7 +28,7 @@ HEADERS += \
     messaging/message.h \
     messaging/messages_batch.h \
     networking/communicators/base_protocol_communicator.h \
-    networking/communicators/messages_batches_queue.h \
+    networking/communicators/messages_batches_send_queue.h \
     networking/communicators/swom_protocol_communicator.h \
     networking/communicators/swom_protocol_formatter.h \
     networking/senders/base_message_senders_manager.h \
@@ -43,6 +44,7 @@ HEADERS += \
     utils/json_qt_support.h
 
 SOURCES += \
+    RxEventBus.cpp \
     caching/messages_caching_service.cpp \
     main.cpp \
     messaging/aux_immediate_messages_map_service.cpp \
@@ -50,7 +52,7 @@ SOURCES += \
     messaging/collectors/immediate_messages_collector.cpp \
     messaging/collectors/messages_collectors_adapter.cpp \
     messaging/collectors/recurrent_messages_collector.cpp \
-    networking/communicators/messages_batches_queue.cpp \
+    networking/communicators/messages_batches_send_queue.cpp \
     networking/communicators/swom_protocol_communicator.cpp \
     networking/communicators/swom_protocol_formatter.cpp \
     networking/senders/message_sender.cpp \

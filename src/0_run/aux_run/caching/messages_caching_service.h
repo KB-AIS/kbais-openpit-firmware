@@ -11,26 +11,33 @@
 
 #include "persisting/commands/save_messages_batch_command.h"
 #include "messaging/messages_batch.h"
+#include "RxEventBus.h"
 
 class IMessagesCachingService : public QObject {
 
 public:
     virtual ~IMessagesCachingService() noexcept = default;
+
 };
 
-class MessagesCachingService : public IMessagesCachingService {
+using  MessagesBatchQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+
+class MessagesCachingService : public IMessagesCachingService, public RxEventModule {
     Q_OBJECT
 
 public:
-    MessagesCachingService(moodycamel::BlockingReaderWriterQueue<MessagesBatch>& queue);
+    MessagesCachingService(MessagesBatchQueue& queue, RxEventBus& bus);
 
 private:
-    moodycamel::BlockingReaderWriterQueue<MessagesBatch>& queue;
+    MessagesBatchQueue& messagesBatchQueue;
+
+    RxEventBus& eventBus;
 
     QLambdaThreadWorker threadWorker;
 
     SaveMessagesBatchCommand saveMessagesBatchCommand;
 
+    void publishMessagesBatchSaved();
 };
 
 #endif // MESSAGES_CACHING_SERVICE_H

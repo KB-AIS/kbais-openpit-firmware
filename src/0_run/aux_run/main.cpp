@@ -1,8 +1,10 @@
 // qt
 #include <QApplication>
 #include <QMetaType>
+#include <QSharedPointer>
 // oss
 #include <boost/di.hpp>
+#include <fmt/core.h>
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
@@ -18,32 +20,25 @@
 #include "messaging/collectors/messages_collectors_adapter.h"
 #include "messaging/collectors/recurrent_messages_collector.h"
 #include "messaging/messages_batch.h"
-#include "networking/senders/tcp_message_senders_manager.h"
 #include "networking/communicators/swom_protocol_communicator.h"
 #include "networking/senders/message_sender.h"
+#include "networking/senders/tcp_message_senders_manager.h"
 #include "persisting/configuration/database_configuration.h"
 #include "utils/boost_di_extensions.h"
+#include "RxEventBus.h"
 
 namespace di = boost::di;
 
 using namespace KbAis::Cfw::Sensors::Gps;
 
-// TODO: Remove
 struct MessageSendersManagerBootstraper {
-
     MessageSendersManagerBootstraper(BaseMessageSendersManager& manager) {
         QList<MessageSenderConfiguration> configurations {
-            {
-                "10.214.1.208",
-                9900,
-                "SWOM",
-                std::chrono::milliseconds { 10000 },
-            },
+            { "10.214.1.208", 9900, "SWOM", std::chrono::milliseconds { 10000 } },
         };
 
         manager.handleConfigurationChanged(configurations);
     }
-
 };
 
 void setupLogging() {

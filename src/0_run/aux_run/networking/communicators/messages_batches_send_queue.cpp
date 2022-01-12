@@ -1,4 +1,4 @@
-#include "messages_batches_queue.h"
+#include "messages_batches_send_queue.h"
 
 // std
 #include <algorithm>
@@ -7,7 +7,7 @@ using namespace std::chrono;
 
 MessagesBatchesSendQueue::MessagesBatchesSendQueue(qint32 capacity, QObject *parent) :
     capacity { capacity },
-    internalQueue { QVector<MessagesBatchDto>(capacity) },
+    internalQueue { QVector<MessagesBatchDto>() },
     QObject(parent) { }
 
 void
@@ -24,12 +24,19 @@ MessagesBatchesSendQueue::requestPeek(quint32 size) const {
 
 void
 MessagesBatchesSendQueue::enqueue(const QVector<MessagesBatchDto>& messagesBatches) {
-    auto size = remaningCapacity();
-    if (messagesBatches.size() > size) {
-        size = messagesBatches.size();
+    auto enequeCount = remaningCapacity();
+
+    auto messagesBatchesCount = messagesBatches.count();
+
+    if (messagesBatchesCount < enequeCount) {
+        enequeCount = messagesBatches.count();
     }
 
-    std::copy_n(messagesBatches.begin(), size, std::back_inserter(internalQueue));
+    if (messagesBatchesCount > enequeCount) {
+        enequeCount -= messagesBatchesCount - enequeCount;
+    }
+
+    std::copy_n(messagesBatches.begin(), enequeCount, std::back_inserter(internalQueue));
 }
 
 void
