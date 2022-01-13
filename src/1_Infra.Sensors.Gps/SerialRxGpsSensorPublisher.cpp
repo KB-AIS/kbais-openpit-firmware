@@ -15,7 +15,8 @@ SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher() :
     serialGpsSensor { this }, subject { GpsUpdateDto {} } {
     connect(
         &serialGpsSensor, &QSerialPort::readyRead,
-        this, &SerialRxGpsSensorPublisher::handleGpsSensorRead);
+        this, &SerialRxGpsSensorPublisher::handleGpsSensorRead
+    );
 
     setupGpsDevice();
     resetGpsDevice();

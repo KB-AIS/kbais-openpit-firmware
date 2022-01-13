@@ -17,7 +17,7 @@ public:
 
     QVector<Message> getMessages();
 
-    void storeMessage(const Message& message);
+    void placeMessage(const Message& message);
 
 private:
     QHash<QString, Message> collectedMessages;

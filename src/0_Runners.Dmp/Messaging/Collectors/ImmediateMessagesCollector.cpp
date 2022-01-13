@@ -1,4 +1,4 @@
-#include "immediate_messages_collector.h"
+#include "ImmediateMessagesCollector.h"
 
 // std
 #include <chrono>
@@ -14,7 +14,7 @@ ImmediateMessagesCollector::ImmediateMessagesCollector() : QObject() {
 
     connect(
         &timerMessageCollected, &QTimer::timeout,
-        this, &ImmediateMessagesCollector::notifyMessageCollected);
+        this, &ImmediateMessagesCollector::messageCollected);
 }
 
 QVector<Message>

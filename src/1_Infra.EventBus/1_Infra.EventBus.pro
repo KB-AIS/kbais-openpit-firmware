@@ -1,20 +1,16 @@
-TARGET = trdparty_rxqt
-
-QT -= qt
+TARGET = cfw_infra_eventbus
 
 TEMPLATE = lib
 
-CONFIG += c++14 c++17 conan_basic_setup
+CONFIG += 11 14 17 conan_basic_setup
 
 include($${PWD}/../../conanbuildinfo.pri)
 
 HEADERS += \
-    RxQt.h \
-    RxQtEvent.h \
-    RxQtRunLoop.h \
-    RxQtRunLoopThread.h \
-    RxQtSignal.h \
-    RxQtUtil.h
+    RxEventBus.h \
+
+SOURCES += \
+    RxEventBus.cpp \
 
 DESTDIR     = $${PWD}/../binaries
 OBJECTS_DIR = $${PWD}/build/.obj

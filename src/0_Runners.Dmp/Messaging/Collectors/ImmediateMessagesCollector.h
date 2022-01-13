@@ -1,5 +1,5 @@
-#ifndef IMMEDIATE_MESSAGES_COLLECTOR_H
-#define IMMEDIATE_MESSAGES_COLLECTOR_H
+#ifndef IMMEDIATEMESSAGESCOLLECTOR_H
+#define IMMEDIATEMESSAGESCOLLECTOR_H
 
 // qt
 #include <QVector>
@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QTimer>
 
-#include "messaging/message.h"
+#include "Messaging/Message.h"
 
 class ImmediateMessagesCollector : public QObject {
     Q_OBJECT
@@ -19,7 +19,7 @@ public:
 
     Q_SLOT void handleMessagePlaced(const Message& message);
 
-    Q_SIGNAL void notifyMessageCollected();
+    Q_SIGNAL void messageCollected();
 
 private:
     QVector<Message> collectedMessages;
@@ -30,4 +30,4 @@ private:
 
 };
 
-#endif // IMMEDIATE_MESSAGES_COLLECTOR_H
+#endif // IMMEDIATEMESSAGESCOLLECTOR_H

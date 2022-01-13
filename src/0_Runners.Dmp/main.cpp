@@ -9,13 +9,16 @@
 #include <plog/Log.h>
 #include <readerwriterqueue/readerwriterqueue.h>
 
- // cfw::infra::sensors::gps
+// cfw::infra::sensors::gps
 #include "SerialRxGpsSensorPublisher.h"
+// cfw::trdparty
+#include "RxQt/RxQt.h"
+#include "rxcpp/rx.hpp"
 
-// trdparty::rxqt
-#include "RxQt.h"
+#include "rxcpp/rx-test.hpp"
 
 #include "Messaging/Collectors/MessagesCollectorsAdapter.h"
+#include "Messaging/DmpImmediateMessagesMapService.h"
 #include "Messaging/DmpRecurrentMessagesMapService.h"
 #include "Utils/BoostDiExtensions.h"
 
@@ -38,6 +41,8 @@ int main(int argc, char* argv[]) {
     rxqt::run_loop rxQtRunLoop;
 
     const auto services = di::make_injector(
+        di::bind<DmpImmediateMessagesMapService>()
+            .in(di::singleton),
         di::bind<DmpRecurrentMessagesMapService>()
             .in(di::singleton),
 

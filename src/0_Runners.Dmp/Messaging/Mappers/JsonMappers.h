@@ -1,11 +1,11 @@
 #ifndef JSONMAPPERS_H
 #define JSONMAPPERS_H
 
-// oss
-#include <nlohmann/json.hpp>
-
+// cfw::infra::sensors::gps
 #include "GpsUpdateDto.h"
-#include "Utils/NlohmannJsonQtSupport.h"
+
+// cfw::trdparty
+#include "JsonQt/JsonQt.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     GpsUpdateDto,

@@ -1,7 +1,7 @@
 #ifndef RXQTRUNLOOPTHREAD_H
 #define RXQTRUNLOOPTHREAD_H
 
-#include "RxQtRunLoop.h"
+#include "RxQt/RxQtRunLoop.h"
 
 namespace rxqt {
 

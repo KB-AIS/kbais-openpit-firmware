@@ -16,14 +16,17 @@ class DmpRecurrentMessagesMapService : public QObject {
 public:
     DmpRecurrentMessagesMapService(
         RecurrentMessagesCollector& collector,
-        const IRxGpsSensorPublisher& gpsSensorPublisher);
+        const IRxGpsSensorPublisher& gpsSensorPublisher
+    );
 
-    Q_SIGNAL void messageMapped(const Message& message);
+    ~DmpRecurrentMessagesMapService();
 
 private:
     RecurrentMessagesCollector& collector;
 
     rxcpp::composite_subscription subs;
+
+    Q_SIGNAL void messageMapped(const Message& message);
 
 };
 

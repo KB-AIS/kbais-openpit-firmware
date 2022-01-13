@@ -5,6 +5,7 @@
 // qt
 #include <QDateTime>
 #include <QVector>
+#include <QThread>
 // oss
 #include <plog/Log.h>
 
@@ -12,53 +13,58 @@ using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds TIMER_COLLECT_MESSAGES_INTERVAL { 10s };
 
+QString threadId(const QString& name) {
+    return name + QString(": %1\n").arg(reinterpret_cast<uintptr_t>(QThread::currentThreadId()));
+}
+
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
-    //ImmediateMessagesCollector& immediateMessagesCollector,
-    RecurrentMessagesCollector& recurrentMessagesCollector/*,
-    MessagesBatchesQueue& queue*/
-) : QObject(),
-    //immediateMessagesCollector { immediateMessagesCollector },
-    recurrentMessagesCollector { recurrentMessagesCollector }/*,
-    queue { queue }*/ {
-//    QTimer timer { this };
-
-//    timer.setInterval(TIMER_COLLECT_MESSAGES_INTERVAL);
-
+    ImmediateMessagesCollector& immediateMessagesCollector,
+    RecurrentMessagesCollector& recurrentMessagesCollector,
+    MessagesBatchesQueue& queue
+)
+    : QObject()
+    , immediateMessagesCollector { immediateMessagesCollector }
+    , recurrentMessagesCollector { recurrentMessagesCollector }
+    , queue { queue }
+{
     subs = rxcpp::composite_subscription();
 
-    rxcpp::observable<>::interval(TIMER_COLLECT_MESSAGES_INTERVAL, rxcpp::observe_on_event_loop())
-        .subscribe(subs, [&](auto x) {
-            handleCollectMessages();
-            PLOGD << "triggered";
-        });
+    auto recurrentObservable = rxcpp::observable<>
+        ::interval(TIMER_COLLECT_MESSAGES_INTERVAL)
+        .tap([](auto) { PLOGD << threadId("RECURRENT"); });
 
-//    connect(
-//        &immediateMessagesCollector, &ImmediateMessagesCollector::notifyMessageCollected,
+    auto immediateObservable =  rxqt
+        ::from_signal(&immediateMessagesCollector, &ImmediateMessagesCollector::messageCollected)
+        .tap([](auto) { PLOGD << threadId("IMMEDIATE"); });
 
-//        this, [&] { threadWorker.execInThread([&] { handleCollectMessages(); }); }
-//    );
+    recurrentObservable.merge(immediateObservable)
+        .observe_on(rxcpp::observe_on_new_thread())
+        .tap([](auto) { PLOGD << threadId("CONCAT"); })
+        .subscribe(subs, [&](auto) { handleCollectMessages(); });
+}
 
-//    auto loopCollectMessages = threadWorker.startLoopInThread(
-//        [&] { handleCollectMessages(); }, TIMER_COLLECT_MESSAGES_INTERVAL.count()
-//    );
-//    Q_UNUSED(loopCollectMessages)
+MessagesCollectorsAdapter::~MessagesCollectorsAdapter() {
+    subs.unsubscribe();
 }
 
 void
 MessagesCollectorsAdapter::handleCollectMessages() {
     QMutexLocker lock(&mtxCollectMessagses);
 
+    PLOGD << "HANDLE std " << std::this_thread::get_id();
+    PLOGD << threadId("HANDLE qt");
+
     QVector<Message> messages;
     messages
-//        << immediateMessagesCollector.getMessages()
+        << immediateMessagesCollector.getMessages()
         << recurrentMessagesCollector.getMessages();
 
     if (messages.isEmpty()) {
         return;
     }
 
-//    auto messagesCollectedAt { QDateTime::currentDateTimeUtc() };
+    auto messagesCollectedAt { QDateTime::currentDateTimeUtc() };
 
-//    auto messagesBatchPlaced = queue.enqueue({ messages, messagesCollectedAt });
-//    Q_UNUSED(messagesBatchPlaced)
+    auto messagesBatchPlaced = queue.enqueue({ messages, messagesCollectedAt });
+    Q_UNUSED(messagesBatchPlaced)
 }

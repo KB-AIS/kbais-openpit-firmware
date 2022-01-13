@@ -1,12 +1,12 @@
-#ifndef MESSAGES_BATCH_H
-#define MESSAGES_BATCH_H
+#ifndef MESSAGESBATCH_H
+#define MESSAGESBATCH_H
 
 // qt
 #include <QDateTime>
 #include <QMetaType>
 #include <QVector>
 
-#include <messaging/message.h>
+#include "Messaging/Message.h"
 
 struct MessagesBatch {
 
@@ -24,4 +24,4 @@ struct MessagesBatch {
 
 Q_DECLARE_METATYPE(MessagesBatch);
 
-#endif // MESSAGES_BATCH_H
+#endif // MESSAGESBATCH_H

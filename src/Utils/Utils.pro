@@ -9,7 +9,8 @@ TEMPLATE = lib
 CONFIG += c++17
 
 HEADERS += \
-    Casting.h
+    Casting.h \
+    Extensions/QByteArrayExt.h
 
 DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj

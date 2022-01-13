@@ -1,15 +1,19 @@
 #include "DmpRecurrentMessagesMapService.h"
 
-// trdpary::rxqt
-#include "RxQt.h"
+// cfw::trdpary
+#include "RxQt/RxQt.h"
+
+// cfw::utils
+#include "Extensions/QByteArrayExt.h"
 
 #include "Messaging/Mappers/JsonMappers.h"
 
-const QString MESSAGE_MONKIER_GPS_UPDATE { "GPS" };
+const QString MESSAGE_MONKIER_GPS_UPDATE { QStringLiteral("GPS") };
 
 DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
     RecurrentMessagesCollector& collector,
-    const IRxGpsSensorPublisher& gpsSensorPublisher)
+    const IRxGpsSensorPublisher& gpsSensorPublisher
+)
     : QObject()
     , collector { collector }
 {
@@ -17,11 +21,9 @@ DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
 
     gpsSensorPublisher.getObservable()
         .subscribe(subs, [&](const GpsUpdateDto& gpsUpdate) {
-            const auto payload = nlohmann::json::to_msgpack(gpsUpdate);
-
             Message message {
                 MESSAGE_MONKIER_GPS_UPDATE,
-                QByteArray(reinterpret_cast<const char*>(payload.data()), payload.size()),
+                fromStdVector(nlohmann::json::to_msgpack(gpsUpdate)),
                 QDateTime::currentDateTimeUtc(),
             };
 
@@ -30,6 +32,10 @@ DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
 
     rxqt::from_signal(this, &DmpRecurrentMessagesMapService::messageMapped)
         .subscribe(subs, [&](const Message& message) {
-            this->collector.storeMessage(message);
+            this->collector.placeMessage(message);
         });
+}
+
+DmpRecurrentMessagesMapService::~DmpRecurrentMessagesMapService() {
+    subs.unsubscribe();
 }

@@ -17,7 +17,7 @@ RecurrentMessagesCollector::getMessages() {
 }
 
 void
-RecurrentMessagesCollector::storeMessage(const Message& message) {
+RecurrentMessagesCollector::placeMessage(const Message& message) {
     QMutexLocker locker(&mtxCollectedMessages);
 
     collectedMessages.insert(message.moniker, message);
