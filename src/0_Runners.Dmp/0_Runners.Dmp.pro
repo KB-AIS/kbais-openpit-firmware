@@ -15,6 +15,8 @@ INCLUDEPATH += \
 include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
+    Caching/BlockingMessagesCachingService.h \
+    Caching/IMessagesCachingService.h \
     Messaging/Collectors/ImmediateMessagesCollector.h \
     Messaging/Collectors/MessagesCollectorsAdapter.h \
     Messaging/Collectors/RecurrentMessagesCollector.h \
@@ -26,6 +28,7 @@ HEADERS += \
     Utils/BoostDiExtensions.h \
 
 SOURCES += \
+    Caching/BlockingMessagesCachingService.cpp \
     Messaging/Collectors/ImmediateMessagesCollector.cpp \
     Messaging/Collectors/MessagesCollectorsAdapter.cpp \
     Messaging/Collectors/RecurrentMessagesCollector.cpp \

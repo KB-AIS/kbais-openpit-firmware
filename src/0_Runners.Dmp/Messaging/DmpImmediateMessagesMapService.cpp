@@ -5,31 +5,26 @@
 
 #include "Messaging/Mappers/JsonMappers.h"
 
+const QString MESSAGE_MONKIER_USR { QStringLiteral("USR") };
+
 DmpImmediateMessagesMapService::DmpImmediateMessagesMapService(
-    const ImmediateMessagesCollector& messagesCollector/*,
-    const HostWrapper& host*/
+    ImmediateMessagesCollector& collector
 )
     : QObject()
-    , timer { new QTimer(this) }
 {
-    connect(
-        this, &DmpImmediateMessagesMapService::notifyIncommingMessageMapped,
-        &messagesCollector, &ImmediateMessagesCollector::handleMessagePlaced
-    );
+    subs = rxcpp::composite_subscription();
 
-    timer->setInterval(3000);
+//    connect(
+//        host.mainPresenter, &main_presenter::notifyTestUserEvent,
+//        this, [&] {
+//            emit messageMapped({
+//                MESSAGE_MONKIER_USR,
+//                fromStdVector(nlohmann::json::to_msgpack("Some user's UI event")),
+//                QDateTime::currentDateTimeUtc()
+//            });
+//        }
+//    );
 
-    connect(
-        //host.mainPresenter, &main_presenter::notifyTestUserEvent,
-        timer, &QTimer::timeout,
-        this, [&] {
-            emit notifyIncommingMessageMapped({
-                "MSG",
-                fromStdVector(nlohmann::json::to_msgpack("Some user's UI event")),
-                QDateTime::currentDateTimeUtc()
-            });
-        }
-    );
-
-    timer->start();
+    rxqt::from_signal(this, &DmpImmediateMessagesMapService::messageMapped)
+        .subscribe(subs, [&](const Message& x) { collector.placeMessage(x); });
 }

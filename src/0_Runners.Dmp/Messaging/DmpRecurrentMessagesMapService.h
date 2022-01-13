@@ -22,8 +22,6 @@ public:
     ~DmpRecurrentMessagesMapService();
 
 private:
-    RecurrentMessagesCollector& collector;
-
     rxcpp::composite_subscription subs;
 
     Q_SIGNAL void messageMapped(const Message& message);

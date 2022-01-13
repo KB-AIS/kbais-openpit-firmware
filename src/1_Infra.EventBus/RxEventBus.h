@@ -30,6 +30,7 @@ class RxEventBus {
 public:
     RxEventBus(const QString& name);
 
+    // TODO: Add as_dynamic type deduction
     void post(const RxEvent& event) const;
 
     const QString& getName() const;

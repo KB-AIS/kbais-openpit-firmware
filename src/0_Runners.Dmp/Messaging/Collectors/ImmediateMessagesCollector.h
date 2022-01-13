@@ -17,7 +17,7 @@ public:
 
     QVector<Message> getMessages();
 
-    Q_SLOT void handleMessagePlaced(const Message& message);
+    void placeMessage(const Message& message);
 
     Q_SIGNAL void messageCollected();
 

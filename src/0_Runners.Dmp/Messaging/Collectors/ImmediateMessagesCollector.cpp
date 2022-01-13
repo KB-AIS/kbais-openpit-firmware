@@ -28,7 +28,7 @@ ImmediateMessagesCollector::getMessages() {
 }
 
 void
-ImmediateMessagesCollector::handleMessagePlaced(const Message& message) {
+ImmediateMessagesCollector::placeMessage(const Message& message) {
     QMutexLocker lock(&mtxCollectedMessages);
 
     collectedMessages.append(message);

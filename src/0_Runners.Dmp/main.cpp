@@ -13,10 +13,8 @@
 #include "SerialRxGpsSensorPublisher.h"
 // cfw::trdparty
 #include "RxQt/RxQt.h"
-#include "rxcpp/rx.hpp"
 
-#include "rxcpp/rx-test.hpp"
-
+#include "Caching/BlockingMessagesCachingService.h"
 #include "Messaging/Collectors/MessagesCollectorsAdapter.h"
 #include "Messaging/DmpImmediateMessagesMapService.h"
 #include "Messaging/DmpRecurrentMessagesMapService.h"
@@ -41,6 +39,10 @@ int main(int argc, char* argv[]) {
     rxqt::run_loop rxQtRunLoop;
 
     const auto services = di::make_injector(
+        di::bind<IMessagesCachingService>()
+            .to<BlockingMessagesCachingService>()
+            .in(di::singleton),
+
         di::bind<DmpImmediateMessagesMapService>()
             .in(di::singleton),
         di::bind<DmpRecurrentMessagesMapService>()

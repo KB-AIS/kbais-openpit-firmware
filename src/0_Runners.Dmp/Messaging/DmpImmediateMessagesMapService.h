@@ -4,7 +4,9 @@
 // qt
 #include <QObject>
 
-// #include "host_wrapper.h"
+// cfw::trdpary
+#include "RxQt/RxQt.h"
+
 #include "Messaging/Collectors/ImmediateMessagesCollector.h"
 #include "Messaging/Message.h"
 
@@ -13,15 +15,13 @@ class DmpImmediateMessagesMapService : public QObject {
 
 public:
     DmpImmediateMessagesMapService(
-        const ImmediateMessagesCollector& messagesCollector/*,
-        const HostWrapper& host*/
+        ImmediateMessagesCollector& messagesCollector
     );
 
 private:
-    Q_SIGNAL void notifyIncommingMessageMapped(const Message& message);
+    rxcpp::composite_subscription subs;
 
-    QTimer* timer;
-
+    Q_SIGNAL void messageMapped(const Message& message);
 };
 
 #endif // DMPIMMEDIATEMESSAGESMAPSERVICE_H

@@ -51,8 +51,7 @@ void
 MessagesCollectorsAdapter::handleCollectMessages() {
     QMutexLocker lock(&mtxCollectMessagses);
 
-    PLOGD << "HANDLE std " << std::this_thread::get_id();
-    PLOGD << threadId("HANDLE qt");
+    PLOGD << threadId("HANDLE");
 
     QVector<Message> messages;
     messages
