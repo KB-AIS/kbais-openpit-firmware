@@ -1,33 +1,54 @@
 #include "BlockingMessagesCachingService.h"
 
-using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+// oss
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <plog/Log.h>
 
 BlockingMessagesCachingService::BlockingMessagesCachingService(
-    MessagesBatchesQueue& messagesBatchQueue, RxEventBus& eventBus
+    MessagesBatchQueue& messagesBatchQueue, const RxEventBus& eventBus
 )
     : RxEventModule(eventBus)
     , messagesBatchQueue { messagesBatchQueue }
     , eventBus { eventBus }
 {
-    auto messagesBatchesQueueObserver = rxcpp::observable<>
+    subMessagesBatcheQueue = rxcpp::composite_subscription();
+
+    auto messagesBatchesQueueObservable = rxcpp::observable<>
         ::create<MessagesBatch>([&](rxcpp::subscriber<MessagesBatch> x) {
             MessagesBatch messagesBatch;
 
-            // Blockingly get the next messages batch.
-            messagesBatchQueue.wait_dequeue(messagesBatch);
+            try {
+                forever {
+                    messagesBatchQueue.wait_dequeue(messagesBatch);
 
-            x.on_next(messagesBatch);
+                    x.on_next(messagesBatch);
+                }
+            } catch (...) {
+                x.on_error(std::current_exception());
+            }
+            x.on_completed();
         })
         .subscribe_on(rxcpp::observe_on_new_thread());
 
-    messagesBatchesQueueObserver.subscribe([&](const MessagesBatch& x) {
-        // saveMessagesBatchCommand.handle(x);
+    messagesBatchesQueueObservable.subscribe(
+        subMessagesBatcheQueue,
+        [&](const MessagesBatch& x) {
+            insertMessagesBatchCmd.handle(x);
 
-        publishEventMessagesBatchSaved();
-    });
+            postEventMessagesBatchSaved();
+        },
+        [](std::exception_ptr e){
+            PLOGE << fmt::format("Error on messages batch caching: {}", rxcpp::util::what(e));
+        }
+    );
+}
+
+BlockingMessagesCachingService::~BlockingMessagesCachingService() {
+    subMessagesBatcheQueue.unsubscribe();
 }
 
 void
-BlockingMessagesCachingService::publishEventMessagesBatchSaved() const {
+BlockingMessagesCachingService::postEventMessagesBatchSaved() const {
     eventBus.post(RxEvent { "MESSAGES_BATCH_SAVED" });
 }

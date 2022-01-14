@@ -1,10 +1,7 @@
 #ifndef IMESSAGESCACHINGSERVICE_H
 #define IMESSAGESCACHINGSERVICE_H
 
-// qt
-#include <QObject>
-
-class IMessagesCachingService : public QObject {
+class IMessagesCachingService {
 
 public:
     virtual ~IMessagesCachingService() noexcept = default;

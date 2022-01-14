@@ -2,10 +2,10 @@
 #define IMMEDIATEMESSAGESCOLLECTOR_H
 
 // qt
-#include <QVector>
 #include <QMutex>
 #include <QObject>
 #include <QTimer>
+#include <QVector>
 
 #include "Messaging/Message.h"
 

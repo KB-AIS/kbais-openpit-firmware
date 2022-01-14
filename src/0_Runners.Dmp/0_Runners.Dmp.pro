@@ -17,6 +17,8 @@ include($${PRJDIR}/../conanbuildinfo.pri)
 HEADERS += \
     Caching/BlockingMessagesCachingService.h \
     Caching/IMessagesCachingService.h \
+    CompositionRootFactory.h \
+    LoggerConfigurator.h \
     Messaging/Collectors/ImmediateMessagesCollector.h \
     Messaging/Collectors/MessagesCollectorsAdapter.h \
     Messaging/Collectors/RecurrentMessagesCollector.h \
@@ -25,15 +27,40 @@ HEADERS += \
     Messaging/DmpRecurrentMessagesMapService.h \
     Messaging/Message.h \
     Messaging/MessagesBatch.h \
-    Utils/BoostDiExtensions.h \
+    Networking/Communicators/IProtocolCommunicator.h \
+    Networking/Communicators/MessagesBatchesSendQueue.h \
+    Networking/Communicators/SwomProtocolCommunicator.h \
+    Networking/Communicators/SwomProtocolFormatter.h \
+    Networking/Senders/IMessageSendersManager.h \
+    Networking/Senders/MessageSender.h \
+    Networking/Senders/TcpMessageSendersManager.h \
+    Persisting/Commands/InsertMessagesBatchCmd.h \
+    Persisting/Commands/UpdateSenderCmd.h \
+    Persisting/Configuration/DatabaseConfigurator.h \
+    Persisting/Queries/Dtos.h \
+    Persisting/Queries/SelectMessagesBatchesQry.h \
+    System/Services/ISystemService.h \
+    System/Services/SetupDatetimeHandler.h \
+    Utils/BoostDiExtensions.h
 
 SOURCES += \
     Caching/BlockingMessagesCachingService.cpp \
+    LoggerConfigurator.cpp \
     Messaging/Collectors/ImmediateMessagesCollector.cpp \
     Messaging/Collectors/MessagesCollectorsAdapter.cpp \
     Messaging/Collectors/RecurrentMessagesCollector.cpp \
     Messaging/DmpImmediateMessagesMapService.cpp \
     Messaging/DmpRecurrentMessagesMapService.cpp \
+    Networking/Communicators/MessagesBatchesSendQueue.cpp \
+    Networking/Communicators/SwomProtocolCommunicator.cpp \
+    Networking/Communicators/SwomProtocolFormatter.cpp \
+    Networking/Senders/MessageSender.cpp \
+    Networking/Senders/TcpMessageSendersManager.cpp \
+    Persisting/Commands/InsertMessagesBatchCmd.cpp \
+    Persisting/Commands/UpdateSenderCmd.cpp \
+    Persisting/Configuration/DatabaseConfigurator.cpp \
+    Persisting/Queries/SelectMessagesBatchesQry.cpp \
+    System/Services/SetupDatetimeHandler.cpp \
     main.cpp \
 
 LIBS += -L$${PRJDIR}/binaries \

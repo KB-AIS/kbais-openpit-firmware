@@ -19,7 +19,7 @@ DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
     subs = rxcpp::composite_subscription();
 
     gpsSensorPublisher.getObservable()
-        .subscribe(subs, [&](const GpsUpdateDto& gpsUpdate) {
+        .subscribe(subs, [&](const GpsMessage& gpsUpdate) {
             Message message {
                 MESSAGE_MONKIER_GPS,
                 fromStdVector(nlohmann::json::to_msgpack(gpsUpdate)),

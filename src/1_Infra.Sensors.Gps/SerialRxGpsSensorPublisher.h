@@ -11,7 +11,7 @@
 #include <rxcpp/rx.hpp>
 
 #include "Nmea/NmeaParser.h"
-#include "GpsUpdateDto.h"
+#include "GpsMessage.h"
 #include "IRxGpsSensorPublisher.h"
 
 class SerialRxGpsSensorPublisher : public IRxGpsSensorPublisher {
@@ -21,12 +21,12 @@ public:
 
     ~SerialRxGpsSensorPublisher();
 
-    const rxcpp::observable<GpsUpdateDto> getObservable() const override;
+    const rxcpp::observable<GpsMessage> getObservable() const override;
 
 private:
     QSerialPort serialGpsSensor;
 
-    rxcpp::subjects::behavior<GpsUpdateDto> subject;
+    rxcpp::subjects::behavior<GpsMessage> subject;
 
     std::vector<std::shared_ptr<NmeaSentence>> nmeaSentences;
 
@@ -40,7 +40,7 @@ private:
 
     void handleGpsSensorRead();
 
-    GpsUpdateDto mapGpsUpdate() const;
+    GpsMessage mapGpsUpdate() const;
 
 };
 

@@ -10,7 +10,7 @@ QVector<Message>
 RecurrentMessagesCollector::getMessages() {
     QMutexLocker lock(&mtxCollectedMessages);
 
-    QVector<Message> messages { collectedMessages.size() };
+    QVector<Message> messages;
     std::copy(collectedMessages.begin(), collectedMessages.end(), std::back_inserter(messages));
 
     return messages;

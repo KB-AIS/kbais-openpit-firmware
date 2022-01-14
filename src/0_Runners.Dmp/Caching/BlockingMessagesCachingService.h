@@ -7,26 +7,31 @@
 // cfw::infra::eventbus
 #include "RxEventBus.h"
 
-// #include "persisting/commands/save_messages_batch_command.h"
 #include "Caching/IMessagesCachingService.h"
 #include "Messaging/MessagesBatch.h"
+#include "Persisting/Commands/InsertMessagesBatchCmd.h"
 
 class BlockingMessagesCachingService : public IMessagesCachingService, public RxEventModule {
 
+using MessagesBatchQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+
 public:
     BlockingMessagesCachingService(
-        moodycamel::BlockingReaderWriterQueue<MessagesBatch>& messagesBatchQueue,
-        RxEventBus& eventBus
+        MessagesBatchQueue& messagesBatchQueue, const RxEventBus& eventBus
     );
 
+    ~BlockingMessagesCachingService();
+
 private:
-    moodycamel::BlockingReaderWriterQueue<MessagesBatch>& messagesBatchQueue;
+    rxcpp::composite_subscription subMessagesBatcheQueue;
 
-    RxEventBus& eventBus;
+    MessagesBatchQueue& messagesBatchQueue;
 
-    // SaveMessagesBatchCommand saveMessagesBatchCommand;
+    const RxEventBus& eventBus;
 
-    void publishEventMessagesBatchSaved() const;
+    InsertMessagesBatchCmd insertMessagesBatchCmd;
+
+    void postEventMessagesBatchSaved() const;
 };
 
 #endif // BLOCKINGMESSAGESCACHINGSERVICE_H

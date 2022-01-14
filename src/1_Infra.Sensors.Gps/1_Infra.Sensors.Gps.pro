@@ -6,7 +6,7 @@ QT += core serialport
 
 TEMPLATE = lib
 
-CONFIG += c++11 c++14 c++17 conan_basic_setup
+CONFIG += 11 14 17 conan_basic_setup
 
 INCLUDEPATH += \
     $${PRJDIR}/Utils \
@@ -16,7 +16,7 @@ include($${PRJDIR}/../conanbuildinfo.pri)
 HEADERS += \
     Nmea/NmeaParser.h \
     Nmea/NmeaSentence.h \
-    GpsUpdateDto.h \
+    GpsMessage.h \
     IRxGpsSensorPublisher.h \
     SerialRxGpsSensorPublisher.h \
 
@@ -25,7 +25,8 @@ SOURCES += \
     Nmea/NmeaSentence.cpp \
     SerialRxGpsSensorPublisher.cpp \
 
-LIBS += -L$${PRJDIR}/binaries -lcfw_utils
+LIBS += -L$${PRJDIR}/binaries \
+    -lcfw_utils \
 
 DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj

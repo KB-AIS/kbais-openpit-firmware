@@ -6,12 +6,12 @@
 // oss
 #include <rxcpp/rx.hpp>
 
-#include "GpsUpdateDto.h"
+#include "GpsMessage.h"
 
 class IRxGpsSensorPublisher : public QObject {
 
 public:
-    virtual const rxcpp::observable<GpsUpdateDto> getObservable() const = 0;
+    virtual const rxcpp::observable<GpsMessage> getObservable() const = 0;
 
 };
 

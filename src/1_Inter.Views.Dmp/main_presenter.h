@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#include "GpsUpdateDto.h"
+#include "GpsMessage.h"
 
 namespace Ui { class main_presenter; }
 
@@ -17,7 +17,7 @@ public:
 
     ~main_presenter();
 
-    Q_SLOT void handleGpsDataUpdated(const GpsUpdateDto& gpsUpdate);
+    Q_SLOT void handleGpsDataUpdated(const GpsMessage& gpsUpdate);
 
     Q_SIGNAL void notifyTestUserEvent();
 

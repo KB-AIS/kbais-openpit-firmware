@@ -45,7 +45,7 @@ main_presenter::~main_presenter() {
     delete ui;
 }
 
-void main_presenter::handleGpsDataUpdated(const GpsUpdateDto& gpsUpdate) {
+void main_presenter::handleGpsDataUpdated(const GpsMessage& gpsUpdate) {
     const auto text = QString("Time %1 Coords %2 %3")
         .arg(gpsUpdate.datetime.toString("d M yyyy hh:mm:ss"))
         .arg(gpsUpdate.latitude)

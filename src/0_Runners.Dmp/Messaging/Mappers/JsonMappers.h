@@ -2,13 +2,13 @@
 #define JSONMAPPERS_H
 
 // cfw::infra::sensors::gps
-#include "GpsUpdateDto.h"
+#include "GpsMessage.h"
 
 // cfw::trdparty
 #include "JsonQt/JsonQt.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    GpsUpdateDto,
+    GpsMessage,
     datetime,
     isValid,
     latitude,

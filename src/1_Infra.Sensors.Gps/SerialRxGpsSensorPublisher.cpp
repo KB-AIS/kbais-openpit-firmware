@@ -12,7 +12,7 @@
 static const QString DEVICE_PORT_NAME { "/dev/ttyS5" };
 
 SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher() :
-    serialGpsSensor { this }, subject { GpsUpdateDto {} } {
+    serialGpsSensor { this }, subject { GpsMessage {} } {
     connect(
         &serialGpsSensor, &QSerialPort::readyRead,
         this, &SerialRxGpsSensorPublisher::handleGpsSensorRead
@@ -28,7 +28,7 @@ SerialRxGpsSensorPublisher::~SerialRxGpsSensorPublisher() {
     serialGpsSensor.close();
 }
 
-const rxcpp::observable<GpsUpdateDto>
+const rxcpp::observable<GpsMessage>
 SerialRxGpsSensorPublisher::getObservable() const {
     return subject.get_observable();
 }
@@ -76,9 +76,9 @@ SerialRxGpsSensorPublisher::handleGpsSensorRead() {
     }
 }
 
-GpsUpdateDto
+GpsMessage
 SerialRxGpsSensorPublisher::mapGpsUpdate() const {
-    return GpsUpdateDto {
+    return GpsMessage {
         lastRmcSentence->datetime,
         lastRmcSentence->isValid,
         lastRmcSentence->latitude,
