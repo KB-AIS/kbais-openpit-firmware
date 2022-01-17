@@ -9,6 +9,7 @@ CONFIG += 11 14 17 conan_basic_setup
 INCLUDEPATH += \
     $${PRJDIR}/1_Infra.EventBus \
     $${PRJDIR}/1_Infra.Sensors.Gps \
+    $${PRJDIR}/1_Inter.Views.Dmp \
     $${PRJDIR}/TrdParty \
     $${PRJDIR}/Utils \
 
@@ -66,6 +67,7 @@ SOURCES += \
 LIBS += -L$${PRJDIR}/binaries \
     -lcfw_infra_eventbus \
     -lcfw_infra_sensors_gps \
+    -lcfw_inter_views_dmp \
     -ltrdparty \
     -lcfw_utils \
 

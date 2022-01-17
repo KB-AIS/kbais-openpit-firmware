@@ -2,6 +2,8 @@
 #include <QApplication>
 #include <QMetaType>
 
+// cfw::inter::views::dmp
+#include "ViewWrapper.h"
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 

@@ -4,6 +4,8 @@
 // qt
 #include <QObject>
 
+// cfw::inter::views::dmp
+#include "MainView.h"
 // cfw::trdpary
 #include "RxQt/RxQt.h"
 
@@ -15,7 +17,8 @@ class DmpImmediateMessagesMapService : public QObject {
 
 public:
     DmpImmediateMessagesMapService(
-        ImmediateMessagesCollector& messagesCollector
+        ImmediateMessagesCollector& messagesCollector,
+        const MainView& mainView
     );
 
 private:

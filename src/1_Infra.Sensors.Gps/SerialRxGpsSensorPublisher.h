@@ -40,7 +40,9 @@ private:
 
     void handleGpsSensorRead();
 
-    GpsMessage mapGpsUpdate() const;
+    bool needPublishGpsMessage() const;
+
+    GpsMessage mapGpsMessage() const;
 
 };
 

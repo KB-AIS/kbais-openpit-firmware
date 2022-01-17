@@ -6,6 +6,8 @@
 
 // cfw::infra::sensors::gps
 #include "SerialRxGpsSensorPublisher.h"
+// cfw::inter::views::dmp
+#include "ViewWrapper.h"
 // cfw::infra::eventbus
 #include "RxEventBus.h"
 
@@ -41,6 +43,8 @@ public:
             boost::di::bind<RxSetupDateTimeService>()
                 .in(boost::di::singleton),
             boost::di::bind<RxEventBus>()
+                .in(boost::di::singleton),
+            boost::di::bind<ViewWrapper>()
                 .in(boost::di::singleton)
         );
     }

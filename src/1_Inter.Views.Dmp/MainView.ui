@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>main_presenter</class>
- <widget class="QWidget" name="main_presenter">
+ <class>MainView</class>
+ <widget class="QWidget" name="MainView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -85,8 +85,8 @@ color: white;</string>
   <widget class="QLabel" name="lbl_timer">
    <property name="geometry">
     <rect>
-     <x>860</x>
-     <y>120</y>
+     <x>850</x>
+     <y>110</y>
      <width>160</width>
      <height>138</height>
     </rect>

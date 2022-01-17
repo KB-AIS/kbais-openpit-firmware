@@ -11,6 +11,10 @@
 #include "Messaging/MessagesBatch.h"
 #include "Persisting/Commands/InsertMessagesBatchCmd.h"
 
+/**
+ * \brief Реализация сервиса кеширования сообщений использующая
+ * блокирующую очередь в собственном потоке
+ */
 class BlockingMessagesCachingService : public IMessagesCachingService, public RxEventModule {
 
 using MessagesBatchQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;

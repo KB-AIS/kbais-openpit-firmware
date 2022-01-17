@@ -6,30 +6,29 @@ QT += core gui widgets
 
 TEMPLATE = lib
 
-CONFIG += c++11 c++14 c++17 conan_basic_setup
+CONFIG += 11 14 17 conan_basic_setup
 
 INCLUDEPATH += \
     # cfw
     $${PRJDIR}/1_Infra.Sensors.Gps \
+    $${PRJDIR}/TrdParty \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
 
 HEADERS += \
-    diag_presenter.h \
-    host_wrapper.h \
-    main_presenter.h \
+    MainView.h \
+    ViewWrapper.h
 
 SOURCES += \
-    diag_presenter.cpp \
-    host_wrapper.cpp \
-    main_presenter.cpp \
+    MainView.cpp \
+    ViewWrapper.cpp
 
 FORMS += \
-    diag_view.ui \
-    main_view.ui \
+    MainView.ui
 
 LIBS += -L$${PRJDIR}/binaries \
     -lcfw_infra_sensors_gps \
+    -ltrdparty \
 
 DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj
