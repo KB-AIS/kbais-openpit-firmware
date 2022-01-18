@@ -2,7 +2,7 @@ PRJDIR = $${PWD}/..
 
 TARGET = cfw_runners_dmp
 
-QT += core network sql widgets
+QT += core network sql widgets serialport
 
 CONFIG += 11 14 17 conan_basic_setup
 
@@ -14,6 +14,7 @@ INCLUDEPATH += \
     $${PRJDIR}/Utils \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
+include($${PRJDIR}/1_Infra.Config.Legacy.Usb/1_Infra.Config.Legacy.Usb.pri)
 
 HEADERS += \
     Caching/BlockingMessagesCachingService.h \
