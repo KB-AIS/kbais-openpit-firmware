@@ -1,0 +1,8 @@
+#ifndef IAGTPCOMMANDSRECIEVER_H
+#define IAGTPCOMMANDSRECIEVER_H
+
+class IAgtpCommandsReciever {
+
+};
+
+#endif // IAGTPCOMMANDSRECIEVER_H

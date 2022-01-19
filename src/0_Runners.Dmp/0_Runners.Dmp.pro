@@ -14,7 +14,7 @@ INCLUDEPATH += \
     $${PRJDIR}/Utils \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
-include($${PRJDIR}/1_Infra.Config.Legacy.Usb/1_Infra.Config.Legacy.Usb.pri)
+include($${PRJDIR}/1_Infra.Legacy.Agtp.Usb/1_Infra.Legacy.Agtp.Usb.pri)
 
 HEADERS += \
     Caching/BlockingMessagesCachingService.h \

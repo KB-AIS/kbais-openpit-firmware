@@ -1,0 +1,8 @@
+#ifndef IAGTPCOMMANDSMEDIATOR_H
+#define IAGTPCOMMANDSMEDIATOR_H
+
+class IAgtpCommandsMediator {
+
+};
+
+#endif // IAGTPCOMMANDSMEDIATOR_H
