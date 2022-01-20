@@ -6,11 +6,17 @@ QT -= qt
 
 TEMPLATE = lib
 
-CONFIG += c++17
+CONFIG += 17
 
 HEADERS += \
+    Extensions/QByteArrayExt.h \
     Casting.h \
-    Extensions/QByteArrayExt.h
+    Crc16Alogs.h \
+    Crc8Alogs.h \
+
+SOURCES += \
+    Crc16Alogs.cpp \
+    Crc8Alogs.cpp \
 
 DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj

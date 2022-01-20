@@ -8,21 +8,21 @@
 
 struct AgtpCommand {
 
-    unsigned short uid;
+    quint16 uid;
 
     QString command;
 
-    unsigned char type;
+    quint8 type;
 
 };
 
 struct AgtpCommandResult {
 
-    unsigned short uid;
+    quint16 uid;
 
     QByteArray bytes;
 
-    unsigned char error;
+    quint8 status;
 };
 
 class IAgtpCommandHandler {

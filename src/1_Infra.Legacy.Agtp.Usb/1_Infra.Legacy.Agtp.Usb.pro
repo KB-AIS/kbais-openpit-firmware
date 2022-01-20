@@ -8,6 +8,7 @@ TEMPLATE = lib
 
 include($${PRJDIR}/../conanbuildinfo.pri)
 include($${PRJDIR}/TrdParty/TrdParty.pri)
+include($${PRJDIR}/Utils/Utils.pri)
 
 HEADERS += \
     Handlers/FetchDeviceInfoCommandHandler.h \
@@ -15,7 +16,6 @@ HEADERS += \
     Handlers/FetchSupportModulesCommandHandler.h \
     Handlers/IAgtpCommandHandler.h \
     AgtpProtocolSerializer.h \
-    CrcCalculators.h \
     IAgtpCommandsMediator.h \
     IAgtpCommandsReciever.h \
     UsbAgtpCommandsReciever.h \
@@ -25,5 +25,4 @@ SOURCES += \
     Handlers/FetchFullDeviceInfoCommandHandler.cpp \
     Handlers/FetchSupportModulesCommandHandler.cpp \
     AgtpProtocolSerializer.cpp \
-    CrcCalculators.cpp \
     UsbAgtpCommandsReciever.cpp \
