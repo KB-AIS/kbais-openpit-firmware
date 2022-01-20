@@ -1,3 +1,5 @@
+// std
+#include <memory>
 // qt
 #include <QApplication>
 #include <QMetaType>
@@ -7,11 +9,48 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "UsbAgtpCommandsReciever.h"
+#include "AgtpUsbCommandsReciever.h"
+#include "AgtpCommandsMediator.h"
 #include "CompositionRootFactory.h"
 #include "LoggerConfigurator.h"
 #include "Persisting/Configuration/DatabaseConfigurator.h"
 #include "Utils/BoostDiExtensions.h"
+
+class ThreadWrapper {
+
+AgtpUsbCommandsReciever* mAgtpService;
+
+std::unique_ptr<rxqt::RunLoopThread> mAgtpServiceTrd;
+
+public:
+    ThreadWrapper(AgtpUsbCommandsReciever* agtpService)
+        : mAgtpService { agtpService }
+        , mAgtpServiceTrd { std::make_unique<rxqt::RunLoopThread>() }
+    {
+        mAgtpService->moveToThread(mAgtpServiceTrd.get());
+
+        QObject::connect(
+            mAgtpServiceTrd.get(), &QThread::started,
+            mAgtpService, &AgtpUsbCommandsReciever::startProcessing);
+
+        QObject::connect(
+            mAgtpServiceTrd.get(), &QThread::finished,
+            mAgtpServiceTrd.get(), &QObject::deleteLater);
+
+        QObject::connect(
+            mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
+            mAgtpServiceTrd.get(), &QThread::quit);
+
+        QObject::connect(
+            mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
+            mAgtpService, &QObject::deleteLater);
+
+        mAgtpServiceTrd->start();
+    }
+
+    ThreadWrapper(const ThreadWrapper&) = default;
+
+};
 
 int main(int argc, char* argv[]) {
     LoggerConfigurator::configure();
@@ -19,24 +58,12 @@ int main(int argc, char* argv[]) {
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
-    rxqt::run_loop mainRunLoop;
+    DatabaseConfigurator::configure();
 
-    // DatabaseConfigurator::configure();
+    auto injector = CompositionRootFactory::create();
+    eagerSingletons(injector);
 
-    // eagerSingletons(CompositionRootFactory::create());
-
-    auto trdAgtpService = new rxqt::RunLoopThread();
-
-    UsbAgtpCommandsReciever agtpService;
-    agtpService.moveToThread(trdAgtpService);
-
-    QObject::connect(trdAgtpService, &QThread::started, &agtpService, &UsbAgtpCommandsReciever::startProcessing);
-    QObject::connect(trdAgtpService, &QThread::finished, trdAgtpService, &QObject::deleteLater);
-
-    QObject::connect(&agtpService, &UsbAgtpCommandsReciever::processingFinished, trdAgtpService, &QThread::quit);
-    QObject::connect(&agtpService, &UsbAgtpCommandsReciever::processingFinished, &agtpService, &QObject::deleteLater);
-
-    trdAgtpService->start();
+    injector.create<std::shared_ptr<ThreadWrapper>>();
 
     PLOGI << "Startup DMP application";
     return app.exec();

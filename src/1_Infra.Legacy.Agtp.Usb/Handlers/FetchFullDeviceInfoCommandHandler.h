@@ -3,12 +3,12 @@
 
 #include "IAgtpCommandHandler.h"
 
-class FetchFullDeviceInfoCommandHandler {
+class FetchFullDeviceInfoCommandHandler : public IAgtpCommandHandler {
 
 public:
     FetchFullDeviceInfoCommandHandler();
 
-    AgtpCommandResult handle(const AgtpCommand &command);
+    AgtpCommandResult handle(const AgtpCommand &command) override;
 
 };
 

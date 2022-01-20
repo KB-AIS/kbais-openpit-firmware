@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 constexpr std::chrono::milliseconds TIMER_COLLECT_MESSAGES_INTERVAL { 10s };
 
 QString threadId(const QString& name) {
-    return name + QString(": %1\n").arg(reinterpret_cast<uintptr_t>(QThread::currentThreadId()));
+    return name + QString(": %1").arg(reinterpret_cast<uintptr_t>(QThread::currentThreadId()));
 }
 
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
@@ -38,7 +38,7 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
         .tap([](auto) { PLOGD << threadId("IMMEDIATE"); });
 
     recurrentObservable.merge(immediateObservable)
-        .observe_on(rxcpp::observe_on_new_thread())
+        .subscribe_on(rxcpp::observe_on_new_thread())
         .tap([](auto) { PLOGD << threadId("CONCAT"); })
         .subscribe(subs, [&](auto) { handleCollectMessages(); });
 }

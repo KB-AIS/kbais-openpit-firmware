@@ -8,21 +8,21 @@
 
 struct AgtpCommand {
 
-    quint16 uid;
+    quint16 uid { 0 };
 
     QString command;
 
-    quint8 type;
+    quint8 type { 0 };
 
 };
 
 struct AgtpCommandResult {
 
-    quint16 uid;
+    quint16 uid { 0 };
 
     QByteArray bytes;
 
-    quint8 status;
+    quint8 status { 0 };
 };
 
 class IAgtpCommandHandler {

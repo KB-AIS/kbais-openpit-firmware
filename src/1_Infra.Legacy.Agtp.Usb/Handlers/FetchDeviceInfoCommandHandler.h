@@ -33,12 +33,12 @@ struct DeviceInfo {
 
 };
 
-class FetchDeviceInfoCommandHandler {
+class FetchDeviceInfoCommandHandler : public IAgtpCommandHandler {
 
 public:
     FetchDeviceInfoCommandHandler();
 
-    AgtpCommandResult handle(const AgtpCommand &command);
+    AgtpCommandResult handle(const AgtpCommand &command) override;
 
 private:
     DeviceInfo mDeviceInfo;

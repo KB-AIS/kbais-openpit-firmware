@@ -1,4 +1,4 @@
-﻿#include "AgtpProtocolSerializer.h"
+﻿#include "AgtpCommandsParser.h"
 
 // std
 #include <numeric>
@@ -8,7 +8,9 @@
 // oss
 #include <plog/Log.h>
 
-#include "CrcCalculators.h"
+// cfw::utils
+#include "Crc16Alogs.h"
+#include "Crc8Alogs.h"
 
 constexpr quint8 AGTP_FRM_BEG = 0x3E;
 constexpr quint8 AGTP_FRM_END = 0x0A;
@@ -16,7 +18,7 @@ constexpr quint8 AGTP_PROTOCOL_V2 = 0x02;
 constexpr quint8 AGTP_PCK_ACK_CODE_OK = 0x7F;
 
 QVector<AgtpCommand>
-AgtpProtocolSerializer::deserialize(QByteArray&& bytes) {
+AgtpCommandsParser::parseFrame(QByteArray&& bytes) {
     QVector<AgtpCommand> commands;
 
     if (bytes.at(0) != AGTP_FRM_BEG) {
@@ -44,17 +46,17 @@ AgtpProtocolSerializer::deserialize(QByteArray&& bytes) {
     auto contentBytes = bytes.mid(10, bytesLeftUnscanned);
     auto cmdsPtr = contentBytes.data();
 
-    constexpr int PACKET_LEN_SHIFT { 1 };
-    constexpr int PACKET_UID_SHIFT { 5 };
-    constexpr int PACKET_PLD_SHIFT { 7 };
+    constexpr int PCK_LEN_SHIFT { 1 };
+    constexpr int PCK_UID_SHIFT { 5 };
+    constexpr int PCK_PLD_SHIFT { 7 };
 
     while (bytesLeftUnscanned > 0) {
         const auto cmdType = *cmdsPtr;
-        const auto cmdLen = *reinterpret_cast<quint32*>(cmdsPtr + PACKET_LEN_SHIFT);
-        const auto cmdUid = *reinterpret_cast<quint16*>(cmdsPtr + PACKET_UID_SHIFT);
+        const auto cmdLen = *reinterpret_cast<quint32*>(cmdsPtr + PCK_LEN_SHIFT);
+        const auto cmdUid = *reinterpret_cast<quint16*>(cmdsPtr + PCK_UID_SHIFT);
         const auto cmdCrc = *reinterpret_cast<quint16*>(cmdsPtr + cmdLen - 2);
 
-        const auto cmdPld = QString::fromUtf8(cmdsPtr + PACKET_PLD_SHIFT, cmdLen - 9);
+        const auto cmdPld = QString::fromUtf8(cmdsPtr + PCK_PLD_SHIFT, cmdLen - 9);
 
         commands.push_back({ cmdUid, cmdPld, cmdType });
 
@@ -66,12 +68,12 @@ AgtpProtocolSerializer::deserialize(QByteArray&& bytes) {
 }
 
 QByteArray
-AgtpProtocolSerializer::serialize(const QVector<AgtpCommandResult> &results) {
+AgtpCommandsParser::createFrame(const QVector<AgtpCommandResult>& commandResults) {
     constexpr int AGTP_FRM_BASE_LEN = 12;
     constexpr int AGTP_PCK_BASE_LEN = 12;
 
     const auto pcksLength = std::accumulate(
-        results.constBegin(), results.constEnd(), 0,
+        commandResults.constBegin(), commandResults.constEnd(), 0,
         [](int a, AgtpCommandResult x) {
             return a + AGTP_PCK_BASE_LEN + x.bytes.size();
         }
@@ -90,10 +92,9 @@ AgtpProtocolSerializer::serialize(const QVector<AgtpCommandResult> &results) {
 
     constexpr int AGTP_FRM_HEAD_LEN = 10;
 
-    auto ptrPck = 0 + AGTP_FRM_HEAD_LEN;
-
-    for (auto result : results) {
-        quint32 pldLength = result.bytes.size();
+    auto nextPckSft = AGTP_FRM_HEAD_LEN;
+    for (auto commandResult : commandResults) {
+        quint32 pldLength = commandResult.bytes.size();
         quint32 pckLength = pldLength + AGTP_PCK_BASE_LEN;
 
         // PCK HEADER:
@@ -103,15 +104,15 @@ AgtpProtocolSerializer::serialize(const QVector<AgtpCommandResult> &results) {
         // PCK HEADER: uid
         out << static_cast<quint16>(0);
         // PCK HEADER: acknowledage uid
-        out << result.uid;
+        out << commandResult.uid;
         // PCK HEADER: status code
-        out << static_cast<quint8>(0);
+        out << commandResult.status;
         // PCK: payload
-        out.writeRawData(result.bytes.data(), pldLength);
+        out.writeRawData(commandResult.bytes.data(), pldLength);
         // PCK TAIL: checksum
-        out << calcCrc16CcittFalse(bytes.mid(ptrPck, pldLength + AGTP_FRM_HEAD_LEN));
+        out << calcCrc16CcittFalse(bytes.mid(nextPckSft, pldLength + AGTP_FRM_HEAD_LEN));
 
-        ptrPck = ptrPck + pckLength;
+        nextPckSft = nextPckSft + pckLength;
     }
 
     out << calcCrc8Maxim(bytes.left(pcksLength + AGTP_FRM_HEAD_LEN));

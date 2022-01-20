@@ -11,18 +11,21 @@ include($${PRJDIR}/TrdParty/TrdParty.pri)
 include($${PRJDIR}/Utils/Utils.pri)
 
 HEADERS += \
+    AgtpCommandsMediator.h \
+    AgtpCommandsParser.h \
+    AgtpUsbCommandsReciever.h \
     Handlers/FetchDeviceInfoCommandHandler.h \
     Handlers/FetchFullDeviceInfoCommandHandler.h \
     Handlers/FetchSupportModulesCommandHandler.h \
     Handlers/IAgtpCommandHandler.h \
-    AgtpProtocolSerializer.h \
     IAgtpCommandsMediator.h \
     IAgtpCommandsReciever.h \
-    UsbAgtpCommandsReciever.h \
+    ModuleAgtpService.h \
 
 SOURCES += \
+    AgtpCommandsMediator.cpp \
+    AgtpCommandsParser.cpp \
+    AgtpUsbCommandsReciever.cpp \
     Handlers/FetchDeviceInfoCommandHandler.cpp \
     Handlers/FetchFullDeviceInfoCommandHandler.cpp \
     Handlers/FetchSupportModulesCommandHandler.cpp \
-    AgtpProtocolSerializer.cpp \
-    UsbAgtpCommandsReciever.cpp \
