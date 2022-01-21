@@ -9,14 +9,17 @@ TEMPLATE = lib
 include($${PRJDIR}/../conanbuildinfo.pri)
 include($${PRJDIR}/TrdParty/TrdParty.pri)
 include($${PRJDIR}/Utils/Utils.pri)
+include($${PRJDIR}/1_Infra.Sensors.Gps/1_Infra.Sensors.Gps.pri)
 
 HEADERS += \
     AgtpCommandsMediator.h \
     AgtpCommandsParser.h \
     AgtpUsbCommandsReciever.h \
-    Handlers/FetchDeviceInfoCommandHandler.h \
-    Handlers/FetchFullDeviceInfoCommandHandler.h \
-    Handlers/FetchSupportModulesCommandHandler.h \
+    DeviceStateCollector.h \
+    Handlers/FetchDeviceInfoCmdHandler.h \
+    Handlers/FetchDeviceModulesCmdHandler.h \
+    Handlers/FetchDeviceSpecCmdHandler.h \
+    Handlers/FetchDeviceStateCmdHandler.h \
     Handlers/IAgtpCommandHandler.h \
     IAgtpCommandsMediator.h \
     IAgtpCommandsReciever.h \
@@ -26,6 +29,8 @@ SOURCES += \
     AgtpCommandsMediator.cpp \
     AgtpCommandsParser.cpp \
     AgtpUsbCommandsReciever.cpp \
-    Handlers/FetchDeviceInfoCommandHandler.cpp \
-    Handlers/FetchFullDeviceInfoCommandHandler.cpp \
-    Handlers/FetchSupportModulesCommandHandler.cpp \
+    DeviceStateCollector.cpp \
+    Handlers/FetchDeviceInfoCmdHandler.cpp \
+    Handlers/FetchDeviceModulesCmdHandler.cpp \
+    Handlers/FetchDeviceSpecCmdHandler.cpp \
+    Handlers/FetchDeviceStateCmdHandler.cpp \

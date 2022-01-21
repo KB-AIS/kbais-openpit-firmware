@@ -32,6 +32,8 @@ public:
 
     virtual AgtpCommandResult handle(const AgtpCommand& command) = 0;
 
+    virtual QString getCommand() const = 0;
+
 };
 
 #endif // IAGTPCOMMANDHANDLER_H

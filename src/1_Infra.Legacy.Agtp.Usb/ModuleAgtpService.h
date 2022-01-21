@@ -1,25 +1,33 @@
 #ifndef MODULEAGTPSERVICE_H
 #define MODULEAGTPSERVICE_H
 
-
 // oss
 #include <boost/di.hpp>
 
-#include "Handlers/FetchDeviceInfoCommandHandler.h"
-#include "Handlers/FetchFullDeviceInfoCommandHandler.h"
-#include "Handlers/FetchSupportModulesCommandHandler.h"
+// cfw::trdparty
+#include "RxQt/RxQt.h"
+
+#include "Handlers/FetchDeviceInfoCmdHandler.h"
+#include "Handlers/FetchDeviceModulesCmdHandler.h"
+#include "Handlers/FetchDeviceSpecCmdHandler.h"
+#include "Handlers/FetchDeviceStateCmdHandler.h"
 #include "Handlers/IAgtpCommandHandler.h"
 #include "AgtpUsbCommandsReciever.h"
+#include "DeviceStateCollector.h"
 
-using InjectorAgtpModule = boost::di::injector<AgtpUsbCommandsReciever*>;
+//using InjectorAgtpModule = boost::di::injector<
+//    AgtpUsbCommandsReciever*
+//>;
 
-inline InjectorAgtpModule createModuleAgtpService() noexcept {
+inline auto createModuleAgtpService() noexcept {
     return boost::di::make_injector(
-        boost::di::bind<AgtpUsbCommandsReciever>()
-    ,   boost::di::bind<IAgtpCommandHandler*[]>().to<
-            FetchDeviceInfoCommandHandler
-        ,   FetchFullDeviceInfoCommandHandler
-        ,   FetchSupportModulesCommandHandler
+        boost::di::bind<DeviceStateCollector>().in(boost::di::singleton),
+        boost::di::bind<AgtpUsbCommandsReciever>(),
+        boost::di::bind<IAgtpCommandHandler*[]>().to<
+            FetchDeviceInfoCmdHandler,
+            FetchDeviceModulesCmdHandler,
+            FetchDeviceSpecCmdHandler,
+            FetchDeviceStateCmdHandler
         >()
     );
 }

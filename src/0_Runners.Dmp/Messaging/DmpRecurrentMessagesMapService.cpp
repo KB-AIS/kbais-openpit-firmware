@@ -11,30 +11,23 @@
 const QString MESSAGE_MONKIER_GPS { QStringLiteral("GPS") };
 
 DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
-    RecurrentMessagesCollector& collector,
     const IRxGpsSensorPublisher& gpsSensorPublisher
 )
-    : QObject()
+    : mGpsSensorPublisher { gpsSensorPublisher }
 {
-    subs = rxcpp::composite_subscription();
 
-    gpsSensorPublisher.getObservable()
-        .subscribe(subs, [&](const GpsMessage& gpsUpdate) {
-            Message message {
-                MESSAGE_MONKIER_GPS,
-                fromStdVector(nlohmann::json::to_msgpack(gpsUpdate)),
-                QDateTime::currentDateTimeUtc(),
-            };
-
-            emit messageMapped(message);
-        });
-
-    rxqt::from_signal(this, &DmpRecurrentMessagesMapService::messageMapped)
-        .subscribe(subs, [&](const Message& message) {
-            collector.placeMessage(message);
-        });
 }
 
-DmpRecurrentMessagesMapService::~DmpRecurrentMessagesMapService() {
-    subs.unsubscribe();
+rxcpp::observable<Message>
+DmpRecurrentMessagesMapService::getMessageObservable() const {
+    auto const gpsMessageObservable = mGpsSensorPublisher.getObservable()
+        .map([&](const GpsMessage& x) -> Message {
+            return {
+                MESSAGE_MONKIER_GPS,
+                fromStdVector(nlohmann::json::to_msgpack(x)),
+                QDateTime::currentDateTimeUtc(),
+            };
+        });
+
+    return gpsMessageObservable;
 }

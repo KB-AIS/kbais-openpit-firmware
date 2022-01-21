@@ -9,46 +9,70 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "AgtpUsbCommandsReciever.h"
 #include "AgtpCommandsMediator.h"
+#include "AgtpUsbCommandsReciever.h"
+#include "DeviceStateCollector.h"
+
 #include "CompositionRootFactory.h"
 #include "LoggerConfigurator.h"
 #include "Persisting/Configuration/DatabaseConfigurator.h"
 #include "Utils/BoostDiExtensions.h"
 
+using namespace std::chrono;
+
+template <class F>
+void wait_until(F f, milliseconds timeout = milliseconds(1000))
+{
+    QTimer timer;
+    timer.setSingleShot(true);
+    timer.setTimerType(Qt::PreciseTimer);
+    timer.start(timeout.count());
+    while (!f() && timer.remainingTime() >= 0) {
+        qApp->processEvents();
+    }
+}
+
 class ThreadWrapper {
 
-AgtpUsbCommandsReciever* mAgtpService;
-
-std::unique_ptr<rxqt::RunLoopThread> mAgtpServiceTrd;
-
 public:
-    ThreadWrapper(AgtpUsbCommandsReciever* agtpService)
+    ThreadWrapper(
+        AgtpUsbCommandsReciever* agtpService
+    ,   DeviceStateCollector& deviceStateCollector
+    )
         : mAgtpService { agtpService }
-        , mAgtpServiceTrd { std::make_unique<rxqt::RunLoopThread>() }
+        , mAgtpServiceTrd { }
     {
-        mAgtpService->moveToThread(mAgtpServiceTrd.get());
+        mAgtpServiceTrd.setObjectName("AgtpService");
+        mAgtpService->moveToThread(&mAgtpServiceTrd);
+        deviceStateCollector.moveToThread(&mAgtpServiceTrd);
 
         QObject::connect(
-            mAgtpServiceTrd.get(), &QThread::started,
+            &mAgtpServiceTrd, &QThread::started,
             mAgtpService, &AgtpUsbCommandsReciever::startProcessing);
 
         QObject::connect(
-            mAgtpServiceTrd.get(), &QThread::finished,
-            mAgtpServiceTrd.get(), &QObject::deleteLater);
+            &mAgtpServiceTrd, &QThread::finished,
+            &mAgtpServiceTrd, &QObject::deleteLater);
 
         QObject::connect(
             mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
-            mAgtpServiceTrd.get(), &QThread::quit);
+            &mAgtpServiceTrd, &QThread::quit);
 
         QObject::connect(
             mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
             mAgtpService, &QObject::deleteLater);
 
-        mAgtpServiceTrd->start();
+        mAgtpServiceTrd.start();
+
+        wait_until([&]() { return mAgtpServiceTrd.runLoop() != nullptr; });
+
+        deviceStateCollector.startCollecting(*mAgtpServiceTrd.runLoop());
     }
 
-    ThreadWrapper(const ThreadWrapper&) = default;
+private:
+    AgtpUsbCommandsReciever* mAgtpService;
+
+    rxqt::RunLoopThread mAgtpServiceTrd;
 
 };
 

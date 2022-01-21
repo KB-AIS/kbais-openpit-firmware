@@ -2,7 +2,6 @@
 #define MESSAGESCOLLECTORSADAPTER_H
 
 // qt
-#include <QMutex>
 #include <QObject>
 // oss
 #include <readerwriterqueue/readerwriterqueue.h>
@@ -36,8 +35,6 @@ private:
     rxcpp::composite_subscription subs;
 
     MessagesBatchesQueue& queue;
-
-    QMutex mtxCollectMessagses;
 
     void handleCollectMessages();
 

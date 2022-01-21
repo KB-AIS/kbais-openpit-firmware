@@ -1,5 +1,5 @@
-#ifndef FETCHDEVICEINFOCOMMANDHANDLER_H
-#define FETCHDEVICEINFOCOMMANDHANDLER_H
+#ifndef FETCHDEVICEINFOCMDHANDLER_H
+#define FETCHDEVICEINFOCMDHANDLER_H
 
 #include "Handlers/IAgtpCommandHandler.h"
 
@@ -33,16 +33,18 @@ struct DeviceInfo {
 
 };
 
-class FetchDeviceInfoCommandHandler : public IAgtpCommandHandler {
+class FetchDeviceInfoCmdHandler : public IAgtpCommandHandler {
 
 public:
-    FetchDeviceInfoCommandHandler();
+    FetchDeviceInfoCmdHandler();
 
     AgtpCommandResult handle(const AgtpCommand &command) override;
+
+    QString getCommand() const override;
 
 private:
     DeviceInfo mDeviceInfo;
 
 };
 
-#endif // FETCHDEVICEINFOCOMMANDHANDLER_H
+#endif // FETCHDEVICEINFOCMDHANDLER_H

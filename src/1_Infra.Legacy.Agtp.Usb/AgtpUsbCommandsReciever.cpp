@@ -22,7 +22,7 @@ AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpCommandsMediator& med
 {
     mSubs = rxcpp::composite_subscription();
 
-    rxqt::from_signal(mSpUsbDevice, &QIODevice::readyRead).subscribe(mSubs, [=](auto) {
+    rxqt::from_signal(mSpUsbDevice, &QIODevice::readyRead).subscribe(mSubs, [&](auto) {
         PLOGV << "AGTP service recived data to read";
 
         const auto commands = AgtpCommandsParser::parseFrame((*mSpUsbDevice).read(PEEK_BYTES));
@@ -31,9 +31,7 @@ AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpCommandsMediator& med
 
         QVector<AgtpCommandResult> commandResults;
         for (auto&& command : commands) {
-            PLOGD << fmt::format("AGTP service is handling command {}",
-                command.command.toStdString()
-            );
+            PLOGD << fmt::format("AGTP service is handling {}", command.command.toStdString());
 
             commandResults.append(mMediator.handle(command));
         }

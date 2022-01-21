@@ -1,0 +1,35 @@
+#include "FetchDeviceModulesCmdHandler.h"
+
+FetchDeviceModulesCmdHandler::FetchDeviceModulesCmdHandler() {
+
+}
+
+AgtpCommandResult
+FetchDeviceModulesCmdHandler::handle(const AgtpCommand& command) {
+    AgtpCommandResult result;
+
+    QString modules {
+        "SUPPORT_MODULES="
+        "common-1.0"
+//        ",srvset-1.0"
+//        ",display-1.0"
+//        ",serial_interfaces-1.0"
+//        ",ethernet-1.0"
+//        ",can_interfaces-1.0"
+//        ",write-1.0"
+        ",state-1.0"
+//        ",parksensor-1.0"
+//        ",scale-1.0"
+//        ",fuel-1.0"
+//        ",upgrade-1.0"
+//        ",scd-1.0"
+    };
+    result.bytes = modules.toUtf8();
+    result.uid = command.uid;
+
+    return result;
+}
+
+QString FetchDeviceModulesCmdHandler::getCommand() const {
+    return QStringLiteral("SUPPORT_MODULES=?;");
+}

@@ -3,26 +3,29 @@
 
 // qt
 #include <QHash>
-#include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QVector>
 
+#include "Messaging/DmpRecurrentMessagesMapService.h"
 #include "Messaging/Message.h"
 
 class RecurrentMessagesCollector : public QObject {
     Q_OBJECT
 
 public:
-    RecurrentMessagesCollector();
+    RecurrentMessagesCollector(
+        const DmpRecurrentMessagesMapService& messagesMapSerivce
+    );
 
     QVector<Message> getMessages();
 
-    void placeMessage(const Message& message);
-
 private:
-    QHash<QString, Message> collectedMessages;
+    rxcpp::composite_subscription mSubs;
 
-    QMutex mtxCollectedMessages;
+    QHash<QString, Message> mCollectedMessages;
+
+    QMutex mMtxCollectedMessages;
 
 };
 
