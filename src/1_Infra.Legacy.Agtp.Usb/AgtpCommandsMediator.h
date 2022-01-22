@@ -18,7 +18,7 @@ public:
     AgtpCommandResult handle(const AgtpCommand& command) const;
 
 private:
-    AgtpCommandHandlers mHandlers {  };
+    AgtpCommandHandlers mHandlers;
 
 };
 

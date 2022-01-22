@@ -2,7 +2,7 @@ PRJDIR = $${PWD}/..
 
 QT += core serialport
 
-CONFIG += 11 14 17 conan_basic_setup
+CONFIG += 11 c++14 17 conan_basic_setup
 
 TEMPLATE = lib
 
