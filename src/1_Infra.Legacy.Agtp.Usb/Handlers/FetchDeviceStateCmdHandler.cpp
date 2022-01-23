@@ -18,13 +18,13 @@ FetchDeviceStateCmdHandler::FetchDeviceStateCmdHandler(
 }
 
 QString
-FetchDeviceStateCmdHandler::getCommand() const {
+FetchDeviceStateCmdHandler::getRequestName() const {
     return CMD_NAME;
 }
 
-AgtpCommandResult
-FetchDeviceStateCmdHandler::handle(const AgtpCommand& command) {
-    AgtpCommandResult result;
+AgtpResponse
+FetchDeviceStateCmdHandler::handle(const AgtpRequest& command) {
+    AgtpResponse result;
 
     const auto gpsMessage = mDeviceStateCollector.mCachedGpsMessage;
 

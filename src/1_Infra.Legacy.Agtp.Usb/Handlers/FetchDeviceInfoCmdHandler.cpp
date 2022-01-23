@@ -10,9 +10,9 @@ FetchDeviceInfoCmdHandler::FetchDeviceInfoCmdHandler() {
     // !W: END BKT UNREFACTORED CODE
 }
 
-AgtpCommandResult
-FetchDeviceInfoCmdHandler::handle(const AgtpCommand& command) {
-    AgtpCommandResult result;
+AgtpResponse
+FetchDeviceInfoCmdHandler::handle(const AgtpRequest& command) {
+    AgtpResponse result;
 
     // !W: BEGIN BKT UNREFACTORED CODE
     result.bytes.resize(sizeof(DeviceInfo));
@@ -24,6 +24,6 @@ FetchDeviceInfoCmdHandler::handle(const AgtpCommand& command) {
     return result;
 }
 
-QString FetchDeviceInfoCmdHandler::getCommand() const {
+QString FetchDeviceInfoCmdHandler::getRequestName() const {
     return QStringLiteral("DEVICEINFO=?;");
 }

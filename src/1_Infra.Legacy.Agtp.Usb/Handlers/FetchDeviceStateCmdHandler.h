@@ -4,17 +4,17 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "IAgtpCommandHandler.h"
+#include "IAgtpRequestHandler.h"
 #include "DeviceStateCollector.h"
 
-class FetchDeviceStateCmdHandler : public IAgtpCommandHandler {
+class FetchDeviceStateCmdHandler : public IAgtpRequestHandler {
 
 public:
     FetchDeviceStateCmdHandler(const DeviceStateCollector& deviceStateCollector);
 
-    QString getCommand() const override;
+    QString getRequestName() const override;
 
-    AgtpCommandResult handle(const AgtpCommand& command) override;
+    AgtpResponse handle(const AgtpRequest& command) override;
 
 private:
     const DeviceStateCollector& mDeviceStateCollector;

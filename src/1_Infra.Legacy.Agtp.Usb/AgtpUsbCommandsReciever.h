@@ -9,24 +9,23 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "AgtpCommandsMediator.h"
+#include "IAgtpCommandsReciever.h"
+#include "AgtpRequestSender.h"
 
-class AgtpUsbCommandsReciever : public QObject {
+class AgtpUsbCommandsReciever : public IAgtpCommandsReciever {
     Q_OBJECT
 
 public:
-    explicit AgtpUsbCommandsReciever(const AgtpCommandsMediator& mediator);
-
-    AgtpUsbCommandsReciever(const AgtpUsbCommandsReciever& other) : QObject(), mMediator { other.mMediator } {};
+    explicit AgtpUsbCommandsReciever(const AgtpRequestsSender& mediator);
 
     ~AgtpUsbCommandsReciever();
 
-    Q_SLOT void startProcessing();
+    Q_SLOT void startProcessing() override;
 
     Q_SIGNAL void processingFinished();
 
 private:
-    const AgtpCommandsMediator& mMediator;
+    const AgtpRequestsSender& mMediator;
 
     QSerialPort* mSpUsbDevice;
 

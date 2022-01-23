@@ -12,22 +12,22 @@ include($${PRJDIR}/Utils/Utils.pri)
 include($${PRJDIR}/1_Infra.Sensors.Gps/1_Infra.Sensors.Gps.pri)
 
 HEADERS += \
-    AgtpCommandsMediator.h \
     AgtpCommandsParser.h \
+    AgtpRequestSender.h \
     AgtpUsbCommandsReciever.h \
     DeviceStateCollector.h \
     Handlers/FetchDeviceInfoCmdHandler.h \
     Handlers/FetchDeviceModulesCmdHandler.h \
     Handlers/FetchDeviceSpecCmdHandler.h \
     Handlers/FetchDeviceStateCmdHandler.h \
-    Handlers/IAgtpCommandHandler.h \
+    Handlers/IAgtpRequestHandler.h \
     IAgtpCommandsMediator.h \
     IAgtpCommandsReciever.h \
     ModuleAgtpService.h \
 
 SOURCES += \
-    AgtpCommandsMediator.cpp \
     AgtpCommandsParser.cpp \
+    AgtpRequestSender.cpp \
     AgtpUsbCommandsReciever.cpp \
     DeviceStateCollector.cpp \
     Handlers/FetchDeviceInfoCmdHandler.cpp \

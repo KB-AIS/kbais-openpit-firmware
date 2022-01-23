@@ -5,16 +5,16 @@
 #include <QIODevice>
 #include <QVector>
 
-#include "Handlers/IAgtpCommandHandler.h"
+#include "Handlers/IAgtpRequestHandler.h"
 
-class AgtpCommandsParser {
+class AgtpRequestsParser {
 
 public:
-    AgtpCommandsParser() = delete;
+    AgtpRequestsParser() = delete;
 
-    static QVector<AgtpCommand> parseFrame(QByteArray&& bytes);
+    static QVector<AgtpRequest> parseFrame(QByteArray&& bytes);
 
-    static QByteArray createFrame(const QVector<AgtpCommandResult>& commandResults);
+    static QByteArray createFrame(const QVector<AgtpResponse>& responses);
 
 };
 

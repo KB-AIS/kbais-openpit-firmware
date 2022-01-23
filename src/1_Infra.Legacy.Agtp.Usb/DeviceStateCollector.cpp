@@ -4,7 +4,7 @@
 #include <plog/Log.h>
 
 DeviceStateCollector::DeviceStateCollector(
-    const IRxGpsSensorPublisher &gpsSensorPublisher
+    const IRxGpsSensorPublisher& gpsSensorPublisher
 )
     : QObject()
     , mGpsSensorPublisher { gpsSensorPublisher }

@@ -10,9 +10,9 @@ FetchDeviceSpecCmdHandler::FetchDeviceSpecCmdHandler() {
 
 }
 
-AgtpCommandResult
-FetchDeviceSpecCmdHandler::handle(const AgtpCommand& command) {
-    AgtpCommandResult result;
+AgtpResponse
+FetchDeviceSpecCmdHandler::handle(const AgtpRequest& command) {
+    AgtpResponse result;
 
     auto const payload = json {
         { "serial", "70100007" },
@@ -45,6 +45,6 @@ FetchDeviceSpecCmdHandler::handle(const AgtpCommand& command) {
     return result;
 }
 
-QString FetchDeviceSpecCmdHandler::getCommand() const {
+QString FetchDeviceSpecCmdHandler::getRequestName() const {
     return QStringLiteral("INFO?;");
 }

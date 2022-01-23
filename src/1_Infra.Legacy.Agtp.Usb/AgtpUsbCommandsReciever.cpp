@@ -7,15 +7,15 @@
 #include <pipes/transform.hpp>
 #include <plog/Log.h>
 
+#include "Handlers/IAgtpRequestHandler.h"
 #include "AgtpCommandsParser.h"
-#include "Handlers/IAgtpCommandHandler.h"
 
 using namespace std::chrono;
 
 using TerminalError = QSerialPort::SerialPortError;
 
-AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpCommandsMediator& mediator)
-    : QObject()
+AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpRequestsSender& mediator)
+    : IAgtpCommandsReciever()
     , mMediator { mediator }
     , mSpUsbDevice { new QSerialPort(this) }
 {
@@ -24,24 +24,26 @@ AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpCommandsMediator& med
     constexpr int PEEK_BYTES = 512 * 1024;
 
     rxqt::from_signal(mSpUsbDevice, &QIODevice::readyRead)
+        // TODO: Move to processing pipeline class
         .tap([](auto) {
             PLOGV << "AGTP service recived data to read";
         })
         .map([&](auto) {
-            return AgtpCommandsParser::parseFrame((*mSpUsbDevice).read(PEEK_BYTES));
+            return AgtpRequestsParser::parseFrame((*mSpUsbDevice).read(PEEK_BYTES));
         })
-        .tap([](const QVector<AgtpCommand>& x) {
-            PLOGD << fmt::format("AGTP serivce deserialized {} command(s)", x.size());
+        .tap([](const QVector<AgtpRequest>& commands) {
+            PLOGD << fmt::format("AGTP serivce deserialized {} command(s)", commands.size());
         })
-        .map([&](const QVector<AgtpCommand>& x) {
-            QVector<AgtpCommandResult> z;
+        .map([&](const QVector<AgtpRequest>& commands) {
+            QVector<AgtpResponse> commandResults;
 
-            x >>= pipes::transform([&](auto y) { return mMediator.handle(y); })
-              >>= pipes::push_back(z);
+            commands
+                >>= pipes::transform([&](auto command) { return mMediator.handle(command); })
+                >>= pipes::push_back(commandResults);
 
-            return z;
+            return commandResults;
         })
-        .map(AgtpCommandsParser::createFrame)
+        .map(AgtpRequestsParser::createFrame)
         .subscribe(
             mSubs
         ,   [&](const QByteArray& x) {
@@ -66,7 +68,7 @@ AgtpUsbCommandsReciever::AgtpUsbCommandsReciever(const AgtpCommandsMediator& med
                 if (x == TerminalError::NoError) return;
 
                 PLOGE << fmt::format(
-                    "AGTP service got an error from terminal device {}, resetting"
+                    "AGTP service got an error from terminal device: {}, resetting"
                 ,   mSpUsbDevice->errorString().toStdString()
                 );
 
@@ -81,14 +83,16 @@ AgtpUsbCommandsReciever::~AgtpUsbCommandsReciever() {
     delete mSpUsbDevice;
 }
 
-void AgtpUsbCommandsReciever::startProcessing() {
+void
+AgtpUsbCommandsReciever::startProcessing() {
     PLOGI << "AGTP service is starting processing";
     setupTerminal();
 
     mSpUsbDevice->open(QIODevice::ReadWrite);
 }
 
-void AgtpUsbCommandsReciever::setupTerminal() {
+void
+AgtpUsbCommandsReciever::setupTerminal() {
     const QString AGTP_TERMINAL_PATH { QStringLiteral("/dev/ttyGS1") };
 
     mSpUsbDevice->setPortName(AGTP_TERMINAL_PATH);
@@ -96,7 +100,8 @@ void AgtpUsbCommandsReciever::setupTerminal() {
     mSpUsbDevice->setDataBits(QSerialPort::Data8);
 }
 
-void AgtpUsbCommandsReciever::resetTerminal() {
+void
+AgtpUsbCommandsReciever::resetTerminal() {
     mSpUsbDevice->close();
     mSpUsbDevice->open(QIODevice::ReadWrite);
 }

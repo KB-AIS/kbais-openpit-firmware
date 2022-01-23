@@ -9,8 +9,8 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "AgtpCommandsMediator.h"
-#include "AgtpUsbCommandsReciever.h"
+#include "AgtpRequestSender.h"
+#include "IAgtpCommandsReciever.h"
 #include "DeviceStateCollector.h"
 
 #include "CompositionRootFactory.h"
@@ -36,31 +36,31 @@ class ThreadWrapper {
 
 public:
     ThreadWrapper(
-        AgtpUsbCommandsReciever* agtpService
+        IAgtpCommandsReciever& agtpService
     ,   DeviceStateCollector& deviceStateCollector
     )
         : mAgtpService { agtpService }
         , mAgtpServiceTrd { }
     {
         mAgtpServiceTrd.setObjectName("AgtpService");
-        mAgtpService->moveToThread(&mAgtpServiceTrd);
+        mAgtpService.moveToThread(&mAgtpServiceTrd);
         deviceStateCollector.moveToThread(&mAgtpServiceTrd);
 
         QObject::connect(
             &mAgtpServiceTrd, &QThread::started,
-            mAgtpService, &AgtpUsbCommandsReciever::startProcessing);
+            &mAgtpService, &IAgtpCommandsReciever::startProcessing);
 
         QObject::connect(
             &mAgtpServiceTrd, &QThread::finished,
             &mAgtpServiceTrd, &QObject::deleteLater);
 
-        QObject::connect(
-            mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
-            &mAgtpServiceTrd, &QThread::quit);
+//        QObject::connect(
+//            &mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
+//            &mAgtpServiceTrd, &QThread::quit);
 
-        QObject::connect(
-            mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
-            mAgtpService, &QObject::deleteLater);
+//        QObject::connect(
+//            &mAgtpService, &AgtpUsbCommandsReciever::processingFinished,
+//            &mAgtpService, &QObject::deleteLater);
 
         mAgtpServiceTrd.start();
 
@@ -70,7 +70,7 @@ public:
     }
 
 private:
-    AgtpUsbCommandsReciever* mAgtpService;
+    IAgtpCommandsReciever& mAgtpService;
 
     rxqt::RunLoopThread mAgtpServiceTrd;
 

@@ -2,16 +2,16 @@
 #define FETCHDEVICEMODULESCMDHANDLER_H
 
 
-#include "IAgtpCommandHandler.h"
+#include "IAgtpRequestHandler.h"
 
-class FetchDeviceModulesCmdHandler : public IAgtpCommandHandler {
+class FetchDeviceModulesCmdHandler : public IAgtpRequestHandler {
 
 public:
     FetchDeviceModulesCmdHandler();
 
-    AgtpCommandResult handle(const AgtpCommand& command) override;
+    AgtpResponse handle(const AgtpRequest& command) override;
 
-    QString getCommand() const override;
+    QString getRequestName() const override;
 };
 
 #endif // FETCHDEVICEMODULESCMDHANDLER_H

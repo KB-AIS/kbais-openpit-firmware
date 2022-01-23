@@ -1,16 +1,16 @@
 #ifndef FETCHDEVICESPECCMDHANDLER_H
 #define FETCHDEVICESPECCMDHANDLER_H
 
-#include "IAgtpCommandHandler.h"
+#include "IAgtpRequestHandler.h"
 
-class FetchDeviceSpecCmdHandler : public IAgtpCommandHandler {
+class FetchDeviceSpecCmdHandler : public IAgtpRequestHandler {
 
 public:
     FetchDeviceSpecCmdHandler();
 
-    AgtpCommandResult handle(const AgtpCommand &command) override;
+    AgtpResponse handle(const AgtpRequest &command) override;
 
-    QString getCommand() const override;
+    QString getRequestName() const override;
 };
 
 #endif // FETCHDEVICESPECCMDHANDLER_H

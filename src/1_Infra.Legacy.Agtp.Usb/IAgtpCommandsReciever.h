@@ -1,7 +1,15 @@
 #ifndef IAGTPCOMMANDSRECIEVER_H
 #define IAGTPCOMMANDSRECIEVER_H
 
-class IAgtpCommandsReciever {
+// qt
+#include <QObject>
+
+class IAgtpCommandsReciever : public QObject {
+
+public:
+    virtual ~IAgtpCommandsReciever() noexcept = default;
+
+    virtual void startProcessing() = 0;
 
 };
 

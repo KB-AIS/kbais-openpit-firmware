@@ -4,9 +4,9 @@ FetchDeviceModulesCmdHandler::FetchDeviceModulesCmdHandler() {
 
 }
 
-AgtpCommandResult
-FetchDeviceModulesCmdHandler::handle(const AgtpCommand& command) {
-    AgtpCommandResult result;
+AgtpResponse
+FetchDeviceModulesCmdHandler::handle(const AgtpRequest& command) {
+    AgtpResponse result;
 
     QString modules {
         "SUPPORT_MODULES="
@@ -30,6 +30,6 @@ FetchDeviceModulesCmdHandler::handle(const AgtpCommand& command) {
     return result;
 }
 
-QString FetchDeviceModulesCmdHandler::getCommand() const {
+QString FetchDeviceModulesCmdHandler::getRequestName() const {
     return QStringLiteral("SUPPORT_MODULES=?;");
 }
