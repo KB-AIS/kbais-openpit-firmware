@@ -1,5 +1,5 @@
-#ifndef FETCHDEVICESTATECMDHANDLER_H
-#define FETCHDEVICESTATECMDHANDLER_H
+#ifndef FETCHDEVICESTATEREQUSETHANDLER_H
+#define FETCHDEVICESTATEREQUSETHANDLER_H
 
 // cfw::trdparty
 #include "RxQt/RxQt.h"
@@ -7,10 +7,10 @@
 #include "IAgtpRequestHandler.h"
 #include "DeviceStateCollector.h"
 
-class FetchDeviceStateCmdHandler : public IAgtpRequestHandler {
+class FetchDeviceStateRequestHandler : public IAgtpRequestHandler {
 
 public:
-    FetchDeviceStateCmdHandler(const DeviceStateCollector& deviceStateCollector);
+    FetchDeviceStateRequestHandler(const DeviceStateCollector& deviceStateCollector);
 
     QString getRequestName() const override;
 
@@ -21,4 +21,4 @@ private:
 
 };
 
-#endif // FETCHDEVICESTATECMDHANDLER_H
+#endif // FETCHDEVICESTATEREQUSETHANDLER_H

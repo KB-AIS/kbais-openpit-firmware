@@ -1,6 +1,6 @@
-#include "FetchDeviceInfoCmdHandler.h"
+#include "FetchDeviceInfoRequestHandler.h"
 
-FetchDeviceInfoCmdHandler::FetchDeviceInfoCmdHandler() {
+FetchDeviceInfoRequestHandler::FetchDeviceInfoRequestHandler() {
     // !W: BEGIN BKT UNREFACTORED CODE
     memset(&mDeviceInfo, 0, sizeof(mDeviceInfo));
     mDeviceInfo.serial = 70100007;
@@ -11,7 +11,7 @@ FetchDeviceInfoCmdHandler::FetchDeviceInfoCmdHandler() {
 }
 
 AgtpResponse
-FetchDeviceInfoCmdHandler::handle(const AgtpRequest& command) {
+FetchDeviceInfoRequestHandler::handle(const AgtpRequest& command) {
     AgtpResponse result;
 
     // !W: BEGIN BKT UNREFACTORED CODE
@@ -24,6 +24,6 @@ FetchDeviceInfoCmdHandler::handle(const AgtpRequest& command) {
     return result;
 }
 
-QString FetchDeviceInfoCmdHandler::getRequestName() const {
+QString FetchDeviceInfoRequestHandler::getRequestName() const {
     return QStringLiteral("DEVICEINFO=?;");
 }

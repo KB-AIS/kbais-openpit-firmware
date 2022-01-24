@@ -15,15 +15,16 @@ class DeviceStateCollector : public QObject {
 public:
     DeviceStateCollector(const IRxGpsSensorPublisher& gpsSensorPublisher);
 
-    void startCollecting(const rxqt::run_loop& loop);
+    void start(const rxqt::run_loop& loop);
 
-    // TODO: add getter
-    GpsMessage mCachedGpsMessage;
+    GpsMessage getGpsMessage() const;
 
 private:
     const IRxGpsSensorPublisher& mGpsSensorPublisher;
 
     rxcpp::composite_subscription mSubs;
+
+    GpsMessage mCachedGpsMessage;
 
 };
 

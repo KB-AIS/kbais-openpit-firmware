@@ -1,5 +1,5 @@
-#ifndef FETCHDEVICEINFOCMDHANDLER_H
-#define FETCHDEVICEINFOCMDHANDLER_H
+#ifndef FETCHDEVICEINFOREQUESTHANDLER_H
+#define FETCHDEVICEINFOREQUESTHANDLER_H
 
 #include "Handlers/IAgtpRequestHandler.h"
 
@@ -33,10 +33,10 @@ struct DeviceInfo {
 
 };
 
-class FetchDeviceInfoCmdHandler : public IAgtpRequestHandler {
+class FetchDeviceInfoRequestHandler : public IAgtpRequestHandler {
 
 public:
-    FetchDeviceInfoCmdHandler();
+    FetchDeviceInfoRequestHandler();
 
     AgtpResponse handle(const AgtpRequest &command) override;
 
@@ -47,4 +47,4 @@ private:
 
 };
 
-#endif // FETCHDEVICEINFOCMDHANDLER_H
+#endif // FETCHDEVICEINFOREQUESTHANDLER_H

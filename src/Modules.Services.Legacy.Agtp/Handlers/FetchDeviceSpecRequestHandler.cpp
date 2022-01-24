@@ -1,4 +1,4 @@
-#include "FetchDeviceSpecCmdHandler.h"
+#include "FetchDeviceSpecRequestHandler.h"
 
 // oss
 #include <fmt/core.h>
@@ -6,12 +6,12 @@
 
 using json = nlohmann::json;
 
-FetchDeviceSpecCmdHandler::FetchDeviceSpecCmdHandler() {
+FetchDeviceSpecRequestHandler::FetchDeviceSpecRequestHandler() {
 
 }
 
 AgtpResponse
-FetchDeviceSpecCmdHandler::handle(const AgtpRequest& command) {
+FetchDeviceSpecRequestHandler::handle(const AgtpRequest& command) {
     AgtpResponse result;
 
     auto const payload = json {
@@ -45,6 +45,6 @@ FetchDeviceSpecCmdHandler::handle(const AgtpRequest& command) {
     return result;
 }
 
-QString FetchDeviceSpecCmdHandler::getRequestName() const {
-    return QStringLiteral("INFO?;");
+QString FetchDeviceSpecRequestHandler::getRequestName() const {
+    return QStringLiteral("INFO:?");
 }

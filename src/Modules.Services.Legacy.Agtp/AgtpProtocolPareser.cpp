@@ -1,4 +1,4 @@
-﻿#include "AgtpCommandsParser.h"
+﻿#include "AgtpProtocolPareser.h"
 
 // std
 #include <numeric>
@@ -20,7 +20,7 @@ constexpr quint8 AGTP_PCK_ACK_CODE_OK = 0x7F;
 constexpr qint32 AGTP_FRM_BASE_LEN = 12;
 
 QVector<AgtpRequest>
-AgtpRequestsParser::parseFrame(QByteArray&& bytes) {
+AgtpProtocolParser::parseRequest(QByteArray&& bytes) {
     QVector<AgtpRequest> requests;
 
     if (bytes.at(0) != AGTP_FRM_BEG) {
@@ -68,7 +68,7 @@ AgtpRequestsParser::parseFrame(QByteArray&& bytes) {
 }
 
 QByteArray
-AgtpRequestsParser::createFrame(const QVector<AgtpResponse>& commandResults) {
+AgtpProtocolParser::createResponse(const QVector<AgtpResponse>& commandResults) {
     constexpr int AGTP_PCK_BASE_LEN = 12;
 
     const auto pcksLength = std::accumulate(

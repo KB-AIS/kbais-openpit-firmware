@@ -1,11 +1,11 @@
-#include "FetchDeviceModulesCmdHandler.h"
+#include "FetchDeviceModulesRequestHandler.h"
 
-FetchDeviceModulesCmdHandler::FetchDeviceModulesCmdHandler() {
+FetchDeviceModulesRequestHandler::FetchDeviceModulesRequestHandler() {
 
 }
 
 AgtpResponse
-FetchDeviceModulesCmdHandler::handle(const AgtpRequest& command) {
+FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
     AgtpResponse result;
 
     QString modules {
@@ -30,6 +30,6 @@ FetchDeviceModulesCmdHandler::handle(const AgtpRequest& command) {
     return result;
 }
 
-QString FetchDeviceModulesCmdHandler::getRequestName() const {
+QString FetchDeviceModulesRequestHandler::getRequestName() const {
     return QStringLiteral("SUPPORT_MODULES=?;");
 }

@@ -1,4 +1,4 @@
-#include "FetchDeviceStateCmdHandler.h"
+#include "FetchDeviceStateRequsetHandler.h"
 
 // oss
 #include <fmt/core.h>
@@ -9,7 +9,7 @@ using json = nlohmann::json;
 
 const QString CMD_NAME { QStringLiteral("STATE:?") };
 
-FetchDeviceStateCmdHandler::FetchDeviceStateCmdHandler(
+FetchDeviceStateRequestHandler::FetchDeviceStateRequestHandler(
     const DeviceStateCollector& deviceStateCollector
 )
     : mDeviceStateCollector { deviceStateCollector }
@@ -18,15 +18,15 @@ FetchDeviceStateCmdHandler::FetchDeviceStateCmdHandler(
 }
 
 QString
-FetchDeviceStateCmdHandler::getRequestName() const {
+FetchDeviceStateRequestHandler::getRequestName() const {
     return CMD_NAME;
 }
 
 AgtpResponse
-FetchDeviceStateCmdHandler::handle(const AgtpRequest& command) {
+FetchDeviceStateRequestHandler::handle(const AgtpRequest& command) {
     AgtpResponse result;
 
-    const auto gpsMessage = mDeviceStateCollector.mCachedGpsMessage;
+    const auto gpsMessage = mDeviceStateCollector.getGpsMessage();
 
     const auto payload = json {
         {

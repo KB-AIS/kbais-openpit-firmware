@@ -8,13 +8,13 @@ CONFIG += 11 14 17 conan_basic_setup
 
 INCLUDEPATH += \
     $${PRJDIR}/1_Infra.EventBus \
-    $${PRJDIR}/1_Infra.Sensors.Gps \
     $${PRJDIR}/1_Inter.Views.Dmp \
     $${PRJDIR}/TrdParty \
     $${PRJDIR}/Utils \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
-include($${PRJDIR}/1_Infra.Legacy.Agtp.Usb/1_Infra.Legacy.Agtp.Usb.pri)
+include($${PRJDIR}/Modules.Sensors.Gps/Modules.Sensors.Gps.pri)
+include($${PRJDIR}/Modules.Services.Legacy.Agtp/Modules.Services.Legacy.Agtp.pri)
 
 HEADERS += \
     Caching/BlockingMessagesCachingService.h \

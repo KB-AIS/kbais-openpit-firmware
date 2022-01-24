@@ -10,7 +10,7 @@ CONFIG += 11 14 17 conan_basic_setup
 
 INCLUDEPATH += \
     # cfw
-    $${PRJDIR}/1_Infra.Sensors.Gps \
+    $${PRJDIR}/Modules.Sensors.Gps \
     $${PRJDIR}/TrdParty \
 
 include($${PRJDIR}/../conanbuildinfo.pri)

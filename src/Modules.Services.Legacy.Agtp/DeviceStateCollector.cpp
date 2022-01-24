@@ -12,10 +12,18 @@ DeviceStateCollector::DeviceStateCollector(
 
 }
 
-void DeviceStateCollector::startCollecting(const rxqt::run_loop& loop) {
+void DeviceStateCollector::start(const rxqt::run_loop& loop) {
     mGpsSensorPublisher.getObservable()
         .observe_on(loop.observe_on_run_loop())
-        .subscribe(mSubs, [&](const GpsMessage& msg) {
-            mCachedGpsMessage = msg;
-        });
+        .subscribe(
+            mSubs
+        ,   [&](const GpsMessage& gpsMessage) {
+                mCachedGpsMessage = gpsMessage;
+            }
+        );
+}
+
+GpsMessage
+DeviceStateCollector::getGpsMessage() const {
+    return mCachedGpsMessage;
 }
