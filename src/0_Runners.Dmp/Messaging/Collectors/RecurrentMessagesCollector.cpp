@@ -3,22 +3,28 @@
 // std
 #include <algorithm>
 
-RecurrentMessagesCollector::RecurrentMessagesCollector()
-    : QObject() {}
+RecurrentMessagesCollector::RecurrentMessagesCollector(
+    const DmpRecurrentMessagesMapService& messagesMapSerivce
+)
+    : QObject()
+{
+    messagesMapSerivce.getMessageObservable().subscribe([&](auto x) {
+        QMutexLocker locker(&mMtxCollectedMessages);
+
+        mCollectedMessages.insert(x.moniker, x);
+    });
+}
 
 QVector<Message>
 RecurrentMessagesCollector::getMessages() {
-    QMutexLocker lock(&mtxCollectedMessages);
+    QMutexLocker lock(&mMtxCollectedMessages);
 
     QVector<Message> messages;
-    std::copy(collectedMessages.begin(), collectedMessages.end(), std::back_inserter(messages));
+    std::copy(
+        mCollectedMessages.constBegin()
+    ,   mCollectedMessages.constEnd()
+    ,   std::back_inserter(messages)
+    );
 
     return messages;
-}
-
-void
-RecurrentMessagesCollector::placeMessage(const Message& message) {
-    QMutexLocker locker(&mtxCollectedMessages);
-
-    collectedMessages.insert(message.moniker, message);
 }

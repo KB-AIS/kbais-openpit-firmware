@@ -71,7 +71,7 @@ SerialRxGpsSensorPublisher::handleGpsSensorRead() {
             lastRmcSentence = sentence;
         });
 
-        if (!needPublishGpsMessage()) continue;
+        //if (!needPublishGpsMessage()) continue;
 
         subject.get_subscriber().on_next(mapGpsMessage());
     }

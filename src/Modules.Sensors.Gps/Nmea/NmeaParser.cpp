@@ -9,7 +9,7 @@
 
 using std::shared_ptr, std::vector;
 
-constexpr int PEEK_SIZE { 8096 };
+constexpr int PEEK_BYTES { 8096 };
 
 constexpr int CMD_LEN { 3 };
 
@@ -23,7 +23,7 @@ static const std::map<QString, sentence_parser> sentence_parsers {
 };
 
 void processDeviceRead(QIODevice& device, vector<shared_ptr<NmeaSentence>>& output_sentences) {
-    const auto bytes = device.peek(PEEK_SIZE);
+    const auto bytes = device.peek(PEEK_BYTES);
 
     unsigned int bytes_scaned { 0u };
 

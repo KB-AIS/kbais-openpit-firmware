@@ -1,30 +1,20 @@
 #ifndef DMPRECURRENTMESSAGESMAPSERVICE_H
 #define DMPRECURRENTMESSAGESMAPSERVICE_H
 
-// qt
-#include <QObject>
-
 // cfw::infra::sensors::gps
 #include "IRxGpsSensorPublisher.h"
 
-#include "Messaging/Collectors/RecurrentMessagesCollector.h"
 #include "Messaging/Message.h"
 
-class DmpRecurrentMessagesMapService : public QObject {
-    Q_OBJECT
+class DmpRecurrentMessagesMapService {
 
 public:
-    DmpRecurrentMessagesMapService(
-        RecurrentMessagesCollector& collector,
-        const IRxGpsSensorPublisher& gpsSensorPublisher
-    );
+    DmpRecurrentMessagesMapService(const IRxGpsSensorPublisher& gpsSensorPublisher);
 
-    ~DmpRecurrentMessagesMapService();
+    rxcpp::observable<Message> getMessageObservable() const;
 
 private:
-    rxcpp::composite_subscription subs;
-
-    Q_SIGNAL void messageMapped(const Message& message);
+    const IRxGpsSensorPublisher& mGpsSensorPublisher;
 
 };
 

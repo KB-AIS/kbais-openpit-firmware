@@ -1,0 +1,6 @@
+#ifndef AGTPCOMMAND_H
+#define AGTPCOMMAND_H
+
+
+
+#endif // AGTPCOMMAND_H

@@ -4,6 +4,8 @@
 // oss
 #include <boost/di.hpp>
 
+// Modules::Services::Legacy::Agtp
+#include "AgtpServiceModuleFactory.h"
 // cfw::infra::sensors::gps
 #include "SerialRxGpsSensorPublisher.h"
 // cfw::inter::views::dmp
@@ -24,7 +26,8 @@ public:
 
     static inline auto create() {
         return boost::di::make_injector(
-            boost::di::bind<IRxGpsSensorPublisher>()
+            createAgtpServiceModule()
+        ,   boost::di::bind<IRxGpsSensorPublisher>()
                 .to<SerialRxGpsSensorPublisher>()
                 .in(boost::di::singleton),
             boost::di::bind<DmpImmediateMessagesMapService>()

@@ -1,3 +1,5 @@
+// std
+#include <memory>
 // qt
 #include <QApplication>
 #include <QMetaType>
@@ -7,10 +9,10 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
-#include "Persisting/Configuration/DatabaseConfigurator.h"
-#include "Utils/BoostDiExtensions.h"
 #include "CompositionRootFactory.h"
 #include "LoggerConfigurator.h"
+#include "Persisting/Configuration/DatabaseConfigurator.h"
+#include "Utils/BoostDiExtensions.h"
 
 int main(int argc, char* argv[]) {
     LoggerConfigurator::configure();
@@ -18,11 +20,10 @@ int main(int argc, char* argv[]) {
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
-    rxqt::run_loop rxQtRunLoop;
-
     DatabaseConfigurator::configure();
 
-    eagerSingletons(CompositionRootFactory::create());
+    auto injector = CompositionRootFactory::create();
+    eagerSingletons(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

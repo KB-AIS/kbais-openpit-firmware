@@ -7,7 +7,8 @@ class CarrierFirmwareConan(ConanFile):
         "nlohmann_json/3.10.4", \
         "plog/1.1.5", \
         "readerwriterqueue/1.0.5", \
-        "rxcpp/4.1.0"
+        "rxcpp/4.1.0", \
+        "pipes/1.0.0"
 
     generators = \
         "qmake"
