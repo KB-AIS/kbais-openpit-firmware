@@ -17,7 +17,6 @@ BlockingMessagesCachingService::BlockingMessagesCachingService(
     auto messagesBatchesQueueObservable = rxcpp::observable<>
         ::create<MessagesBatch>([&](rxcpp::subscriber<MessagesBatch> x) {
             MessagesBatch messagesBatch;
-
             try {
                 forever {
                     messagesBatchQueue.wait_dequeue(messagesBatch);

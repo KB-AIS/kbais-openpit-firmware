@@ -6,5 +6,5 @@ void
 LoggerConfigurator::configure() {
     static ConsoleAppender<TxtFormatter> consoleAppender;
 
-    init(debug).addAppender(&consoleAppender);
+    init(verbose).addAppender(&consoleAppender);
 }

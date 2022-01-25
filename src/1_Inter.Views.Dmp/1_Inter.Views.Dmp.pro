@@ -14,6 +14,7 @@ INCLUDEPATH += \
     $${PRJDIR}/TrdParty \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
+include($${PRJDIR}/Modules.Sensors.Gps/Modules.Sensors.Gps.pri)
 
 HEADERS += \
     MainView.h \
