@@ -28,7 +28,11 @@ public:
 
     static inline auto create() {
         return boost::di::make_injector(
-            boost::di::bind<IConfigurationProvider, ConfigurationService>()
+            boost::di::bind<
+                IConfigurationProvider
+            ,   IRxConfigurationChangePublisher
+            ,   ConfigurationService
+            >()
                 .to<ConfigurationService>()
                 .in(boost::di::singleton)
         ,   createAgtpServiceModule()

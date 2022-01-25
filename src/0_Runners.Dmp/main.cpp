@@ -41,9 +41,9 @@ int main(int argc, char* argv[]) {
 
     injector.create<std::shared_ptr<Test>>();
 
-    auto configuration_service = injector.create<std::shared_ptr<IConfigurationProvider>>();
+    auto configuration_service = injector.create<std::shared_ptr<IRxConfigurationChangePublisher>>();
 
-    configuration_service->get_configuration_change_observable("ethernet")
+    configuration_service->get_observable("ethernet")
         .subscribe([&](Configuration configuration) {
             PLOGD << configuration.value.dump(4);
         });

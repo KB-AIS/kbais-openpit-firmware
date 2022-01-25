@@ -4,7 +4,9 @@
 #include <plog/Log.h>
 
 ConfigurationService::ConfigurationService()
-    :   IConfigurationProvider()
+    :   QObject()
+    ,   IRxConfigurationChangePublisher()
+    ,   IConfigurationProvider()
     ,   m_configuration_location { "/media/app/cfw/configuration" }
 {
     PLOGD << "ctor";
@@ -31,8 +33,8 @@ ConfigurationService::register_configuration(
 
     Configuration configuration { configuration_name, confiugration_value };
 
-    auto ptr_configuration_file_watcher =
-            QSharedPointer<QFileSystemWatcher>(new QFileSystemWatcher());
+    auto ptr_configuration_file_watcher = std::make_shared<QFileSystemWatcher>(this);
+
     ptr_configuration_file_watcher->addPath(configuration_file_info.filePath());
 
     m_configuration_file_watcher[configuration_name] = ptr_configuration_file_watcher;
@@ -42,7 +44,7 @@ ConfigurationService::register_configuration(
     m_subjects[configuration_name] =
         std::make_shared<rxcpp::rxsub::behavior<Configuration>>(sub_configuration_change);
 
-    rxqt::from_signal<1>(ptr_configuration_file_watcher.data(), &QFileSystemWatcher::fileChanged)
+    rxqt::from_signal<1>(ptr_configuration_file_watcher.get(), &QFileSystemWatcher::fileChanged)
         .subscribe(
             m_subs
         ,   [&](QString configuration_file_name) {
@@ -68,7 +70,7 @@ ConfigurationService::update_configuration(
 }
 
 rxcpp::observable<Configuration>
-ConfigurationService::get_configuration_change_observable(
+ConfigurationService::get_observable(
     const QString& configuration_name
 ) const {
     const auto itr_find_configuration_change = m_subjects.find(configuration_name);

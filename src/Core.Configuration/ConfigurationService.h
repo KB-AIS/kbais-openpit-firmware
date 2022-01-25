@@ -22,20 +22,29 @@ struct Configuration {
 
 };
 
-class IConfigurationProvider : public QObject {
+class IRxConfigurationChangePublisher : virtual public QObject {
+
+public:
+    virtual ~IRxConfigurationChangePublisher() noexcept = default;
+
+    virtual rxcpp::observable<Configuration>
+    get_observable(const QString& configuration_name) const = 0;
+
+};
+
+class IConfigurationProvider : virtual public QObject {
 
 public:
     virtual ~IConfigurationProvider() noexcept = default;
-
-    virtual rxcpp::observable<Configuration>
-    get_configuration_change_observable(const QString& configuration_name) const = 0;
 
     virtual Configuration
     get_configuration(const QString& configuration_name) = 0;
 
 };
 
-class ConfigurationService : public IConfigurationProvider {
+class ConfigurationService
+    :   public IRxConfigurationChangePublisher
+    ,   public IConfigurationProvider {
     Q_OBJECT
 
 public:
@@ -48,7 +57,7 @@ public:
 
     void update_configuration(const QString& configuration_name, const nlohmann::json& value);
 
-    rxcpp::observable<Configuration> get_configuration_change_observable(
+    rxcpp::observable<Configuration> get_observable(
         const QString& configuration_name
     ) const override;
 
@@ -59,7 +68,7 @@ private:
 
     rxcpp::composite_subscription m_subs;
 
-    QMap<QString, QSharedPointer<QFileSystemWatcher>> m_configuration_file_watcher;
+    std::map<QString, std::shared_ptr<QFileSystemWatcher>> m_configuration_file_watcher;
 
     std::map<QString, std::shared_ptr<rxcpp::rxsub::behavior<Configuration>>> m_subjects;
 
