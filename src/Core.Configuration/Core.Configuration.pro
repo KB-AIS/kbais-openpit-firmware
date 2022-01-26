@@ -8,7 +8,12 @@ include($$PRJDIR/../conanbuildinfo.pri)
 include($$PRJDIR/TrdParty/TrdParty.pri)
 
 HEADERS += \
-    ConfigurationService.h
+    Configuration.h \
+    ConfigurationChangeSource.h \
+    ConfigurationsManager.h \
+    IConfigurationProvider.h \
+    IRxConfigurationChangePublisher.h
 
 SOURCES += \
-    ConfigurationService.cpp
+    ConfigurationChangeSource.cpp \
+    ConfigurationsManager.cpp

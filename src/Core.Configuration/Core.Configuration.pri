@@ -3,7 +3,12 @@ CONFIG += 11 14 17
 INCLUDEPATH += $$PWD
 
 HEADERS += \
-    $$PWD/ConfigurationService.h \
+    $$PWD/Configuration.h \
+    $$PWD/ConfigurationChangeSource.h \
+    $$PWD/ConfigurationsManager.h \
+    $$PWD/IConfigurationProvider.h \
+    $$PWD/IRxConfigurationChangePublisher.h
 
 SOURCES += \
-    $$PWD/ConfigurationService.cpp \
+    $$PWD/ConfigurationChangeSource.cpp \
+    $$PWD/ConfigurationsManager.cpp

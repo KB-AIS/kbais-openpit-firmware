@@ -10,21 +10,22 @@
 #include "Utils/BoostDiExtensions.h"
 
 #include <nlohmann/json.hpp>
-#include <ConfigurationService.h>
+#include <ConfigurationsManager.h>
 
 using json = nlohmann::json;
 
 struct Test {
-    Test(ConfigurationService& configuration_service) {
-        auto const ethernet_default_configuration = nlohmann::json {
-            { "dns", "" }
-        ,   { "gateway", "10.214.1.1" }
-        ,   { "ip", "10.214.1.205" }
-        ,   { "manual_enable", true }
-        ,   { "mask", "255.255.0.0" }
-        };
-
-        configuration_service.register_configuration("ethernet", ethernet_default_configuration);
+    Test(ConfigurationManager& configurationManager) {
+        configurationManager.registerConfiguration(
+            "ethernet"
+        ,   nlohmann::json {
+                { "dns", "" }
+            ,   { "gateway", "10.214.1.1" }
+            ,   { "ip", "10.214.1.205" }
+            ,   { "manual_enable", true }
+            ,   { "mask", "255.255.0.0" }
+            }
+        );
     }
 };
 
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     auto configuration_service = injector.create<std::shared_ptr<IRxConfigurationChangePublisher>>();
 
-    configuration_service->get_observable("ethernet")
+    configuration_service->getChangeObservable("ethernet")
         .subscribe([&](Configuration configuration) {
             PLOGD << configuration.value.dump(4);
         });

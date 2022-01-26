@@ -14,7 +14,7 @@ const QString REQUEST_NAME { QStringLiteral("ETHERNET_SETTINGS") };
 const QRegularExpression RE_REQUEST_PARAM_CAPTURE { "([\\w]+):(.*)" };
 
 FetchConfigEthernetHandler::FetchConfigEthernetHandler(
-    ConfigurationService& configuration_service
+    ConfigurationManager& configuration_service
 )
     :   m_configuration_service { configuration_service }
 {
@@ -49,18 +49,11 @@ FetchConfigEthernetHandler::updateConfiguration(const QString& configuration_val
 
     PLOGD << payload.dump(4);
 
-    m_configuration_service.update_configuration("ethernet", payload);
+    m_configuration_service.updateConfiguration("ethernet", payload);
 }
 
 QString FetchConfigEthernetHandler::fetchConfiguration() const {
-//    auto const payload = nlohmann::json {
-//        { "dns", "" }
-//    ,   { "gateway", "10.214.1.1" }
-//    ,   { "ip", "10.214.1.205" }
-//    ,   { "manual_enable", true }
-//    ,   { "mask", "255.255.0.0" }
-//    };
-    auto const configuration = m_configuration_service.get_configuration("ethernet");
+    auto const configuration = m_configuration_service.getConfiguration("ethernet");
 
     return QString::fromStdString(configuration.value.dump());
 }
