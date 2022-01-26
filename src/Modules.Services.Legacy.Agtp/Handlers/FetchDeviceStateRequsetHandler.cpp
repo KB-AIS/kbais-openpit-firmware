@@ -7,7 +7,7 @@
 
 using json = nlohmann::json;
 
-const QString CMD_NAME { QStringLiteral("STATE:?") };
+const QString CMD_NAME { QStringLiteral("STATE") };
 
 FetchDeviceStateRequestHandler::FetchDeviceStateRequestHandler(
     const DeviceStateCollector& deviceStateCollector

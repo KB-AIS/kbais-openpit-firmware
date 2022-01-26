@@ -7,6 +7,7 @@
 // cfw::trdparty
 #include "RxQt/RxQt.h"
 
+#include "Handlers/ConfigEthernetRequestHandler.h"
 #include "Handlers/FetchDeviceInfoRequestHandler.h"
 #include "Handlers/FetchDeviceModulesRequestHandler.h"
 #include "Handlers/FetchDeviceSpecRequestHandler.h"
@@ -34,7 +35,8 @@ inline auto createAgtpServiceModule() noexcept {
 
     ,   boost::di::bind<IAgtpRequestHandler*[]>()
             .to<
-                FetchDeviceInfoRequestHandler
+                FetchConfigEthernetHandler
+            ,   FetchDeviceInfoRequestHandler
             ,   FetchDeviceModulesRequestHandler
             ,   FetchDeviceSpecRequestHandler
             ,   FetchDeviceStateRequestHandler

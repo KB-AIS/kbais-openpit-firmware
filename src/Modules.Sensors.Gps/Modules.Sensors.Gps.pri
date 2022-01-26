@@ -1,7 +1,7 @@
-
 CONFIG += 11 14 17
 
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD \
+    $$PWD/../Utils \
 
 HEADERS += \
     $$PWD/Nmea/NmeaParser.h \

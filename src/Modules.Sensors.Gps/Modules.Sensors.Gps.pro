@@ -12,6 +12,7 @@ INCLUDEPATH += \
     $${PRJDIR}/Utils \
 
 include($${PRJDIR}/../conanbuildinfo.pri)
+include($${PRJDIR}/Utils/Utils.pri)
 
 HEADERS += \
     Nmea/NmeaParser.h \
@@ -25,8 +26,7 @@ SOURCES += \
     Nmea/NmeaSentence.cpp \
     SerialRxGpsSensorPublisher.cpp \
 
-LIBS += -L$${PRJDIR}/binaries \
-    -lcfw_utils \
+LIBS += -L$${PRJDIR}/binaries
 
 DESTDIR     = $${PRJDIR}/binaries
 OBJECTS_DIR = $${PWD}/build/.obj

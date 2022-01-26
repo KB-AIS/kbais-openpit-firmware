@@ -1,4 +1,4 @@
-PRJDIR = $${PWD}/..
+PRJDIR = $$PWD/..
 
 TARGET = cfw_runners_dmp
 
@@ -9,12 +9,14 @@ CONFIG += 11 14 17 conan_basic_setup
 INCLUDEPATH += \
     $${PRJDIR}/1_Infra.EventBus \
     $${PRJDIR}/1_Inter.Views.Dmp \
-    $${PRJDIR}/TrdParty \
-    $${PRJDIR}/Utils \
+    $$PRJDIR/Utils \
 
-include($${PRJDIR}/../conanbuildinfo.pri)
-include($${PRJDIR}/Modules.Sensors.Gps/Modules.Sensors.Gps.pri)
-include($${PRJDIR}/Modules.Services.Legacy.Agtp/Modules.Services.Legacy.Agtp.pri)
+include($$PRJDIR/../conanbuildinfo.pri)
+include($$PRJDIR/Core.Configuration/Core.Configuration.pri)
+include($$PRJDIR/Modules.Sensors.Gps/Modules.Sensors.Gps.pri)
+include($$PRJDIR/Modules.Services.Legacy.Agtp/Modules.Services.Legacy.Agtp.pri)
+include($$PRJDIR/TrdParty/TrdParty.pri)
+include($$PRJDIR/Utils/Utils.pri)
 
 HEADERS += \
     Caching/BlockingMessagesCachingService.h \
@@ -67,10 +69,7 @@ SOURCES += \
 
 LIBS += -L$${PRJDIR}/binaries \
     -lcfw_infra_eventbus \
-    -lcfw_infra_sensors_gps \
     -lcfw_inter_views_dmp \
-    -ltrdparty \
-    -lcfw_utils \
 
 DESTDIR     = $${PWD}/../binaries
 OBJECTS_DIR = $${PWD}/build/.obj

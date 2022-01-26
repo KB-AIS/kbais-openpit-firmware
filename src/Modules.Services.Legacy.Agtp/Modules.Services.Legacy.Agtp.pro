@@ -10,9 +10,11 @@ include($${PRJDIR}/../conanbuildinfo.pri)
 include($${PRJDIR}/TrdParty/TrdParty.pri)
 include($${PRJDIR}/Utils/Utils.pri)
 include($${PRJDIR}/Modules.Sensors.Gps/Modules.Sensors.Gps.pri)
+include($${PRJDIR}/Core.Configuration/Core.Configuration.pri)
 
 HEADERS += \
     AgtpRequestMediator.h \
+    Handlers/ConfigEthernetRequestHandler.h \
     Handlers/FetchDeviceInfoRequestHandler.h \
     Handlers/FetchDeviceModulesRequestHandler.h \
     Handlers/FetchDeviceSpecRequestHandler.h \
@@ -28,6 +30,7 @@ HEADERS += \
 
 SOURCES += \
     AgtpRequestMediator.cpp \
+    Handlers/ConfigEthernetRequestHandler.cpp \
     Handlers/FetchDeviceInfoRequestHandler.cpp \
     Handlers/FetchDeviceModulesRequestHandler.cpp \
     Handlers/FetchDeviceSpecRequestHandler.cpp \

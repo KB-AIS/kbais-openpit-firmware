@@ -14,7 +14,7 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
 //        ",srvset-1.0"
 //        ",display-1.0"
 //        ",serial_interfaces-1.0"
-//        ",ethernet-1.0"
+        ",ethernet-1.0"
 //        ",can_interfaces-1.0"
 //        ",write-1.0"
         ",state-1.0"
@@ -31,5 +31,5 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
 }
 
 QString FetchDeviceModulesRequestHandler::getRequestName() const {
-    return QStringLiteral("SUPPORT_MODULES=?;");
+    return QStringLiteral("SUPPORT_MODULES");
 }

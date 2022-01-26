@@ -4,6 +4,7 @@ INCLUDEPATH += $$PWD
 
 HEADERS += \
     $$PWD/AgtpRequestMediator.h \
+    $$PWD/Handlers/ConfigEthernetRequestHandler.h \
     $$PWD/Handlers/FetchDeviceInfoRequestHandler.h \
     $$PWD/Handlers/FetchDeviceModulesRequestHandler.h \
     $$PWD/Handlers/FetchDeviceSpecRequestHandler.h \
@@ -19,6 +20,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/AgtpRequestMediator.cpp \
+    $$PWD/Handlers/ConfigEthernetRequestHandler.cpp \
     $$PWD/Handlers/FetchDeviceInfoRequestHandler.cpp \
     $$PWD/Handlers/FetchDeviceModulesRequestHandler.cpp \
     $$PWD/Handlers/FetchDeviceSpecRequestHandler.cpp \
@@ -27,4 +29,3 @@ SOURCES += \
     $$PWD/AgtpUsbCommandsReciever.cpp \
     $$PWD/DeviceStateCollector.cpp \
     $$PWD/Handlers/FetchDeviceStateRequsetHandler.cpp
-
