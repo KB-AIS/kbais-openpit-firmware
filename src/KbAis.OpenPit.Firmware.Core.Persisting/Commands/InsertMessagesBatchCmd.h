@@ -8,8 +8,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include "Messaging/Message.h"
-#include "Messaging/MessagesBatch.h"
+#include "Message.h"
+#include "MessagesBatch.h"
 
 class InsertMessagesBatchCmd {
 

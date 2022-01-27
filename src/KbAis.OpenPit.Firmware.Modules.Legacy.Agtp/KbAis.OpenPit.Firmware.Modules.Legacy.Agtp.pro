@@ -2,9 +2,11 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitModulesLegacyAgtp
 
+TEMPLATE = lib
+
 QT += core serialport
 
-TEMPLATE = lib
+QMAKE_CXXFLAGS += -Wno-psabi
 
 CONFIG += \
     c++11 c++14 c++17 \

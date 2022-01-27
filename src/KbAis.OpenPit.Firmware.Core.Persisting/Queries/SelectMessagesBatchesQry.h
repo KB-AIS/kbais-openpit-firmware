@@ -4,7 +4,7 @@
 // qt sql
 #include <QSqlDatabase>
 
-#include "Persisting/Queries/Dtos.h"
+#include "Queries/Dtos.h"
 
 class SelectMessagesBatchesQry {
 

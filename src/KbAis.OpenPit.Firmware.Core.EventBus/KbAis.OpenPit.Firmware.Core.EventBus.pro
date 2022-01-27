@@ -1,28 +1,22 @@
 PRJDIR = $$PWD/..
 
-TARGET = OpenPitCoreConfiguration
+TARGET = OpenPitCoreEventBus
 
 TEMPLATE = lib
+
+QT += core
 
 QMAKE_CXXFLAGS += -Wno-psabi
 
 CONFIG += 11 14 17 conan_basic_setup
 
-INCLUDEPATH += \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
-
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Configuration.h \
-    ConfigurationChangeSource.h \
-    ConfigurationsManager.h \
-    IConfigurationProvider.h \
-    IRxConfigurationChangePublisher.h \
+    RxEventBus.h \
 
 SOURCES += \
-    ConfigurationChangeSource.cpp \
-    ConfigurationsManager.cpp \
+    RxEventBus.cpp \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

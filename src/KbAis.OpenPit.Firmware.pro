@@ -7,10 +7,11 @@ SUBDIRS += \
 #    KbAis.OpenPit.Firmware.App.Shv.CompRoot \
     KbAis.OpenPit.Firmware.Core.Configuration \
 #    KbAis.OpenPit.Firmware.Core.Diagnositcs \
-#    KbAis.OpenPit.Firmware.Core.EventBus \
+    KbAis.OpenPit.Firmware.Core.EventBus \
     KbAis.OpenPit.Firmware.Core.Messaging \
 #    KbAis.OpenPit.Firmware.Core.Networking \
-#    KbAis.OpenPit.Firmware.Core.Persisting \
+    KbAis.OpenPit.Firmware.Core.Persisting \
+#    KbAis.OpenPit.Firmware.Core.Persisting.Sqlite \
     KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \
     KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
 #    KbAis.OpenPit.Firmware.Modules.Sensors.Lls \

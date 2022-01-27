@@ -7,15 +7,14 @@
 // cfw::infra::eventbus
 #include "RxEventBus.h"
 
-#include "Caching/IMessagesCachingService.h"
-#include "Messaging/MessagesBatch.h"
-#include "Persisting/Commands/InsertMessagesBatchCmd.h"
+#include "IMessagesCachingService.h"
+#include "MessagesBatch.h"
+#include "Commands/InsertMessagesBatchCmd.h"
 
-/**
- * \brief Реализация сервиса кеширования сообщений использующая
- * блокирующую очередь в собственном потоке
- */
-class BlockingMessagesCachingService : public IMessagesCachingService, public RxEventModule {
+class BlockingMessagesCachingService
+    :   public IMessagesCachingService
+    ,   public RxEventModule
+{
 
 using MessagesBatchQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
 

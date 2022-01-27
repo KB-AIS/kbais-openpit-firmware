@@ -23,8 +23,6 @@ private:
 
 };
 
-typedef std::function<void(const RxEvent&)> EventHandler;
-
 class RxEventBus {
 
 public:
@@ -45,6 +43,7 @@ private:
 };
 
 class RxEventModule {
+    using EventHandler_t = std::function<void(const RxEvent&)>;
 
 public:
     RxEventModule(const RxEventBus& bus);
@@ -55,14 +54,14 @@ public:
 
     void detach();
 
-    void subscribe(const QString& eventName, EventHandler handler);
+    void subscribe(const QString& eventName, EventHandler_t handler);
 
     void unsubscribe(const QString& eventName);
 
 private:
     rxcpp::composite_subscription subscription;
 
-    QMap<QString, EventHandler> handlers;
+    QMap<QString, EventHandler_t> handlers;
 
 };
 

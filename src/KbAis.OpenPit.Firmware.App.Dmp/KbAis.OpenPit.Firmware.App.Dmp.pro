@@ -2,18 +2,23 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitDmp
 
-QT += core gui widgets
+QT += core sql gui widgets
 
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -Wno-psabi -Wno-aligned-new
+
 CONFIG += \
     c++11 c++14 c++17 \
-    depend_includepath \
     conan_basic_setup \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.App.Dmp.Presentation \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.EventBus \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Messaging \
+    #$$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Persisting \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \
@@ -24,9 +29,9 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    InjectorFactory.h \
     Messaging/DmpImmediateMessageMapper.h \
-    Messaging/DmpRecurrentMessageMapper.h
+    Messaging/DmpRecurrentMessageMapper.h \
+    InjectorFactory.h \
 
 SOURCES += \
     Messaging/DmpImmediateMessageMapper.cpp \
@@ -36,7 +41,9 @@ SOURCES += \
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \
     -lOpenPitCoreConfiguration \
+    -lOpenPitCoreEventBus \
     -lOpenPitCoreMessaging \
+    -lOpenPitCorePersisting \
     -lOpenPitModulesLegacyAgtp \
     -lOpenPitModulesSensorsGps \
     -lOpenPitUtilsExtensions \

@@ -1,15 +1,17 @@
 // qt
 #include <QApplication>
-
-// Utils.TrdParty.BoostDi
-#include "BoostDiExtensions.h"
-
-#include "InjectorFactory.h"
-
+// oss
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
+
+// Core.Persisting
+#include "Configuration/DatabaseConfigurator.h"
+// Utils.TrdParty.BoostDi
+#include "BoostDiExtensions.h"
+
+#include "InjectorFactory.h"
 
 void
 configureLogging() {
@@ -25,6 +27,8 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
+
+    DatabaseConfigurator::configure();
 
     auto injector = InjectorFactory::create();
     eagerSingletons(injector);

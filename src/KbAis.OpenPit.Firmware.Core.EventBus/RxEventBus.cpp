@@ -61,7 +61,7 @@ RxEventModule::detach() {
 }
 
 void
-RxEventModule::subscribe(const QString& eventName, EventHandler handler) {
+RxEventModule::subscribe(const QString& eventName, EventHandler_t handler) {
     handlers.insert(eventName, handler);
 }
 
