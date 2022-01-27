@@ -6,8 +6,14 @@
 
 // App.Dmp.Presentation
 #include "ViewWrapper.h"
+// Core.Messaging
+#include "Collectors/MessagesCollectorsAdapter.h"
 // Modules.Sensors.Gps
 #include "SerialRxGpsSensorPublisher.h"
+
+#include "Messaging/DmpImmediateMessageMapper.h"
+#include "Messaging/DmpRecurrentMessageMapper.h"
+#include "ThreadWorkerMessaging.h"
 
 class InjectorFactory {
 
@@ -23,6 +29,14 @@ public:
             // Configure Modules.Sensors.Gps
         ,   boost::di::bind<IRxGpsSensorPublisher>()
                 .to<SerialRxGpsSensorPublisher>()
+                .in(boost::di::singleton)
+
+            // Configure Core.Messaging
+        ,   boost::di::bind<IRxImmediateMessageMapper*[]>
+                .to<DmpImmediateMessageMapper>()
+        ,   boost::di::bind<IRxRecurrentMessageMapper*[]>
+                .to<DmpRecurrentMessageMapper>()
+        ,   boost::di::bind<ThreadWorkerMessaging>()
                 .in(boost::di::singleton)
         );
     }

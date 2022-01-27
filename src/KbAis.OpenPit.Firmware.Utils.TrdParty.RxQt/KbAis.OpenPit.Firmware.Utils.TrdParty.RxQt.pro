@@ -2,7 +2,7 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitUtilsTrdPartyRxQt
 
-QT -= qt
+QT -= qt gui
 
 TEMPLATE = lib
 

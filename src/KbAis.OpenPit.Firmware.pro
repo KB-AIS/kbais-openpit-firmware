@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    KbAis.OpenPit.Firmware.App.Dmp.CompRoot \
+    KbAis.OpenPit.Firmware.App.Dmp \
     KbAis.OpenPit.Firmware.App.Dmp.Presentation \
 #    KbAis.OpenPit.Firmware.App.Ful.CompRoot \
 #    KbAis.OpenPit.Firmware.App.Shv.CompRoot \

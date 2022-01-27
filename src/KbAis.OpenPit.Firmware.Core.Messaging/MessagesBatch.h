@@ -6,7 +6,7 @@
 #include <QMetaType>
 #include <QVector>
 
-#include "Messaging/Message.h"
+#include "Message.h"
 
 struct MessagesBatch {
 

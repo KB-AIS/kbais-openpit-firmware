@@ -1,16 +1,16 @@
-#include "DmpRecurrentMessagesMapService.h"
+#include "DmpRecurrentMessageMapper.h"
 
-// cfw::trdpary
-#include "RxQt/RxQt.h"
+// oss
+#include <nlohmann/json.hpp>
 
-// cfw::utils
-#include "Extensions/QByteArrayExt.h"
-
-#include "Messaging/Mappers/JsonMappers.h"
+// Core.Messaging
+#include "Mappers/JsonMappers.h"
+// Utils.Extensions
+#include "QtExtensions/QByteArrayExt.h"
 
 const QString MESSAGE_MONKIER_GPS { QStringLiteral("GPS") };
 
-DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
+DmpRecurrentMessageMapper::DmpRecurrentMessageMapper(
     const IRxGpsSensorPublisher& gpsSensorPublisher
 )
     : mGpsSensorPublisher { gpsSensorPublisher }
@@ -19,7 +19,7 @@ DmpRecurrentMessagesMapService::DmpRecurrentMessagesMapService(
 }
 
 rxcpp::observable<Message>
-DmpRecurrentMessagesMapService::getMessageObservable() const {
+DmpRecurrentMessageMapper::getObservable() const {
     auto const gpsMessageObservable = mGpsSensorPublisher.getObservable()
         .map([&](const GpsMessage& x) -> Message {
             return {

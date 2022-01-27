@@ -1,6 +1,6 @@
 PRJDIR = $$PWD/..
 
-TARGET = openpit-utils-extensions
+TARGET = OpenPitUtilsExtensions
 
 QT -= qt
 

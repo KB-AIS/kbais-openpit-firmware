@@ -1,6 +1,6 @@
 PRJDIR = $$PWD/..
 
-TARGET = openpit-modules-sensors-gps
+TARGET = OpenPitModulesSensorsGps
 
 QT += core serialport
 
@@ -27,9 +27,6 @@ SOURCES += \
     Nmea/NmeaParser.cpp \
     Nmea/NmeaSentence.cpp \
     SerialRxGpsSensorPublisher.cpp \
-
-LIBS += -L$$PRJDIR/binaries \
-    -lopenpit-utils-extensions \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

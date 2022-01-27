@@ -3,30 +3,38 @@
 
 // qt
 #include <QMutex>
-#include <QObject>
-#include <QTimer>
 #include <QVector>
 
+// Utils.TrdParty.RxQt
+#include "RxQt.h"
+
+#include "IRxImmediateMessageMapper.h"
 #include "Message.h"
 
-class ImmediateMessagesCollector : public QObject {
-    Q_OBJECT
+class ImmediateMessagesCollector {
+    using ImmediateMessageMappers_t = std::vector<std::shared_ptr<IRxImmediateMessageMapper>>;
 
 public:
-    ImmediateMessagesCollector();
+    ImmediateMessagesCollector(ImmediateMessageMappers_t mappers);
 
-    QVector<Message> getMessages();
+    ~ImmediateMessagesCollector();
 
-    void placeMessage(const Message& message);
+    void startCollectingOn(const rxqt::run_loop& loop);
 
-    Q_SIGNAL void messageCollected();
+    rxcpp::observable<long> getCollectedObservable();
+
+    QVector<Message> dumpMessages();
 
 private:
-    QVector<Message> collectedMessages;
+    rxcpp::observable<Message> mObservable;
 
-    QMutex mtxCollectedMessages;
+    rxcpp::composite_subscription mSubscriptions;
 
-    QTimer timerMessageCollected;
+    rxcpp::rxsub::subject<long> mSubject;
+
+    QVector<Message> mMessages;
+
+    QMutex mMtxMessages;
 
 };
 

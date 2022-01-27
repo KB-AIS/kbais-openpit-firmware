@@ -1,8 +1,8 @@
 PRJDIR = $$PWD/..
 
-TARGET = openpit-utils-trdparty-boostdi
+TARGET = OpenPitUtilsTrdPartyBoostDi
 
-QT -= core gui
+QT -= qt core gui
 
 TEMPLATE = lib
 

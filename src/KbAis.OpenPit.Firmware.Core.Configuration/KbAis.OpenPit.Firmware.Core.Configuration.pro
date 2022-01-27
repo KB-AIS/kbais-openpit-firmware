@@ -22,10 +22,6 @@ SOURCES += \
     ConfigurationChangeSource.cpp \
     ConfigurationsManager.cpp \
 
-LIBS += -L$$PRJDIR/binaries \
-    -lopenpit-utils-extensions \
-    -lOpenPitUtilsTrdPartyRxQt \
-
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj
 MOC_DIR     = $$PWD/build/.moc

@@ -1,6 +1,6 @@
 PRJDIR = $$PWD/..
 
-TARGET = openpit-app-dmp-presentation
+TARGET = OpenPitAppDmpPresentation
 
 QT += core gui widgets
 
@@ -26,10 +26,6 @@ SOURCES += \
 
 FORMS += \
     MainView.ui \
-
-LIBS += -L$$PRJDIR/binaries \
-    -lopenpit-modules-sensors-gps \
-    -lopenpit-utils-extensions \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

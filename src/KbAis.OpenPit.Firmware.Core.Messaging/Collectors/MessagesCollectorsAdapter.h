@@ -6,35 +6,35 @@
 // oss
 #include <readerwriterqueue/readerwriterqueue.h>
 
-// cfw::trdparty
+// Utils.TrdParty.RxQt
 #include "RxQt.h"
 
 #include "Collectors/ImmediateMessagesCollector.h"
 #include "Collectors/RecurrentMessagesCollector.h"
 #include "MessagesBatch.h"
 
-using MessagesBatchesQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
-
 class MessagesCollectorsAdapter : public QObject {
     Q_OBJECT
 
+    using MessagesBatchesCachingQueue_t = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+
 public:
     MessagesCollectorsAdapter(
-        ImmediateMessagesCollector& immediateMessagesCollector,
-        RecurrentMessagesCollector& recurrentMessagesCollector,
-        MessagesBatchesQueue& queue
+        ImmediateMessagesCollector& immediateMessagesCollector
+    ,   RecurrentMessagesCollector& recurrentMessagesCollector
+    ,   MessagesBatchesCachingQueue_t& queue
     );
 
-    ~MessagesCollectorsAdapter();
+    ~MessagesCollectorsAdapter() noexcept;
 
 private:
-    ImmediateMessagesCollector& immediateMessagesCollector;
+    ImmediateMessagesCollector& mImmediateMessagesCollector;
 
-    RecurrentMessagesCollector& recurrentMessagesCollector;
+    RecurrentMessagesCollector& mRecurrentMessagesCollector;
 
-    rxcpp::composite_subscription subs;
+    rxcpp::composite_subscription mSubs;
 
-    MessagesBatchesQueue& queue;
+    MessagesBatchesCachingQueue_t& mQueue;
 
     void handleCollectMessages();
 

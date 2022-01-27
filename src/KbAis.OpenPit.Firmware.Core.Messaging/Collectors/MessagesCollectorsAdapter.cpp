@@ -12,7 +12,7 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::milliseconds TIMER_COLLECT_MESSAGES_INTERVAL { 10s };
+constexpr std::chrono::milliseconds COLLECT_MESSAGES_PERIOD { 10s };
 
 std::string threadId(const QString& name) {
     return fmt::format(
@@ -25,43 +25,55 @@ std::string threadId(const QString& name) {
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     ImmediateMessagesCollector& immediateMessagesCollector
 ,   RecurrentMessagesCollector& recurrentMessagesCollector
-,   MessagesBatchesQueue& queue
+,   MessagesBatchesCachingQueue_t& queue
 )
     :   QObject()
-    ,   immediateMessagesCollector { immediateMessagesCollector }
-    ,   recurrentMessagesCollector { recurrentMessagesCollector }
-    ,   queue { queue }
+    ,   mImmediateMessagesCollector { immediateMessagesCollector }
+    ,   mRecurrentMessagesCollector { recurrentMessagesCollector }
+    ,   mQueue { queue }
 {
-    subs = rxcpp::composite_subscription();
+    mSubs = rxcpp::composite_subscription();
+
+    auto immediateObservable = immediateMessagesCollector.getCollectedObservable();
 
     auto recurrentObservable = rxcpp::observable<>
-        ::interval(TIMER_COLLECT_MESSAGES_INTERVAL);
-
-    auto immediateObservable = rxqt
-        ::from_signal(&immediateMessagesCollector, &ImmediateMessagesCollector::messageCollected);
+        ::interval(COLLECT_MESSAGES_PERIOD);
 
     recurrentObservable.merge(immediateObservable)
         .subscribe_on(rxcpp::observe_on_new_thread())
-        .subscribe(subs, [&](auto) { handleCollectMessages(); });
+        .subscribe(mSubs, [&](auto) { handleCollectMessages(); });
 }
 
 MessagesCollectorsAdapter::~MessagesCollectorsAdapter() {
-    subs.unsubscribe();
+    mSubs.unsubscribe();
 }
 
 void
 MessagesCollectorsAdapter::handleCollectMessages() {
-    PLOGD << threadId("HANDLE");
+    PLOGD << "Messages collector started to dump messages";
 
     QVector<Message> messages;
     messages
-        << immediateMessagesCollector.getMessages()
-        << recurrentMessagesCollector.getMessages();
+        << mImmediateMessagesCollector.dumpMessages()
+        << mRecurrentMessagesCollector.dumpMessages();
 
-    if (messages.isEmpty()) return;
+    if (messages.isEmpty()) {
+        PLOGD << "Messages collector has no messages to enqueue";
+
+        return;
+    }
+
+    PLOGD << fmt::format("Messages collector dumped {} messages", messages.size());
 
     auto messagesCollectedAt { QDateTime::currentDateTimeUtc() };
 
-    auto messagesBatchPlaced = queue.enqueue({ messages, messagesCollectedAt });
-    Q_UNUSED(messagesBatchPlaced)
+    auto messagesBatchPlaced = mQueue.enqueue({ messages, messagesCollectedAt });
+
+    if (!messagesBatchPlaced) {
+        PLOGW << "Messages collector could not enqueue messsages";
+
+        return;
+    }
+
+    PLOGD << "Messages collector enqueued messages";
 }

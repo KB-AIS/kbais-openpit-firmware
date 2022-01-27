@@ -1,43 +1,66 @@
 #include "ImmediateMessagesCollector.h"
 
-// std
-#include <chrono>
-// qt
-#include <QThread>
+// oss
+#include <pipes/drop.hpp>
+#include <pipes/for_each.hpp>
+#include <pipes/operator.hpp>
+#include <pipes/push_back.hpp>
+#include <pipes/transform.hpp>
+#include <plog/Log.h>
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::milliseconds TIMER_MESSAGE_COLLECTED_DELAY { 1s };
+constexpr std::chrono::milliseconds USR_MESSAGE_DEBOUNCE_PERIOD = 1s;
 
-ImmediateMessagesCollector::ImmediateMessagesCollector() : QObject() {
-    timerMessageCollected.setSingleShot(true);
+ImmediateMessagesCollector::ImmediateMessagesCollector(ImmediateMessageMappers_t mappers) {
+    mSubject = rxcpp::rxsub::subject<long>();
 
-    connect(
-        &timerMessageCollected, &QTimer::timeout,
-        this, &ImmediateMessagesCollector::messageCollected);
+    mObservable = mappers.at(0)->getObservable();
+
+    mappers
+        >>= pipes::drop(1)
+        >>= pipes::transform([](auto mapper) {
+                return mapper->getObservable();
+            })
+        >>= pipes::for_each([&](const auto& mapperObservable) {
+                mObservable = mObservable.merge(mapperObservable);
+            });
 }
 
-QVector<Message>
-ImmediateMessagesCollector::getMessages() {
-    QMutexLocker lock(&mtxCollectedMessages);
-
-    QVector<Message> messages(collectedMessages);
-    collectedMessages.clear();
-
-    return messages;
+ImmediateMessagesCollector::~ImmediateMessagesCollector() {
+    mSubscriptions.unsubscribe();
 }
 
 void
-ImmediateMessagesCollector::placeMessage(const Message& message) {
-    QMutexLocker lock(&mtxCollectedMessages);
+ImmediateMessagesCollector::startCollectingOn(const rxqt::run_loop& loop) {
+    mSubscriptions = rxcpp::composite_subscription();
 
-    collectedMessages.append(message);
+    mObservable
+        .observe_on(loop.observe_on_run_loop())
+        .subscribe(
+            mSubscriptions
+        ,   [&](Message message) {
+                mMtxMessages.lock();
+                mMessages.append(message);
+                mMtxMessages.unlock();
 
-    // Debounce timer repeate activation.
-    if (timerMessageCollected.isActive()) {
-        return;
-    }
+                mSubject.get_subscriber().on_next(0);
+            }
+   );
+}
 
-    // Start timer
-    timerMessageCollected.start(TIMER_MESSAGE_COLLECTED_DELAY);
+rxcpp::observable<long>
+ImmediateMessagesCollector::getCollectedObservable() {
+    return mSubject.get_observable()
+        .debounce(USR_MESSAGE_DEBOUNCE_PERIOD);
+}
+
+QVector<Message>
+ImmediateMessagesCollector::dumpMessages() {
+    QMutexLocker lock(&mMtxMessages);
+
+    QVector<Message> messages(mMessages);
+    mMessages.clear();
+
+    return messages;
 }
