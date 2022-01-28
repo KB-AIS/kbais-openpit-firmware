@@ -5,7 +5,7 @@
 #include <boost/di.hpp>
 
 // cfw::trdparty
-#include "RxQt/RxQt.h"
+#include "RxQt.h"
 
 #include "Handlers/ConfigEthernetRequestHandler.h"
 #include "Handlers/FetchDeviceInfoRequestHandler.h"

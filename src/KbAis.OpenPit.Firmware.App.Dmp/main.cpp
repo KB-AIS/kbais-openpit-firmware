@@ -22,6 +22,26 @@ configureLogging() {
     init(verbose).addAppender(&consoleAppender);
 }
 
+struct ConfigurationBootstraper {
+    ConfigurationBootstraper(ConfigurationManager& configurationManager) {
+        configurationManager.registerConfiguration(
+            "ethernet"
+        ,   nlohmann::json {
+                { "dns", "" }
+            ,   { "gateway", "10.214.1.1" }
+            ,   { "ip", "10.214.1.205" }
+            ,   { "manual_enable", true }
+            ,   { "mask", "255.255.0.0" }
+            }
+        );
+
+        configurationManager.getChangeObservable("ethernet")
+           .subscribe([&](Configuration configuration) {
+               PLOGD << configuration.value.dump(4);
+           });
+    }
+};
+
 int main(int argc, char* argv[]) {
     configureLogging();
 
@@ -32,6 +52,9 @@ int main(int argc, char* argv[]) {
 
     auto injector = InjectorFactory::create();
     eagerSingletons(injector);
+
+    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
+    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

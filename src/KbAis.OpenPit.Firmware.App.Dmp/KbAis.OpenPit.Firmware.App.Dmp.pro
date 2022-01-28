@@ -2,7 +2,7 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitDmp
 
-QT += core sql gui widgets
+QT += core sql gui widgets serialport
 
 TEMPLATE = app
 

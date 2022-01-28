@@ -11,6 +11,8 @@
 #include "ThreadWorkerMessaging.h"
 // Core.Persisiting
 #include "BlockingMessagesCachingService.h"
+// Modules.Legacy.Agtp
+#include "AgtpServiceModuleFactory.h"
 // Modules.Sensors.Gps
 #include "SerialRxGpsSensorPublisher.h"
 
@@ -28,6 +30,7 @@ public:
             boost::di::bind<ViewWrapper>()
                 .in(boost::di::singleton)
 
+        ,   createAgtpServiceModule()
             // Configure Modules.Sensors.Gps
         ,   boost::di::bind<IRxGpsSensorPublisher>()
                 .to<SerialRxGpsSensorPublisher>()
