@@ -1,6 +1,7 @@
 // qt
 #include <QApplication>
 // oss
+#include <fmt/core.h>
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
@@ -37,7 +38,7 @@ struct ConfigurationBootstraper {
 
         configurationManager.getChangeObservable("ethernet")
            .subscribe([&](Configuration configuration) {
-               PLOGD << configuration.value.dump(4);
+               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
            });
     }
 };

@@ -6,7 +6,7 @@ QT += core sql gui widgets serialport
 
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wno-psabi -Wno-aligned-new
+QMAKE_CXXFLAGS += -Wno-psabi -faligned-new
 
 CONFIG += \
     c++11 c++14 c++17 \
