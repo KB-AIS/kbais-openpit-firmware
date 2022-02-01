@@ -4,10 +4,11 @@
 // oss
 #include <boost/di.hpp>
 
-// cfw::trdparty
+// Utils.TrdParty.RxQt
 #include "RxQt.h"
 
 #include "Handlers/ConfigEthernetRequestHandler.h"
+#include "Handlers/ConfigNetworkingRequestHandler.h"
 #include "Handlers/FetchDeviceInfoRequestHandler.h"
 #include "Handlers/FetchDeviceModulesRequestHandler.h"
 #include "Handlers/FetchDeviceSpecRequestHandler.h"
@@ -35,7 +36,8 @@ inline auto createAgtpServiceModule() noexcept {
 
     ,   boost::di::bind<IAgtpRequestHandler*[]>()
             .to<
-                FetchConfigEthernetHandler
+                ConfigEthernetRequestHandler
+            ,   ConfigNetworkingRequestHandler
             ,   FetchDeviceInfoRequestHandler
             ,   FetchDeviceModulesRequestHandler
             ,   FetchDeviceSpecRequestHandler

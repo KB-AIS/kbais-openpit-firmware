@@ -4,9 +4,9 @@ TARGET = OpenPitCoreConfiguration
 
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -Wno-psabi
+QMAKE_CXXFLAGS += -std=c++17 -Wno-psabi
 
-CONFIG += 11 14 17 conan_basic_setup
+CONFIG += conan_basic_setup
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \

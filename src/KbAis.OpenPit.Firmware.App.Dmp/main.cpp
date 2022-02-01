@@ -36,7 +36,34 @@ struct ConfigurationBootstraper {
             }
         );
 
+        configurationManager.registerConfiguration(
+            "networking"
+        ,   R"(
+                {
+                  "primary_message_server": -1,
+                  "servers": [
+                    {
+                      "enabled": true,
+                      "protocol": 0,
+                      "reserve_enabled": false,
+                      "reserve_server_name": "",
+                      "reserve_server_port": 0,
+                      "send_interval": 10,
+                      "server_name": "10.73.212.191",
+                      "server_port": 47653
+                    }
+                  ],
+                  "version": "1.0"
+                }
+            )"_json
+        );
+
         configurationManager.getChangeObservable("ethernet")
+           .subscribe([&](Configuration configuration) {
+               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
+           });
+
+        configurationManager.getChangeObservable("networking")
            .subscribe([&](Configuration configuration) {
                PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
            });

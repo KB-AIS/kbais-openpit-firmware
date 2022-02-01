@@ -14,39 +14,6 @@
 
 #include "Networking/Communicators/IProtocolCommunicator.h"
 
-using SocketState = QAbstractSocket::SocketState;
-
-using SocketError = QAbstractSocket::SocketError;
-
-struct MesssageSenderStatus {
-
-    SocketState state;
-
-    SocketError error;
-
-};
-
-struct MessageSenderStatusChanged {
-
-    QUuid senderId;
-
-    SocketState lastState;
-
-    SocketError lastError;
-
-};
-
-struct MessageSenderConfiguration {
-
-    QString host;
-
-    quint16 port;
-
-    QString protocol;
-
-    std::chrono::milliseconds sendInterval;
-
-};
 
 class MessageSender : public QObject {
     Q_OBJECT
