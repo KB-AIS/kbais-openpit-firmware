@@ -20,7 +20,7 @@ ConfigNetworkingRequestHandler::handle(const AgtpRequest& request) {
         mConfigurationManager.updateConfiguration("networking", *opt_configuration);
     }
 
-    const auto configuration = mConfigurationManager.getConfiguration("networking").j_value;
+    const auto configuration = mConfigurationManager.getConfiguration("networking").j_object;
 
     return {
         request.uid

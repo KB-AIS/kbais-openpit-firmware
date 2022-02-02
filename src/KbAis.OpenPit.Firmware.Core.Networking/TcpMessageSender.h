@@ -1,16 +1,10 @@
 #ifndef TCPMESSAGESENDER_H
 #define TCPMESSAGESENDER_H
 
-// std
-#include <chrono>
-#include <memory>
 // qt
-#include <QAbstractSocket>
 #include <QObject>
 #include <QSharedPointer>
 #include <QTcpSocket>
-#include <QTimer>
-#include <QUuid>
 
 #include "IProtocolCommunicator.h"
 #include "MessageSenderConfiguration.h"
@@ -28,11 +22,11 @@ public:
     void restart(const MessageSenderConfiguration& configuration);
 
 private:
-    const QString mMessageSenderName;
+    const QString m_message_sender_name;
 
-    QTcpSocket mSocket;
+    QTcpSocket m_socket;
 
-    void setupSocketSignals();
+    void setup_socket_signals();
 
 };
 

@@ -5,7 +5,7 @@ class CarrierFirmwareConan(ConanFile):
     requires = \
         "di/1.2.0", \
         "plog/1.1.5", \
-        "rxcpp/4.1.0"
+        "rxcpp/4.1.1"
 
     """ Support libraries """
     requires += \

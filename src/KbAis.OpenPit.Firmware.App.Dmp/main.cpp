@@ -62,7 +62,7 @@ struct ConfigurationBootstraper {
 
         configurationManager.getChangeObservable("ethernet")
            .subscribe([&](AppConfiguration configuration) {
-               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.j_value.dump(4));
+               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.j_object.dump(4));
            });
     }
 };
@@ -76,12 +76,11 @@ int main(int argc, char* argv[]) {
     DatabaseConfigurator::configure();
 
     auto injector = InjectorFactory::create();
-    eagerSingletons(injector);
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 
-    boost::di::create<std::shared_ptr<TcpMessageSendersManager>>(injector);
+    eagerSingletons(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

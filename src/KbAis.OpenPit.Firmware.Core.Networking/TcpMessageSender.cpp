@@ -1,36 +1,45 @@
 #include "TcpMessageSender.h"
 
+// oss
+#include <plog/Log.h>
+#include <QMetaEnum>
+
+template<typename QEnum>
+std::string QtEnumToString(const QEnum value) {
+    return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
+}
+
 TcpMessageSender::TcpMessageSender()
     :   QObject()
-    ,   mSocket(this)
+    ,   m_socket(this)
 {
-    setupSocketSignals();
+    setup_socket_signals();
 }
 
 void
-TcpMessageSender::setupSocketSignals() {
+TcpMessageSender::setup_socket_signals() {
     constexpr auto SocketStateSignal = qOverload<SocketState>(&QAbstractSocket::stateChanged);
 
     constexpr auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
-    QObject::connect(&mSocket, &QTcpSocket::connected, [&] {
-
+    QObject::connect(&m_socket, &QTcpSocket::connected, [&] {
+        PLOGD << "Connected";
     });
 
-    QObject::connect(&mSocket, SocketStateSignal, [&](auto state) {
-
+    QObject::connect(&m_socket, SocketStateSignal, [&](auto state) {
+        PLOGD << "State " << QtEnumToString(state);
     });
 
-    QObject::connect(&mSocket, SocketErrorSignal, [&](auto error) {
-
+    QObject::connect(&m_socket, SocketErrorSignal, [&](auto error) {
+        PLOGD << "Error " << QtEnumToString(error);
     });
 
-    QObject::connect(&mSocket, &QTcpSocket::disconnected, [&] {
-
+    QObject::connect(&m_socket, &QTcpSocket::disconnected, [&] {
+        PLOGD << "Disconnected";
     });
 }
 
 void
 TcpMessageSender::restart(const MessageSenderConfiguration& configuration) {
-    mSocket.connectToHost(configuration.host, configuration.port);
+    m_socket.connectToHost(configuration.host, configuration.port);
 }

@@ -12,7 +12,9 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration/ \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions/ \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt/ \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt/ \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 
@@ -27,14 +29,16 @@ HEADERS += \
     MessageSenderConfiguration.h \
     ModuleFactoryNetworking.h \
     TcpMessageSender.h \
-    TcpMessageSendersManager.h
+    TcpMessageSendersManager.h \
+    ThreadWorkerNetworking.h
 
 SOURCES += \
 #    MessagesBatchesSendQueue.cpp \
 #    SwomProtocolCommunicator.cpp \
 #    SwomProtocolFormatter.cpp \
     TcpMessageSender.cpp \
-    TcpMessageSendersManager.cpp
+    TcpMessageSendersManager.cpp \
+    ThreadWorkerNetworking.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

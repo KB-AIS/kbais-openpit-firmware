@@ -34,7 +34,7 @@ ConfigurationManager::registerConfiguration(
     mConfigurationChangeSources[configurationName].reset(
         new ConfigurationChangeSource(
             AppConfiguration { configurationName, configurationValue }
-        , configurationFileInfo.filePath()
+        ,   configurationFileInfo.filePath()
         )
     );
 }

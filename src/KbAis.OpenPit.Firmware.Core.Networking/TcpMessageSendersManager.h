@@ -20,17 +20,19 @@ class TcpMessageSendersManager
 {
     Q_OBJECT
 
+    using MessageSenderConfigurations_t = std::map<QString, MessageSenderConfiguration>;
+
 public:
     explicit TcpMessageSendersManager(
         IRxConfigurationChangePublisher& configurationPublisher
     );
 
-    void start_work_on(/*rxcpp::observe_on_one_worker& loop*/);
+    void start_work_on(rxcpp::observe_on_one_worker& scheduler);
 
     rxcpp::observable<QVector<MessageSenderStatus>> get_diag_observable() const override;
 
 private:
-    IRxConfigurationChangePublisher& mConfigurationPublisher;
+    IRxConfigurationChangePublisher& m_configuration_publisher;
 
     rxcpp::composite_subscription m_subscriptions;
 
@@ -38,7 +40,7 @@ private:
 
     void on_configuration_changed(AppConfiguration configuration);
 
-    void restartMessageSendersWithError();
+    void restart_message_senders();
 
 };
 

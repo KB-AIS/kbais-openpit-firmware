@@ -8,17 +8,19 @@
 
 struct MessageSenderConfiguration {
 
-    QString name;
-
     QString host;
 
     quint16 port;
 
     QString protocol;
 
-    bool isEnabled;
+    bool is_enabled;
 
-    std::chrono::milliseconds sendInterval;
+    std::chrono::milliseconds send_interval;
+
+    QString get_name() const {
+        return QString("%1:%2").arg(host).arg(port);
+    };
 
 };
 

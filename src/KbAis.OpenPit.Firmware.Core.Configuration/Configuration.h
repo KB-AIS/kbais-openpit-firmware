@@ -9,11 +9,11 @@
 struct AppConfiguration {
     QString section_name;
 
-    nlohmann::json j_value;
+    nlohmann::json j_object;
 
     AppConfiguration(QString name, nlohmann::json value)
         :   section_name(name)
-        ,   j_value(value)
+        ,   j_object(value)
     {
 
     }

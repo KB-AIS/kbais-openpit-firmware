@@ -69,7 +69,7 @@ ConfigurationChangeSource::loadConfigurationValue() {
     if (configurationFileValue.isEmpty()) return;
 
     QWriteLocker lock(&mRwlConfigurationValue);
-    mConfiguration.j_value = nlohmann::json::parse(configurationFileValue.toStdString());
+    mConfiguration.j_object = nlohmann::json::parse(configurationFileValue.toStdString());
 }
 
 void
