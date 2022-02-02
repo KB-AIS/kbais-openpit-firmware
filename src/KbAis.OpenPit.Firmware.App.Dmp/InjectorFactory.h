@@ -9,6 +9,7 @@
 // Core.Messaging
 #include "Collectors/MessagesCollectorsAdapter.h"
 #include "ThreadWorkerMessaging.h"
+#include "ModuleFactoryNetworking.h"
 // Core.Persisiting
 #include "BlockingMessagesCachingService.h"
 // Modules.Legacy.Agtp
@@ -29,13 +30,20 @@ public:
             // Configure App.Dmp.Presentation
             boost::di::bind<ViewWrapper>()
                 .in(boost::di::singleton)
-
+            // Configure Core.Configuration
+        ,   boost::di::bind<
+                IConfigurationProvider
+            ,   IRxConfigurationChangePublisher
+            ,   ConfigurationManager
+            >()
+                .to<ConfigurationManager>()
+                .in(boost::di::singleton)
+        ,   createDiModuleNetworking()
         ,   createAgtpServiceModule()
             // Configure Modules.Sensors.Gps
         ,   boost::di::bind<IRxGpsSensorPublisher>()
                 .to<SerialRxGpsSensorPublisher>()
                 .in(boost::di::singleton)
-
             // Configure Core.Messaging
         ,   boost::di::bind<IRxImmediateMessageMapper*[]>
                 .to<DmpImmediateMessageMapper>()
@@ -43,7 +51,6 @@ public:
                 .to<DmpRecurrentMessageMapper>()
         ,   boost::di::bind<ThreadWorkerMessaging>()
                 .in(boost::di::singleton)
-
             // Configure Core.Persisting
         ,   boost::di::bind<IMessagesCachingService>()
                 .to<BlockingMessagesCachingService>()

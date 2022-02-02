@@ -33,7 +33,7 @@ ConfigurationManager::registerConfiguration(
 
     mConfigurationChangeSources[configurationName].reset(
         new ConfigurationChangeSource(
-            Configuration { configurationName, configurationValue }
+            AppConfiguration { configurationName, configurationValue }
         , configurationFileInfo.filePath()
         )
     );
@@ -44,12 +44,12 @@ ConfigurationManager::updateConfiguration(const QString& name, const nlohmann::j
     mConfigurationChangeSources[name]->setConfigurationValue(value);
 }
 
-Configuration
+AppConfiguration
 ConfigurationManager::getConfiguration(const QString& name) {
     return mConfigurationChangeSources[name]->getConfiguration();
 }
 
-rxcpp::observable<Configuration>
+rxcpp::observable<AppConfiguration>
 ConfigurationManager::getChangeObservable(const QString& name) {
     return mConfigurationChangeSources[name]->getChangeObservable();
 }

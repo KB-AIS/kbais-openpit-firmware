@@ -4,12 +4,11 @@ TARGET = OpenPitModulesLegacyAgtp
 
 TEMPLATE = lib
 
-QT += core serialport
+QT += core serialport \
 
-CONFIG += \
-    conan_basic_setup \
+CONFIG += conan_basic_setup \
 
-QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \

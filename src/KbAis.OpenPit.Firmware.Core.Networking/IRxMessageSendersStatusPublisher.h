@@ -13,7 +13,7 @@ class IRxMessageSendersStatusPublisher {
 public:
     virtual ~IRxMessageSendersStatusPublisher() noexcept = default;
 
-    virtual rxcpp::observable<QVector<MessageSenderStatus>> getObservable() const = 0;
+    virtual rxcpp::observable<QVector<MessageSenderStatus>> get_diag_observable() const = 0;
 
 };
 

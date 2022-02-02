@@ -8,8 +8,6 @@ class IMessageSendersManager {
 public:
     virtual ~IMessageSendersManager() noexcept = default;
 
-    virtual void applyConfiguration(const MessageSenderConfiguration& configuration) = 0;
-
 };
 
 #endif // IMESSAGESENDERSMANAGER_H

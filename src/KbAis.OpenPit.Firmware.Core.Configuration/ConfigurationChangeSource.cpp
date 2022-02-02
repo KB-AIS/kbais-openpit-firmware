@@ -7,16 +7,18 @@
 #include "RxQt.h"
 
 ConfigurationChangeSource::ConfigurationChangeSource(
-    Configuration configuration
+    AppConfiguration configuration
 ,   const QString& configurationFilePath
 )
     :   mConfiguration { configuration }
     ,   mConfigurationFilePath { configurationFilePath }
-    ,   mChangeWatcher { QStringList { configurationFilePath } }
     ,   mChangeSubject(configuration)
 {
     mSubs = rxcpp::composite_subscription();
-    rxqt::from_signal<1>(&mChangeWatcher, &QFileSystemWatcher::fileChanged)
+
+    mChangeWatcher.addPath(configurationFilePath);
+
+    rxqt::from_signal<0>(&mChangeWatcher, &QFileSystemWatcher::fileChanged)
         .subscribe(
             mSubs
         ,   [&](auto) {
@@ -35,17 +37,17 @@ ConfigurationChangeSource::~ConfigurationChangeSource() noexcept {
 
 QString
 ConfigurationChangeSource::getConfigurationName() const {
-    return mConfiguration.name;
+    return mConfiguration.section_name;
 }
 
-Configuration
+AppConfiguration
 ConfigurationChangeSource::getConfiguration() {
     QReadLocker lock(&mRwlConfigurationValue);
 
     return mConfiguration;
 }
 
-rxcpp::observable<Configuration>
+rxcpp::observable<AppConfiguration>
 ConfigurationChangeSource::getChangeObservable() {
     return mChangeSubject.get_observable();
 }
@@ -67,7 +69,7 @@ ConfigurationChangeSource::loadConfigurationValue() {
     if (configurationFileValue.isEmpty()) return;
 
     QWriteLocker lock(&mRwlConfigurationValue);
-    mConfiguration.value = nlohmann::json::parse(configurationFileValue.toStdString());
+    mConfiguration.j_value = nlohmann::json::parse(configurationFileValue.toStdString());
 }
 
 void

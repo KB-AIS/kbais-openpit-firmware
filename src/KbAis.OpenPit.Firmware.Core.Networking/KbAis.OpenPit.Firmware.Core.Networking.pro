@@ -4,38 +4,36 @@ TARGET = OpenPitCoreNetworking
 
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -Wno-psabi
+QT += core network \
 
-CONFIG += \
-    c++11 c++14 c++17 \
-    depend_includepath \
-    conan_basic_setup \
+CONFIG += conan_basic_setup \
 
-QT += core network
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration/ \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt/ \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
     IMessageSendersManager.h \
-#    IProtocolCommunicator.h \
+    IProtocolCommunicator.h \
 #    MessagesBatchesSendQueue.h \
-#    MessageSender.h \
 #    SwomProtocolCommunicator.h \
 #    SwomProtocolFormatter.h \
     IMessageSendersRegistry.h \
     IRxMessageSendersStatusPublisher.h \
     MessageSenderConfiguration.h \
-    MessageSenderStatus.h \
+    ModuleFactoryNetworking.h \
+    TcpMessageSender.h \
     TcpMessageSendersManager.h
 
 SOURCES += \
 #    MessagesBatchesSendQueue.cpp \
-#    MessageSender.cpp \
 #    SwomProtocolCommunicator.cpp \
 #    SwomProtocolFormatter.cpp \
+    TcpMessageSender.cpp \
     TcpMessageSendersManager.cpp
 
 DESTDIR     = $$PRJDIR/binaries

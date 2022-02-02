@@ -13,10 +13,30 @@ struct MessageSenderDto {
 
 };
 
-class IMessageSendersRegistry {
+class MessageSenderCreateCmd {
+
+};
+
+class MessageSenderRemoveCmd {
+
+};
+
+class MessageSenderSetEnableCmd {
+
+};
+
+class MessageSenderSetMessageBatchIdCmd {
+
+};
+
+class MessageSenderGetAllQry {
+
+};
+
+class IMessageSenderFetcher {
 
 public:
-    virtual ~IMessageSendersRegistry() noexcept = default;
+    virtual ~IMessageSenderFetcher() noexcept = default;
 
     virtual QVector<MessageSenderDto> getAll() = 0;
 

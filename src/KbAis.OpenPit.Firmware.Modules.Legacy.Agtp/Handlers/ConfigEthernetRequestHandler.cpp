@@ -52,5 +52,5 @@ ConfigEthernetRequestHandler::updateConfiguration(const QString& configuration_v
 QString ConfigEthernetRequestHandler::fetchConfiguration() const {
     auto const configuration = mConfigurationService.getConfiguration("ethernet");
 
-    return QString::fromStdString(configuration.value.dump());
+    return QString::fromStdString(configuration.j_value.dump());
 }

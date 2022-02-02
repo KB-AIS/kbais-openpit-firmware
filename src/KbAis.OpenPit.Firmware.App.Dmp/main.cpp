@@ -27,13 +27,15 @@ struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
         configurationManager.registerConfiguration(
             "ethernet"
-        ,   nlohmann::json {
-                { "dns", "" }
-            ,   { "gateway", "10.214.1.1" }
-            ,   { "ip", "10.214.1.205" }
-            ,   { "manual_enable", true }
-            ,   { "mask", "255.255.0.0" }
-            }
+        ,   R"(
+                {
+                  "dns": "",
+                  "gateway": "10.214.1.1",
+                  "ip": "10.214.1.205",
+                  "manual_enable": true,
+                  "mask": "255.255.0.0"
+                }
+            )"_json
         );
 
         configurationManager.registerConfiguration(
@@ -59,13 +61,8 @@ struct ConfigurationBootstraper {
         );
 
         configurationManager.getChangeObservable("ethernet")
-           .subscribe([&](Configuration configuration) {
-               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
-           });
-
-        configurationManager.getChangeObservable("networking")
-           .subscribe([&](Configuration configuration) {
-               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
+           .subscribe([&](AppConfiguration configuration) {
+               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.j_value.dump(4));
            });
     }
 };
@@ -83,6 +80,8 @@ int main(int argc, char* argv[]) {
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
+
+    boost::di::create<std::shared_ptr<TcpMessageSendersManager>>(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

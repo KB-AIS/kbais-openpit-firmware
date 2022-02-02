@@ -6,14 +6,14 @@
 // oss
 #include <nlohmann/json.hpp>
 
-struct Configuration {
-    QString name;
+struct AppConfiguration {
+    QString section_name;
 
-    nlohmann::json value;
+    nlohmann::json j_value;
 
-    Configuration(QString name, nlohmann::json value)
-        :   name(name)
-        ,   value(value)
+    AppConfiguration(QString name, nlohmann::json value)
+        :   section_name(name)
+        ,   j_value(value)
     {
 
     }
