@@ -2,14 +2,13 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitUtilsTrdPartyBoostDi
 
-QT -= qt core gui
-
 TEMPLATE = lib
 
-CONFIG += \
-    c++11 c++14 c++17 \
-    depend_includepath \
-    conan_basic_setup \
+QT -= qt core gui \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
+
+CONFIG += staticlib depend_includepath conan_basic_setup \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 

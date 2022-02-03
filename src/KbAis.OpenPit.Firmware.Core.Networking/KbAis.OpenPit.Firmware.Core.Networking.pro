@@ -6,7 +6,7 @@ TEMPLATE = lib
 
 QT += core network \
 
-CONFIG += conan_basic_setup \
+CONFIG += staticlib conan_basic_setup \
 
 QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 

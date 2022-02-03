@@ -33,9 +33,6 @@ TcpMessageSendersManager::start_work_on(rxcpp::observe_on_one_worker& scheduler)
         ,   [](std::exception_ptr e) {
                 PLOGE << "An exception occured " << rxcpp::util::what(e);
             }
-        ,   [] {
-                PLOGD << "DONE";
-            }
         );
 }
 
@@ -74,7 +71,9 @@ TcpMessageSendersManager::on_configuration_changed(
         message_sender_configurations | ranges::views::values
         , [&](MessageSenderConfiguration x) {
             const auto message_sender_name = x.get_name();
-            m_message_senders[message_sender_name].reset(new TcpMessageSender { });
+            m_message_senders[message_sender_name].reset(new TcpMessageSender {
+                message_sender_name
+            });
             m_message_senders[message_sender_name]->restart(x);
         }
     );

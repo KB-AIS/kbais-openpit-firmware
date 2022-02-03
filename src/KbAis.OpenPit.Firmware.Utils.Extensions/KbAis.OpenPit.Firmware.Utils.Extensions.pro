@@ -4,9 +4,11 @@ TARGET = OpenPitUtilsExtensions
 
 TEMPLATE = lib
 
-QT -= qt
+QT -= qt \
 
-CONFIG += c++17
+CONFIG += staticlib \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 HEADERS += \
     QtExtensions/QByteArrayExt.h \

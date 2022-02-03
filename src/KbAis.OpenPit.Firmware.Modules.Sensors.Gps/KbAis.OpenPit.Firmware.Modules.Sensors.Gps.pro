@@ -2,16 +2,13 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitModulesSensorsGps
 
-QT += core serialport
-
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -Wno-psabi
+QT += core serialport \
 
-CONFIG += \
-    c++11 c++14 c++17 \
-    depend_includepath \
-    conan_basic_setup \
+CONFIG += staticlib depend_includepath conan_basic_setup \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \

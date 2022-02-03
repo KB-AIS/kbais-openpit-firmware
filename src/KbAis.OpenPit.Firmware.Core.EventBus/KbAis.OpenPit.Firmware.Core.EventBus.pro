@@ -4,11 +4,11 @@ TARGET = OpenPitCoreEventBus
 
 TEMPLATE = lib
 
-QT += core
+QT += core \
 
-QMAKE_CXXFLAGS += -Wno-psabi
+CONFIG += staticlib conan_basic_setup \
 
-CONFIG += 11 14 17 conan_basic_setup
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 

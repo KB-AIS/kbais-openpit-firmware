@@ -17,7 +17,7 @@ class TcpMessageSender : public QObject {
     using SocketError = QAbstractSocket::SocketError;
 
 public:
-    TcpMessageSender();
+    TcpMessageSender(const QString& message_sender_name);
 
     void restart(const MessageSenderConfiguration& configuration);
 

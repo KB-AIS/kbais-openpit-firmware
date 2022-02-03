@@ -2,18 +2,18 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitDmp
 
-QT += core gui network serialport sql widgets
-
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi -faligned-new
+QT += core gui network serialport sql widgets \
 
-CONFIG += conan_basic_setup
+CONFIG += depend_includepath conan_basic_setup \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi -faligned-new \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.App.Dmp.Presentation \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Core.EventBus \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.EventBus \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Messaging \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Persisting \

@@ -5,12 +5,13 @@
 #include <QMetaEnum>
 
 template<typename QEnum>
-std::string QtEnumToString(const QEnum value) {
+std::string qt_enum_to_string(const QEnum value) {
     return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
 }
 
-TcpMessageSender::TcpMessageSender()
+TcpMessageSender::TcpMessageSender(const QString& message_sender_name)
     :   QObject()
+    ,   m_message_sender_name(message_sender_name)
     ,   m_socket(this)
 {
     setup_socket_signals();
@@ -23,19 +24,19 @@ TcpMessageSender::setup_socket_signals() {
     constexpr auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
     QObject::connect(&m_socket, &QTcpSocket::connected, [&] {
-        PLOGD << "Connected";
+        PLOGD << m_message_sender_name << " -- connected";
     });
 
     QObject::connect(&m_socket, SocketStateSignal, [&](auto state) {
-        PLOGD << "State " << QtEnumToString(state);
+        PLOGD << m_message_sender_name << " -- change state: " << qt_enum_to_string(state);
     });
 
     QObject::connect(&m_socket, SocketErrorSignal, [&](auto error) {
-        PLOGD << "Error " << QtEnumToString(error);
+        PLOGE << m_message_sender_name << " -- got error: " << qt_enum_to_string(error);
     });
 
     QObject::connect(&m_socket, &QTcpSocket::disconnected, [&] {
-        PLOGD << "Disconnected";
+        PLOGD << m_message_sender_name << " -- disconnected";
     });
 }
 
