@@ -20,7 +20,13 @@ class TcpMessageSendersManager
 {
     Q_OBJECT
 
-    using MessageSenderConfigurations_t = std::map<QString, MessageSenderConfiguration>;
+    using MessageSenderId_t = QString;
+
+    using MessageSenderConfigurations_t = std::map<MessageSenderId_t, MessageSenderConfiguration>;
+
+    using MessageSenderStates_t = std::map<MessageSenderId_t, TcpMessageSenderState>;
+
+    using MessageSenders_t = std::map<MessageSenderId_t, std::unique_ptr<TcpMessageSender>>;
 
 public:
     explicit TcpMessageSendersManager(
@@ -34,13 +40,19 @@ public:
 private:
     IRxConfigurationChangePublisher& m_configuration_publisher;
 
-    rxcpp::composite_subscription m_subscriptions;
+    rxcpp::composite_subscription m_main_subs;
 
-    std::map<QString, std::unique_ptr<TcpMessageSender>> m_message_senders;
+    rxcpp::composite_subscription m_message_sender_status_changed_subs;
+
+    MessageSenderConfigurations_t m_message_sender_configurations;
+
+    MessageSenderStates_t m_message_sender_states;
+
+    MessageSenders_t m_message_senders;
 
     void on_configuration_changed(AppConfiguration configuration);
 
-    void restart_message_senders();
+    void on_message_senders_restart_required();
 
 };
 

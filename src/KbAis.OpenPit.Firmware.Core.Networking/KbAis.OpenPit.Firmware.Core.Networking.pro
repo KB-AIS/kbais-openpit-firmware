@@ -24,7 +24,6 @@ HEADERS += \
 #    MessagesBatchesSendQueue.h \
 #    SwomProtocolCommunicator.h \
 #    SwomProtocolFormatter.h \
-    IMessageSendersRegistry.h \
     IRxMessageSendersStatusPublisher.h \
     MessageSenderConfiguration.h \
     ModuleFactoryNetworking.h \

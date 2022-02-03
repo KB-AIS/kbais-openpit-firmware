@@ -38,7 +38,7 @@ public:
             >()
                 .to<ConfigurationManager>()
                 .in(boost::di::singleton)
-        ,   createDiModuleNetworking()
+        ,   create_di_module_networking()
         ,   createAgtpServiceModule()
             // Configure Modules.Sensors.Gps
         ,   boost::di::bind<IRxGpsSensorPublisher>()

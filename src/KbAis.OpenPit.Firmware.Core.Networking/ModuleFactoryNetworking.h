@@ -7,7 +7,7 @@
 #include "TcpMessageSendersManager.h"
 #include "ThreadWorkerNetworking.h"
 
-inline auto createDiModuleNetworking() noexcept {
+inline auto create_di_module_networking() noexcept {
     return boost::di::make_injector(
         boost::di::bind<
             IMessageSendersManager

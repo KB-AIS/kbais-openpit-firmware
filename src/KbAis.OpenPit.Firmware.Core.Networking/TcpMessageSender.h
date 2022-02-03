@@ -9,17 +9,33 @@
 #include "IProtocolCommunicator.h"
 #include "MessageSenderConfiguration.h"
 
+struct TcpMessageSenderState {
+
+    QAbstractSocket::SocketState socket_state { QAbstractSocket::UnconnectedState };
+
+    QAbstractSocket::SocketError socket_error { QAbstractSocket::UnknownSocketError };
+
+};
+
+struct TcpMessageSenderStateChanged {
+
+    QString message_sender_name;
+
+    TcpMessageSenderState state;
+
+};
+
+Q_DECLARE_METATYPE(TcpMessageSenderStateChanged);
+
 class TcpMessageSender : public QObject {
     Q_OBJECT
-
-    using SocketState = QAbstractSocket::SocketState;
-
-    using SocketError = QAbstractSocket::SocketError;
 
 public:
     TcpMessageSender(const QString& message_sender_name);
 
     void restart(const MessageSenderConfiguration& configuration);
+
+    Q_SIGNAL void state_changed(TcpMessageSenderStateChanged notification);
 
 private:
     const QString m_message_sender_name;
