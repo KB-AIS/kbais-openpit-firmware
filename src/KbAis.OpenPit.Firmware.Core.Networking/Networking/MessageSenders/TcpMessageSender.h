@@ -6,14 +6,18 @@
 #include <QSharedPointer>
 #include <QTcpSocket>
 
-#include "IProtocolCommunicator.h"
-#include "MessageSenderConfiguration.h"
+#include "Networking/Communicators/IProtocolCommunicator.h"
+#include "Networking/Confguration/TcpMessageSenderConfiguration.h"
 
 struct TcpMessageSenderState {
 
-    QAbstractSocket::SocketState socket_state { QAbstractSocket::UnconnectedState };
+    QAbstractSocket::SocketState socket_state {
+        QAbstractSocket::UnconnectedState
+    };
 
-    QAbstractSocket::SocketError socket_error { QAbstractSocket::UnknownSocketError };
+    QAbstractSocket::SocketError socket_error {
+        QAbstractSocket::UnknownSocketError
+    };
 
 };
 
@@ -33,7 +37,7 @@ class TcpMessageSender : public QObject {
 public:
     TcpMessageSender(const QString& message_sender_name);
 
-    void restart(const MessageSenderConfiguration& configuration);
+    void restart(const TcpMessageSenderConfiguration& configuration);
 
     Q_SIGNAL void state_changed(TcpMessageSenderStateChanged notification);
 

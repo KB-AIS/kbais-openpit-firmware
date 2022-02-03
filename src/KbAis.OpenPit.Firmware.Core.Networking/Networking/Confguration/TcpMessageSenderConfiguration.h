@@ -1,12 +1,12 @@
-#ifndef MESSAGESENDERCONFIGURATION_H
-#define MESSAGESENDERCONFIGURATION_H
+#ifndef TCPMESSAGESENDERCONFIGURATION_H
+#define TCPMESSAGESENDERCONFIGURATION_H
 
 // std
 #include <chrono>
 // qt
 #include <QString>
 
-struct MessageSenderConfiguration {
+struct TcpMessageSenderConfiguration {
 
     QString host;
 
@@ -24,4 +24,4 @@ struct MessageSenderConfiguration {
 
 };
 
-#endif // MESSAGESENDERCONFIGURATION_H
+#endif // TCPMESSAGESENDERCONFIGURATION_H

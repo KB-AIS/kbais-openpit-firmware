@@ -12,13 +12,18 @@
 #include "GpsMessage.h"
 #include "IRxGpsSensorPublisher.h"
 
+#include "Networking/Diagnosing/IRxMessageSendersDiagPub.h"
+
 namespace Ui { class MainView; }
 
 class MainView : public QWidget {
     Q_OBJECT
 
 public:
-    MainView(const IRxGpsSensorPublisher& gpsSensorPublisher);
+    MainView(
+        const IRxGpsSensorPublisher& gpsSensorPublisher
+    ,   const IRxMessageSendersDiagPub& message_sender_diag_pub
+    );
 
     ~MainView();
 
@@ -27,7 +32,7 @@ public:
 private:
     Ui::MainView* ui;
 
-    rxcpp::composite_subscription subs;
+    rxcpp::composite_subscription m_subscriptions;
 
     /*!
      * \brief Timer to update current time on screen.

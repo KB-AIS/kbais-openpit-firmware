@@ -13,7 +13,7 @@ const QString MESSAGE_MONKIER_GPS { QStringLiteral("GPS") };
 DmpRecurrentMessageMapper::DmpRecurrentMessageMapper(
     const IRxGpsSensorPublisher& gpsSensorPublisher
 )
-    : mGpsSensorPublisher { gpsSensorPublisher }
+    :   mGpsSensorPublisher { gpsSensorPublisher }
 {
 
 }

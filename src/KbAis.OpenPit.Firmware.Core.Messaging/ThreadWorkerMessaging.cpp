@@ -19,6 +19,7 @@ ThreadWorkerMessaging::ThreadWorkerMessaging(
 ,   RecurrentMessagesCollector& recurrentMessagesCollector
 ,   MessagesCollectorsAdapter& messagesCollectorsAdapter
 ) {
+    mTrdWorker.setObjectName("CORE\MESSAGING");
     messagesCollectorsAdapter.moveToThread(&mTrdWorker);
 
     mTrdWorker.start();

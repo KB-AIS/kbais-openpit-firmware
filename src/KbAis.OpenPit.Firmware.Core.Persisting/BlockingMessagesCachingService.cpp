@@ -28,16 +28,18 @@ BlockingMessagesCachingService::BlockingMessagesCachingService(
             }
             x.on_completed();
         })
-        .subscribe_on(rxcpp::observe_on_new_thread());
+        .subscribe_on(rxcpp::synchronize_new_thread());
 
     messagesBatchesQueueObservable.subscribe(
-        subMessagesBatcheQueue,
-        [&](const MessagesBatch& x) {
+        subMessagesBatcheQueue
+    ,   [&](const MessagesBatch& x) {
+            PLOGV << "Messages caching service got a new batch";
+
             insertMessagesBatchCmd.handle(x);
 
             postEventMessagesBatchSaved();
-        },
-        [](std::exception_ptr e){
+        }
+    ,   [](std::exception_ptr e){
             PLOGE << fmt::format("Error on messages batch caching: {}", rxcpp::util::what(e));
         }
     );

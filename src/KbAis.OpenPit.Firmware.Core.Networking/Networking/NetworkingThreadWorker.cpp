@@ -1,15 +1,15 @@
-#include "ThreadWorkerNetworking.h"
+#include "NetworkingThreadWorker.h"
 
 #include "QtExtensions/QTimerExt.h"
 
 using namespace std::chrono;
 
-ThreadWorkerNetworking::ThreadWorkerNetworking(
+NetworkingThreadWorker::NetworkingThreadWorker(
     TcpMessageSendersManager& manager
 )
     :   m_manager(manager)
 {
-    m_working_thread.setObjectName("NETWORKING");
+    m_working_thread.setObjectName("CORE.NETWORKING");
 
     m_manager.moveToThread(&m_working_thread);
 

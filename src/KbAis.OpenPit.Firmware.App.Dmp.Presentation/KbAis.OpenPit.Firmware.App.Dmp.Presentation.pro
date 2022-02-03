@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 

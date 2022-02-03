@@ -9,7 +9,7 @@
 // Core.Messaging
 #include "Collectors/MessagesCollectorsAdapter.h"
 #include "ThreadWorkerMessaging.h"
-#include "ModuleFactoryNetworking.h"
+#include "Networking/NetworkingModuleFactory.h"
 // Core.Persisiting
 #include "BlockingMessagesCachingService.h"
 // Modules.Legacy.Agtp

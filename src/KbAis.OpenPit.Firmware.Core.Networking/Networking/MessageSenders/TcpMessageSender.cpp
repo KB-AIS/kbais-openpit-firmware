@@ -47,6 +47,6 @@ TcpMessageSender::setup_socket_signals() {
 }
 
 void
-TcpMessageSender::restart(const MessageSenderConfiguration& configuration) {
+TcpMessageSender::restart(const TcpMessageSenderConfiguration& configuration) {
     m_socket.connectToHost(configuration.host, configuration.port);
 }

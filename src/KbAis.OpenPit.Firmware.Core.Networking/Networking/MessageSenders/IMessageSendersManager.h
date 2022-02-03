@@ -1,8 +1,6 @@
 #ifndef IMESSAGESENDERSMANAGER_H
 #define IMESSAGESENDERSMANAGER_H
 
-#include "MessageSenderConfiguration.h"
-
 class IMessageSendersManager {
 
 public:

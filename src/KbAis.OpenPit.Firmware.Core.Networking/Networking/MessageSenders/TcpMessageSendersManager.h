@@ -9,20 +9,23 @@
 // Core.Configuration
 #include "IRxConfigurationChangePublisher.h"
 
-#include "IMessageSendersManager.h"
-#include "IRxMessageSendersStatusPublisher.h"
-#include "TcpMessageSender.h"
+#include "Networking/Confguration/TcpMessageSenderConfiguration.h"
+#include "Networking/Diagnosing/IRxMessageSendersDiagPub.h"
+#include "Networking/MessageSenders/IMessageSendersManager.h"
+#include "Networking/MessageSenders/TcpMessageSender.h"
 
 class TcpMessageSendersManager
     :   public QObject
     ,   public IMessageSendersManager
-    ,   public IRxMessageSendersStatusPublisher
+    ,   public IRxMessageSendersDiagPub
 {
     Q_OBJECT
 
     using MessageSenderId_t = QString;
 
-    using MessageSenderConfigurations_t = std::map<MessageSenderId_t, MessageSenderConfiguration>;
+    using MessageSenderConfigurations_t = std::map<MessageSenderId_t, TcpMessageSenderConfiguration>;
+
+    using MessageSenderState_t = std::pair<MessageSenderId_t, TcpMessageSenderState>;
 
     using MessageSenderStates_t = std::map<MessageSenderId_t, TcpMessageSenderState>;
 
@@ -30,19 +33,21 @@ class TcpMessageSendersManager
 
 public:
     explicit TcpMessageSendersManager(
-        IRxConfigurationChangePublisher& configurationPublisher
+        IRxConfigurationChangePublisher& configuration_publisher
     );
 
-    void start_work_on(rxcpp::observe_on_one_worker& scheduler);
+    Q_SLOT void start_work_on(rxcpp::observe_on_one_worker& coordinator);
 
-    rxcpp::observable<QVector<MessageSenderStatus>> get_diag_observable() const override;
+    rxcpp::observable<MessageSenderDiagInfos_t> get_diag_observable() const override;
 
 private:
     IRxConfigurationChangePublisher& m_configuration_publisher;
 
-    rxcpp::composite_subscription m_main_subs;
+    rxcpp::composite_subscription m_subscriptions;
 
-    rxcpp::composite_subscription m_message_sender_status_changed_subs;
+    rxcpp::composite_subscription m_status_subscriptions;
+
+    rxcpp::rxsub::behavior<MessageSenderDiagInfos_t> m_subject;
 
     MessageSenderConfigurations_t m_message_sender_configurations;
 
@@ -53,6 +58,8 @@ private:
     void on_configuration_changed(AppConfiguration configuration);
 
     void on_message_senders_restart_required();
+
+    void on_message_sender_state_changed(TcpMessageSenderStateChanged);
 
 };
 
