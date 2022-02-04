@@ -6,7 +6,7 @@
 #include <plog/Log.h>
 
 BlockingMessagesCachingService::BlockingMessagesCachingService(
-    MessagesBatchQueue& messagesBatchQueue, const RxEventBus& eventBus
+    MessagesBatchQueue_t& messagesBatchQueue, const RxEventBus& eventBus
 )
     : RxEventModule(eventBus)
     , messagesBatchQueue { messagesBatchQueue }

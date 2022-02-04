@@ -59,6 +59,10 @@ inline void from_json(const nlohmann::json &j, QList<T> &list) {
 
 inline void to_json(nlohmann::json& j, const QVariant&);
 
+inline void to_json(nlohmann::json& j, const QString& string) {
+    j = string.toStdString();
+}
+
 inline void to_json(nlohmann::json& j, const QVariantList& list) {
     j = nlohmann::json::array();
 
@@ -86,6 +90,8 @@ inline void to_json(nlohmann::json& j, const QVariant& variant) {
         to_json(j, variant.value<QVariantList>());
     } else if (type == QMetaType::QVariantMap) {
         to_json(j, variant.value<QVariantMap>());
+    } else if (type == QMetaType::QDateTime) {
+        j = variant.toDateTime().toString(Qt::ISODateWithMs).toStdString();
     } else if (type == QMetaType::QString) {
         j = variant.toString().toStdString();
     } else if (type == QMetaType::Double) {

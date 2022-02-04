@@ -1,24 +1,40 @@
 #include "TcpMessageSender.h"
 
+// qt
+#include <QMetaEnum>
 // oss
 #include <plog/Log.h>
-#include <QMetaEnum>
 
-template<typename QEnum>
-std::string qt_enum_to_string(const QEnum value) {
-    return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
+#include "Networking/Communicators/Swom/SwomProtocolCommunicator.h"
+
+template<typename TEnum>
+QString QEnumToString(const TEnum value) {
+    return QMetaEnum::fromType<TEnum>().valueToKey(value);
 }
 
 TcpMessageSender::TcpMessageSender(const QString& message_sender_name)
     :   QObject()
-    ,   m_message_sender_name(message_sender_name)
+    ,   m_messageSenderName(message_sender_name)
     ,   m_socket(this)
 {
-    setup_socket_signals();
+    SetupSocketSignals();
 }
 
 void
-TcpMessageSender::setup_socket_signals() {
+TcpMessageSender::Restart(const TcpMessageSenderConfiguration& configuration) {
+    if (m_protocolCommunicator != nullptr) {
+        // TODO: Should we just use destructor to stop communication?
+        m_protocolCommunicator->StopCommunication();
+    }
+
+    m_protocolCommunicator = GenProtocolCommunicator(configuration.protocol);
+
+    // Connecto to new host
+    m_socket.connectToHost(configuration.host, configuration.port);
+}
+
+void
+TcpMessageSender::SetupSocketSignals() {
     using SocketState = QAbstractSocket::SocketState;
     constexpr auto SocketStateSignal = qOverload<SocketState>(&QAbstractSocket::stateChanged);
 
@@ -26,27 +42,40 @@ TcpMessageSender::setup_socket_signals() {
     constexpr auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
     QObject::connect(&m_socket, &QTcpSocket::connected, [&] {
-        PLOGD << m_message_sender_name << " -- connected";
+        PLOGD << m_messageSenderName << " -- connected";
+
+        m_protocolCommunicator->InitCommunication(m_socket);
     });
 
     QObject::connect(&m_socket, SocketStateSignal, [&](auto state) {
-        PLOGD << m_message_sender_name << " -- change state: " << qt_enum_to_string(state);
+        PLOGD << m_messageSenderName << " -- change state: " << QEnumToString(state);
 
-        emit state_changed({ m_message_sender_name, { state, m_socket.error() } });
+        emit StateChanged({ m_messageSenderName, { state, m_socket.error() } });
     });
 
     QObject::connect(&m_socket, SocketErrorSignal, [&](auto error) {
-        PLOGE << m_message_sender_name << " -- got error: " << qt_enum_to_string(error);
+        PLOGE << m_messageSenderName << " -- got error: " << QEnumToString(error);
 
-        emit state_changed({ m_message_sender_name, { m_socket.state(), error } });
+        emit StateChanged({ m_messageSenderName, { m_socket.state(), error } });
     });
 
     QObject::connect(&m_socket, &QTcpSocket::disconnected, [&] {
-        PLOGD << m_message_sender_name << " -- disconnected";
+        PLOGD << m_messageSenderName << " -- disconnected";
+
+        if (m_protocolCommunicator != nullptr) {
+            m_protocolCommunicator->StopCommunication();
+        }
     });
 }
 
-void
-TcpMessageSender::restart(const TcpMessageSenderConfiguration& configuration) {
-    m_socket.connectToHost(configuration.host, configuration.port);
+TcpMessageSender::ProtocolCommunicator_t
+TcpMessageSender::GenProtocolCommunicator(const MessageSenderProtocol protocol) {
+    switch (protocol) {
+
+    case MessageSenderProtocol::Swom:
+        return std::make_unique<SwomProtocolCommunicator>();
+
+    default: throw std::logic_error { "Unknown protocol" };
+
+    }
 }

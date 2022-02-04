@@ -6,9 +6,10 @@
 #include "pipes/operator.hpp"
 #include "pipes/push_back.hpp"
 #include "pipes/transform.hpp"
+#include <range/v3/all.hpp>
 
 RecurrentMessagesCollector::RecurrentMessagesCollector(RecurrentMessageMappers_t mappers) {
-    mObservable = mappers.at(0)->getObservable();
+    m_observableRecurrentMappers = mappers.at(0)->getObservable();
 
     mappers
         >>= pipes::drop(1)
@@ -16,34 +17,33 @@ RecurrentMessagesCollector::RecurrentMessagesCollector(RecurrentMessageMappers_t
                 return mapper->getObservable();
             })
         >>= pipes::for_each([&](const auto& mapperObservable) {
-                mObservable = mObservable.merge(mapperObservable);
+                m_observableRecurrentMappers = m_observableRecurrentMappers.merge(mapperObservable);
             });
 }
 
 RecurrentMessagesCollector::~RecurrentMessagesCollector() {
-    mSubs.unsubscribe();
+    m_subscriptions.unsubscribe();
 }
 
-void RecurrentMessagesCollector::startCollectingOn(const rxqt::run_loop& loop) {
-    mSubs = rxcpp::composite_subscription();
+void RecurrentMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler) {
+    m_subscriptions = rxcpp::composite_subscription();
 
-    mObservable
-        .observe_on(loop.observe_on_run_loop())
+    m_observableRecurrentMappers
+        .observe_on(scheduler)
         .subscribe(
-            mSubs
+            m_subscriptions
         ,   [&](Message message) {
-                QMutexLocker locker(&mMtxMessages);
-                mMessages.insert(message.moniker, message);
+                //QMutexLocker locker(&m_mtxCollectedMessages);
+                m_collectedMessages.insert(message.moniker, message);
             }
         );
 }
 
 QVector<Message>
-RecurrentMessagesCollector::dumpMessages() {
-    QMutexLocker lock(&mMtxMessages);
+RecurrentMessagesCollector::DumpMessages() {
+    //QMutexLocker lock(&m_mtxCollectedMessages);
 
-    QVector<Message> messages;
-    std::copy(std::begin(mMessages), std::end(mMessages), pipes::push_back(messages));
+    QVector<Message> messages { m_collectedMessages.values().toVector() };
 
     return messages;
 }

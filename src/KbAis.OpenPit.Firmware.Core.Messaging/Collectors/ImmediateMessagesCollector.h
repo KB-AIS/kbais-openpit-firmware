@@ -14,27 +14,29 @@
 class ImmediateMessagesCollector {
     using ImmediateMessageMappers_t = std::vector<std::shared_ptr<IRxImmediateMessageMapper>>;
 
+    using Scheduler_t = rxcpp::observe_on_one_worker;
+
 public:
     ImmediateMessagesCollector(ImmediateMessageMappers_t mappers);
 
     ~ImmediateMessagesCollector();
 
-    void startCollectingOn(const rxqt::run_loop& loop);
+    void StartCollectingOn(const Scheduler_t& scheduler);
 
-    rxcpp::observable<long> getCollectedObservable();
+    rxcpp::observable<bool> GetMessagesCollectedObservable(const Scheduler_t& scheduler);
 
-    QVector<Message> dumpMessages();
+    QVector<Message> DumpMessages();
 
 private:
-    rxcpp::observable<Message> mObservable;
+    rxcpp::observable<Message> m_observableImmediateMappers;
 
-    rxcpp::composite_subscription mSubscriptions;
+    rxcpp::composite_subscription m_subs;
 
-    rxcpp::rxsub::subject<long> mSubject;
+    rxcpp::rxsub::subject<bool> m_messagesCollectedSubject;
 
-    QVector<Message> mMessages;
+    QVector<Message> m_collectedMessages;
 
-    QMutex mMtxMessages;
+    QMutex m_mtxCollectedMessages;
 
 };
 

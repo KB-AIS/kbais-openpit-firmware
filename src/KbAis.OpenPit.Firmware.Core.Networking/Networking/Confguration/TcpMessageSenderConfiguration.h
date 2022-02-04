@@ -6,19 +6,23 @@
 // qt
 #include <QString>
 
+enum class MessageSenderProtocol {
+    Swom
+};
+
 struct TcpMessageSenderConfiguration {
 
     QString host;
 
     quint16 port;
 
-    QString protocol;
+    MessageSenderProtocol protocol;
 
-    bool is_enabled;
+    bool isEnabled;
 
-    std::chrono::milliseconds send_interval;
+    std::chrono::milliseconds sendInterval;
 
-    QString get_name() const {
+    QString GetMessageSenderName() const {
         return QString("%1:%2").arg(host).arg(port);
     };
 

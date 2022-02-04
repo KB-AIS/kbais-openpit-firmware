@@ -1,66 +1,63 @@
 #include "ImmediateMessagesCollector.h"
 
 // oss
-#include <pipes/drop.hpp>
-#include <pipes/for_each.hpp>
-#include <pipes/operator.hpp>
-#include <pipes/push_back.hpp>
-#include <pipes/transform.hpp>
 #include <plog/Log.h>
+#include <range/v3/all.hpp>
 
 using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds USR_MESSAGE_DEBOUNCE_PERIOD = 1s;
 
-ImmediateMessagesCollector::ImmediateMessagesCollector(ImmediateMessageMappers_t mappers) {
-    mSubject = rxcpp::rxsub::subject<long>();
+ImmediateMessagesCollector::ImmediateMessagesCollector(
+    ImmediateMessageMappers_t mappers
+) {
+    m_observableImmediateMappers = mappers.at(0)->getObservable();
 
-    mObservable = mappers.at(0)->getObservable();
-
-    mappers
-        >>= pipes::drop(1)
-        >>= pipes::transform([](auto mapper) {
-                return mapper->getObservable();
-            })
-        >>= pipes::for_each([&](const auto& mapperObservable) {
-                mObservable = mObservable.merge(mapperObservable);
-            });
+    ranges::for_each(
+        mappers
+    |   ranges::view::drop(1)
+    |   ranges::view::transform([](auto x) { return x->getObservable(); })
+    ,   [&](const auto& x) {
+            m_observableImmediateMappers = m_observableImmediateMappers.merge(x);
+        }
+    );
 }
 
 ImmediateMessagesCollector::~ImmediateMessagesCollector() {
-    mSubscriptions.unsubscribe();
+    m_subs.unsubscribe();
 }
 
 void
-ImmediateMessagesCollector::startCollectingOn(const rxqt::run_loop& loop) {
-    mSubscriptions = rxcpp::composite_subscription();
+ImmediateMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler) {
+    m_subs = rxcpp::composite_subscription();
 
-    mObservable
-        .observe_on(loop.observe_on_run_loop())
-        .subscribe(
-            mSubscriptions
-        ,   [&](Message message) {
-                mMtxMessages.lock();
-                mMessages.append(message);
-                mMtxMessages.unlock();
+    const auto messageMapped_f = [&](Message message) {
+        //m_mtxCollectedMessages.lock();
 
-                mSubject.get_subscriber().on_next(0);
-            }
-   );
+        m_collectedMessages.append(message);
+
+        //m_mtxCollectedMessages.unlock();
+
+        m_messagesCollectedSubject.get_subscriber().on_next(true);
+    };
+
+    m_observableImmediateMappers
+        .observe_on(scheduler)
+        .subscribe(m_subs, messageMapped_f);
 }
 
-rxcpp::observable<long>
-ImmediateMessagesCollector::getCollectedObservable() {
-    return mSubject.get_observable()
-        .debounce(USR_MESSAGE_DEBOUNCE_PERIOD);
+rxcpp::observable<bool>
+ImmediateMessagesCollector::GetMessagesCollectedObservable(const Scheduler_t& scheduler) {
+    return m_messagesCollectedSubject.get_observable()
+        .debounce(USR_MESSAGE_DEBOUNCE_PERIOD, scheduler);
 }
 
 QVector<Message>
-ImmediateMessagesCollector::dumpMessages() {
-    QMutexLocker lock(&mMtxMessages);
+ImmediateMessagesCollector::DumpMessages() {
+    //QMutexLocker lock(&m_mtxCollectedMessages);
 
-    QVector<Message> messages(mMessages);
-    mMessages.clear();
+    QVector<Message> messages(m_collectedMessages);
+    m_collectedMessages.clear();
 
     return messages;
 }

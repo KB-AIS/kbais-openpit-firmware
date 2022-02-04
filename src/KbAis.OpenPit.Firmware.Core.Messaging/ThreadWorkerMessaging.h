@@ -9,14 +9,10 @@
 class ThreadWorkerMessaging {
 
 public:
-    ThreadWorkerMessaging(
-        ImmediateMessagesCollector& immediateMessagesCollector
-    ,   RecurrentMessagesCollector& recurrentMessagesCollector
-    ,   MessagesCollectorsAdapter& messagesCollectorsAdapter
-    );
+    ThreadWorkerMessaging(MessagesCollectorsAdapter& messagesCollectorsAdapter);
 
 private:
-    rxqt::RunLoopThread mTrdWorker;
+    rxqt::RunLoopThread m_workingThread;
 
 };
 

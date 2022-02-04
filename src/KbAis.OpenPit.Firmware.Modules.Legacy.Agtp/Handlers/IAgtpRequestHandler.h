@@ -12,7 +12,7 @@ struct AgtpRequest {
 
     QString payload;
 
-    quint8 type { 0 };
+    quint8 type { 0x00 };
 
 };
 
@@ -22,7 +22,7 @@ struct AgtpResponse {
 
     QByteArray bytes;
 
-    quint8 status { 0 };
+    quint8 status { 0x00 };
 };
 
 class IAgtpRequestHandler {

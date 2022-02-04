@@ -1,6 +1,8 @@
 #ifndef TCPMESSAGESENDER_H
 #define TCPMESSAGESENDER_H
 
+// std
+#include <memory>
 // qt
 #include <QObject>
 #include <QSharedPointer>
@@ -34,19 +36,25 @@ Q_DECLARE_METATYPE(TcpMessageSenderStateChanged);
 class TcpMessageSender : public QObject {
     Q_OBJECT
 
+    using ProtocolCommunicator_t = std::unique_ptr<IProtocolCommunicator>;
+
 public:
-    TcpMessageSender(const QString& message_sender_name);
+    TcpMessageSender(const QString& messageSenderName);
 
-    void restart(const TcpMessageSenderConfiguration& configuration);
+    void Restart(const TcpMessageSenderConfiguration& configuration);
 
-    Q_SIGNAL void state_changed(TcpMessageSenderStateChanged notification);
+    Q_SIGNAL void StateChanged(TcpMessageSenderStateChanged notification);
 
 private:
-    const QString m_message_sender_name;
+    const QString m_messageSenderName;
 
     QTcpSocket m_socket;
 
-    void setup_socket_signals();
+    ProtocolCommunicator_t m_protocolCommunicator;
+
+    void SetupSocketSignals();
+
+    static ProtocolCommunicator_t GenProtocolCommunicator(const MessageSenderProtocol protocol);
 
 };
 

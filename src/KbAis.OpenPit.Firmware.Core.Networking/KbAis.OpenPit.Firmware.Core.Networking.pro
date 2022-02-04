@@ -4,7 +4,7 @@ TARGET = OpenPitCoreNetworking
 
 TEMPLATE = lib
 
-QT += core network \
+QT += core network sql \
 
 CONFIG += staticlib conan_basic_setup \
 
@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration/ \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Persisting/ \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions/ \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt/ \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt/ \

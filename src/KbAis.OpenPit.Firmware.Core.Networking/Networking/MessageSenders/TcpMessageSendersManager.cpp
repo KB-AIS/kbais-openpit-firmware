@@ -10,6 +10,7 @@
 #include "JsonQt.h"
 // Utils.TrdParty.RxQt
 #include "RxQt.h"
+#include <variant>
 
 using namespace std::chrono_literals;
 
@@ -77,12 +78,12 @@ TcpMessageSendersManager::on_configuration_changed(
             TcpMessageSenderConfiguration msc {
                 x.at("server_name").get<QString>()
             ,   x.at("server_port").get<quint16>()
-            ,   "swom"
+            ,   MessageSenderProtocol::Swom
             ,   x.at("enabled").get<bool>()
             ,   std::chrono::seconds(x.at("send_interval").get<quint16>())
             };
 
-            return std::make_pair(msc.get_name(), std::move(msc));
+            return std::make_pair(msc.GetMessageSenderName(), std::move(msc));
         })
         | ranges::to<MessageSenderConfigurations_t>();
 
@@ -90,7 +91,7 @@ TcpMessageSendersManager::on_configuration_changed(
         m_message_sender_configurations
     |   ranges::views::values
     ,   [&](TcpMessageSenderConfiguration x) {
-            const auto id = x.get_name();
+            const auto id = x.GetMessageSenderName();
 
             m_message_senders[id].reset(new TcpMessageSender { id });
             // Set default state: unconnected
@@ -98,7 +99,7 @@ TcpMessageSendersManager::on_configuration_changed(
 
             const auto on_message_sender_state_changed_f =
                 std::bind(&TcpMessageSendersManager::on_message_sender_state_changed, this, std::placeholders::_1);
-            rxqt::from_signal(m_message_senders[id].get(), &TcpMessageSender::state_changed)
+            rxqt::from_signal(m_message_senders[id].get(), &TcpMessageSender::StateChanged)
                 .subscribe(m_status_subscriptions, on_message_sender_state_changed_f);
         }
     );
@@ -116,7 +117,7 @@ TcpMessageSendersManager::on_message_senders_restart_required() {
         })
     |   ranges::views::keys
     ,   [&](const MessageSenderId_t& x) {
-            m_message_senders[x]->restart(m_message_sender_configurations[x]);
+            m_message_senders[x]->Restart(m_message_sender_configurations[x]);
         }
     );
 }

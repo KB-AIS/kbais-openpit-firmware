@@ -16,11 +16,11 @@ class BlockingMessagesCachingService
     ,   public RxEventModule
 {
 
-using MessagesBatchQueue = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
+using MessagesBatchQueue_t = moodycamel::BlockingReaderWriterQueue<MessagesBatch>;
 
 public:
     BlockingMessagesCachingService(
-        MessagesBatchQueue& messagesBatchQueue, const RxEventBus& eventBus
+        MessagesBatchQueue_t& messagesBatchQueue, const RxEventBus& eventBus
     );
 
     ~BlockingMessagesCachingService();
@@ -28,7 +28,7 @@ public:
 private:
     rxcpp::composite_subscription subMessagesBatcheQueue;
 
-    MessagesBatchQueue& messagesBatchQueue;
+    MessagesBatchQueue_t& messagesBatchQueue;
 
     const RxEventBus& eventBus;
 

@@ -14,14 +14,6 @@ using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds COLLECT_MESSAGES_PERIOD { 10s };
 
-std::string threadId(const QString& name) {
-    return fmt::format(
-        "{}: {}"
-    ,   name.toStdString()
-    ,   reinterpret_cast<uintptr_t>(QThread::currentThreadId())
-    );
-}
-
 MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     ImmediateMessagesCollector& immediateMessagesCollector
 ,   RecurrentMessagesCollector& recurrentMessagesCollector
@@ -32,20 +24,31 @@ MessagesCollectorsAdapter::MessagesCollectorsAdapter(
     ,   mRecurrentMessagesCollector { recurrentMessagesCollector }
     ,   mQueue { queue }
 {
-    mSubs = rxcpp::composite_subscription();
 
-    auto immediateObservable = immediateMessagesCollector.getCollectedObservable();
-
-    auto recurrentObservable = rxcpp::observable<>
-        ::interval(COLLECT_MESSAGES_PERIOD);
-
-    recurrentObservable.merge(immediateObservable)
-        .subscribe_on(rxcpp::observe_on_new_thread())
-        .subscribe(mSubs, [&](auto) { handleCollectMessages(); });
 }
 
 MessagesCollectorsAdapter::~MessagesCollectorsAdapter() {
     mSubs.unsubscribe();
+}
+
+void
+MessagesCollectorsAdapter::StartCollectingOn(const rxcpp::observe_on_one_worker& scheduler) {
+    mSubs = rxcpp::composite_subscription();
+
+    auto immediateObservable =
+        mImmediateMessagesCollector.GetMessagesCollectedObservable(scheduler);
+
+    auto recurrentObservable = rxcpp::observable<>
+        ::interval(COLLECT_MESSAGES_PERIOD, scheduler)
+        .map([](auto) { return true; });
+
+    recurrentObservable.merge(immediateObservable)
+        //.subscribe_on(rxcpp::observe_on_new_thread())
+        .subscribe(mSubs, [&](auto) { handleCollectMessages(); });
+
+    mImmediateMessagesCollector.StartCollectingOn(scheduler);
+
+    mRecurrentMessagesCollector.StartCollectingOn(scheduler);
 }
 
 void
@@ -54,8 +57,8 @@ MessagesCollectorsAdapter::handleCollectMessages() {
 
     QVector<Message> messages;
     messages
-        << mImmediateMessagesCollector.dumpMessages()
-        << mRecurrentMessagesCollector.dumpMessages();
+        << mImmediateMessagesCollector.DumpMessages()
+        << mRecurrentMessagesCollector.DumpMessages();
 
     if (messages.isEmpty()) {
         PLOGD << "Messages collector has no messages to enqueue";

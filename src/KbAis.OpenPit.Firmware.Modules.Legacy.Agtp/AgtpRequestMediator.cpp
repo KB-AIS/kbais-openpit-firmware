@@ -3,27 +3,25 @@
 // qt
 #include <QRegularExpression>
 // oss
-#include <pipes/operator.hpp>
-#include <pipes/insert.hpp>
-#include <pipes/transform.hpp>
-#include <plog/Log.h>
 #include <fmt/core.h>
+#include <plog/Log.h>
+#include <range/v3/all.hpp>
 
 const QRegularExpression RE_REQUEST_NAME_CAPTURE { "([\\w]+)" };
 
 AgtpRequestsMediator::AgtpRequestsMediator(
-    std::set<std::shared_ptr<IAgtpRequestHandler>> handlers
+    std::set<AgtpCommandHandler_t> handlers
 ) {
-    handlers
-        >>= pipes::transform([](auto x) {
-                return std::make_pair(x->getRequestName(), x);
-            })
-        >>= pipes::insert(mHandlers);
+    const auto v = ranges::view::transform([](const auto& x) {
+        return x->getRequestName();
+    });
+    m_RequestHandlers = ranges::views::zip(handlers | v, handlers)
+        | ranges::to<AgtpCommandHandlers_t>();
 }
 
 AgtpResponse
 AgtpRequestsMediator::handle(const AgtpRequest& request) const {
-    PLOGD << fmt::format("AGTP service got a request: {}", request.payload.toStdString());
+    PLOGV << fmt::format("AGTP service got a request: {}", request.payload.toStdString());
 
     const auto reRequestNameMatch = RE_REQUEST_NAME_CAPTURE.match(request.payload);
 
@@ -31,9 +29,9 @@ AgtpRequestsMediator::handle(const AgtpRequest& request) const {
         throw std::out_of_range("Request has wrong format");
     }
 
-    const auto itrFindHandler = mHandlers.find(reRequestNameMatch.captured(1));
+    const auto itrFindHandler = m_RequestHandlers.find(reRequestNameMatch.captured(1));
 
-    if (itrFindHandler == mHandlers.end()) {
+    if (itrFindHandler == m_RequestHandlers.end()) {
         throw std::out_of_range("Request is not supported");
     }
 
