@@ -25,5 +25,5 @@ NetworkingThreadWorker::NetworkingThreadWorker(
     });
 
     auto scheduler = m_working_thread.runLoop()->observe_on_run_loop();
-    m_manager.start_work_on(scheduler);
+    m_manager.StartWorkOn(scheduler);
 }

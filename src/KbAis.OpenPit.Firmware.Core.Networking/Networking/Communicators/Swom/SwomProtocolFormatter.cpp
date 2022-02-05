@@ -22,8 +22,8 @@ SwomProtocolFormatter::EncodeAckFrame(const QString& clientId) {
     QDataStream out { &bytes, QIODevice::WriteOnly };
 
     out << static_cast<quint8>(0x00)
-        << QUuid::createUuid();
-    out << json { { "EquipmentId", clientId } };
+        << QUuid::createUuid()
+        << json { { "EquipmentId", clientId } };
 
     return bytes;
 }

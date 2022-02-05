@@ -32,34 +32,32 @@ class TcpMessageSendersManager
     using MessageSenders_t = std::map<MessageSenderId_t, std::unique_ptr<TcpMessageSender>>;
 
 public:
-    explicit TcpMessageSendersManager(
-        IRxConfigurationChangePublisher& configuration_publisher
-    );
+    explicit TcpMessageSendersManager(IRxConfigurationChangePublisher& configurationPublisher);
 
-    Q_SLOT void start_work_on(rxcpp::observe_on_one_worker& coordinator);
+    Q_SLOT void StartWorkOn(rxcpp::observe_on_one_worker& coordinator);
 
-    rxcpp::observable<MessageSenderDiagInfos_t> get_diag_observable() const override;
+    rxcpp::observable<MessageSenderDiagInfos_t> GetObservableDiagInfo() const override;
 
 private:
-    IRxConfigurationChangePublisher& m_configuration_publisher;
+    IRxConfigurationChangePublisher& m_configurationPublisher;
 
-    rxcpp::composite_subscription m_subscriptions;
+    rxcpp::composite_subscription m_subs;
 
-    rxcpp::composite_subscription m_status_subscriptions;
+    rxcpp::composite_subscription m_subsMessageSenderStateCahnge;
 
     rxcpp::rxsub::behavior<MessageSenderDiagInfos_t> m_subject;
 
-    MessageSenderConfigurations_t m_message_sender_configurations;
+    MessageSenderConfigurations_t m_messageSenderConfigurations;
 
-    MessageSenderStates_t m_message_sender_states;
+    MessageSenderStates_t m_messageSenderStates;
 
-    MessageSenders_t m_message_senders;
+    MessageSenders_t m_messageSenders;
 
-    void on_configuration_changed(AppConfiguration configuration);
+    void OnConfigurationChanged(AppConfiguration configuration);
 
-    void on_message_senders_restart_required();
+    void OnMessageSendersRestartRequired();
 
-    void on_message_sender_state_changed(TcpMessageSenderStateChanged);
+    void OnMessageSenderStateChanged(TcpMessageSenderStateChanged notification);
 
 };
 

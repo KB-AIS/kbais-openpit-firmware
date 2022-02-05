@@ -37,7 +37,7 @@ MainView::MainView(
             ui->lbl_diag->setText(text);
         });
 
-    message_sender_diag_pub.get_diag_observable()
+    message_sender_diag_pub.GetObservableDiagInfo()
         .subscribe(
             m_subscriptions
         ,   [&](const std::vector<MessageSenderDiagInfo>& x) {

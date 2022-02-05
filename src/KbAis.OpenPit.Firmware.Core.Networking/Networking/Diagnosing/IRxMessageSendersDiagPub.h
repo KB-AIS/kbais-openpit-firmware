@@ -23,7 +23,7 @@ public:
 
     virtual ~IRxMessageSendersDiagPub() noexcept = default;
 
-    virtual rxcpp::observable<MessageSenderDiagInfos_t> get_diag_observable() const = 0;
+    virtual rxcpp::observable<MessageSenderDiagInfos_t> GetObservableDiagInfo() const = 0;
 
 };
 
