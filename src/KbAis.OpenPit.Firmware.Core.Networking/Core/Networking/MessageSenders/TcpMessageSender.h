@@ -8,8 +8,8 @@
 #include <QSharedPointer>
 #include <QTcpSocket>
 
-#include "Networking/Communicators/IProtocolCommunicator.h"
-#include "Networking/Confguration/TcpMessageSenderConfiguration.h"
+#include "Core/Networking/Communicators/IProtocolCommunicator.h"
+#include "Core/Networking/Confguration/TcpMessageSenderConfiguration.h"
 
 struct TcpMessageSenderState {
 

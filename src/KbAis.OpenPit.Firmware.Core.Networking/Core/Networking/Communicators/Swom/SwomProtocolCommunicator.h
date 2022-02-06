@@ -6,7 +6,7 @@
 
 #include "RxQt.h"
 
-#include "Networking/Communicators/IProtocolCommunicator.h"
+#include "Core/Networking/Communicators/IProtocolCommunicator.h"
 
 enum class SwomProtocolCommunicatorState {
     Authenticating,

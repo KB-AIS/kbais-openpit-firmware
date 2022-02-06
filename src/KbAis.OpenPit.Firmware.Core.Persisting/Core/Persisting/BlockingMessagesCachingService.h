@@ -7,9 +7,10 @@
 // cfw::infra::eventbus
 #include "RxEventBus.h"
 
-#include "IMessagesCachingService.h"
 #include "MessagesBatch.h"
-#include "Commands/InsertMessagesBatchCmd.h"
+
+#include "Core/Persisting/IMessagesCachingService.h"
+#include "Core/Persisting/Commands/InsertMessagesBatchCmd.h"
 
 class BlockingMessagesCachingService
     :   public IMessagesCachingService
@@ -25,14 +26,18 @@ public:
 
     ~BlockingMessagesCachingService();
 
+    void StartWorkOn(rxcpp::observe_on_one_worker& coordination);
+
 private:
-    rxcpp::composite_subscription subMessagesBatcheQueue;
+    MessagesBatchQueue_t& m_messagesBatchQueue;
 
-    MessagesBatchQueue_t& messagesBatchQueue;
+    const RxEventBus& m_eventBus;
 
-    const RxEventBus& eventBus;
+    rxcpp::composite_subscription m_subscriptions;
 
-    InsertMessagesBatchCmd insertMessagesBatchCmd;
+    rxcpp::observable<MessagesBatch> m_messagesBatchesQueueObservable;
+
+    InsertMessagesBatchCmd m_insertMessagesBatchCmd;
 
     void postEventMessagesBatchSaved() const;
 };

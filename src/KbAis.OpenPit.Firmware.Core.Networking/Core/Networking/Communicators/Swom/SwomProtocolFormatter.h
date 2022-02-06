@@ -4,7 +4,7 @@
 // qt
 #include <QByteArray>
 
-#include <Queries/Dtos.h>
+#include <Core/Persisting/Queries/Dtos.h>
 
 class SwomProtocolFormatter {
 

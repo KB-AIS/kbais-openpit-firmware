@@ -4,7 +4,7 @@
 // Utils.TrdParty.RxQt
 #include "RxQt.h"
 
-#include "Networking/MessageSenders/TcpMessageSendersManager.h"
+#include "Core/Networking/MessageSenders/TcpMessageSendersManager.h"
 
 class NetworkingThreadWorker {
 

@@ -4,8 +4,8 @@
 // oss
 #include <boost/di.hpp>
 
-#include "Networking/MessageSenders/TcpMessageSendersManager.h"
-#include "Networking/NetworkingThreadWorker.h"
+#include "Core/Networking/MessageSenders/TcpMessageSendersManager.h"
+#include "Core/Networking/NetworkingThreadWorker.h"
 
 inline auto create_di_module_networking() noexcept {
     return boost::di::make_injector(

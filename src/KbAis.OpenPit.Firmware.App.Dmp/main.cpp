@@ -8,7 +8,7 @@
 #include <plog/Log.h>
 
 // Core.Persisting
-#include "Configuration/DatabaseConfigurator.h"
+#include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 // Utils.TrdParty.BoostDi
 #include "BoostDiExtensions.h"
 
@@ -39,7 +39,7 @@ struct ConfigurationBootstraper {
         );
 
         configurationManager.registerConfiguration(
-            "networking"
+            "Core/Networking"
         ,   R"(
                 {
                   "primary_message_server": -1,

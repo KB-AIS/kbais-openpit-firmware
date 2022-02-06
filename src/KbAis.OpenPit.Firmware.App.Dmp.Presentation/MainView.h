@@ -12,7 +12,7 @@
 #include "GpsMessage.h"
 #include "IRxGpsSensorPublisher.h"
 
-#include "Networking/Diagnosing/IRxMessageSendersDiagPub.h"
+#include "Core/Networking/Diagnosing/IRxMessageSendersDiagPub.h"
 
 namespace Ui { class MainView; }
 

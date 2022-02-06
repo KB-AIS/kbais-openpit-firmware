@@ -9,10 +9,10 @@
 // Core.Configuration
 #include "IRxConfigurationChangePublisher.h"
 
-#include "Networking/Confguration/TcpMessageSenderConfiguration.h"
-#include "Networking/Diagnosing/IRxMessageSendersDiagPub.h"
-#include "Networking/MessageSenders/IMessageSendersManager.h"
-#include "Networking/MessageSenders/TcpMessageSender.h"
+#include "Core/Networking/Confguration/TcpMessageSenderConfiguration.h"
+#include "Core/Networking/Diagnosing/IRxMessageSendersDiagPub.h"
+#include "Core/Networking/MessageSenders/IMessageSendersManager.h"
+#include "Core/Networking/MessageSenders/TcpMessageSender.h"
 
 class TcpMessageSendersManager
     :   public QObject

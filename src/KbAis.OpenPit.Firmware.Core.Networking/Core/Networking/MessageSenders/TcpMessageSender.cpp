@@ -5,7 +5,7 @@
 // oss
 #include <plog/Log.h>
 
-#include "Networking/Communicators/Swom/SwomProtocolCommunicator.h"
+#include "Core/Networking/Communicators/Swom/SwomProtocolCommunicator.h"
 
 template<typename TEnum>
 QString QEnumToString(const TEnum value) {

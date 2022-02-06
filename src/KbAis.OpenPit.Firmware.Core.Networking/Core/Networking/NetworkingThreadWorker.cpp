@@ -1,4 +1,4 @@
-#include "NetworkingThreadWorker.h"
+#include "Core/Networking/NetworkingThreadWorker.h"
 
 #include "QtExtensions/QTimerExt.h"
 

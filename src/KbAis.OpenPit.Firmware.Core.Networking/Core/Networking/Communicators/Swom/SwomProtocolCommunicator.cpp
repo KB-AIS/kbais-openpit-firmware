@@ -7,9 +7,9 @@
 #include <range/v3/all.hpp>
 
 // TODO: Move to fetcher interface
-#include "Queries/SelectMessagesBatchesQry.h"
-#include "Commands/UpdateSenderCmd.h"
-#include "Networking/Communicators/Swom/SwomProtocolFormatter.h"
+#include "Core/Persisting/Queries/SelectMessagesBatchesQry.h"
+#include "Core/Persisting/Commands/UpdateSenderCmd.h"
+#include "Core/Networking/Communicators/Swom/SwomProtocolFormatter.h"
 
 using namespace std::chrono_literals;
 

@@ -36,7 +36,7 @@ TcpMessageSendersManager::StartWorkOn(rxcpp::observe_on_one_worker& coordination
 
     auto const onConfigurationChanged_f =
         std::bind(&TcpMessageSendersManager::OnConfigurationChanged, this, std::placeholders::_1);
-    m_configurationPublisher.getChangeObservable("networking")
+    m_configurationPublisher.getChangeObservable("Core/Networking")
         // Workaround: nasty way to prevent fireing on file change twice
         .sample_with_time(500ms, coordination)
         .subscribe(m_subs, onConfigurationChanged_f);

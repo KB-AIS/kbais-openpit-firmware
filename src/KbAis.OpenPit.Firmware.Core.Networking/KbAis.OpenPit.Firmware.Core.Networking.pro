@@ -20,23 +20,23 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Networking/Communicators/Swom/SwomProtocolCommunicator.h \
-    Networking/Communicators/Swom/SwomProtocolFormatter.h \
-    Networking/Communicators/IProtocolCommunicator.h \
-    Networking/Confguration/TcpMessageSenderConfiguration.h \
-    Networking/Diagnosing/IRxMessageSendersDiagPub.h \
-    Networking/MessageSenders/IMessageSendersManager.h \
-    Networking/MessageSenders/TcpMessageSender.h \
-    Networking/MessageSenders/TcpMessageSendersManager.h \
-    Networking/NetworkingModuleFactory.h \
-    Networking/NetworkingThreadWorker.h \
+    Core/Networking/Communicators/Swom/SwomProtocolCommunicator.h \
+    Core/Networking/Communicators/Swom/SwomProtocolFormatter.h \
+    Core/Networking/Communicators/IProtocolCommunicator.h \
+    Core/Networking/Confguration/TcpMessageSenderConfiguration.h \
+    Core/Networking/Diagnosing/IRxMessageSendersDiagPub.h \
+    Core/Networking/MessageSenders/IMessageSendersManager.h \
+    Core/Networking/MessageSenders/TcpMessageSender.h \
+    Core/Networking/MessageSenders/TcpMessageSendersManager.h \
+    Core/Networking/NetworkingModuleFactory.h \
+    Core/Networking/NetworkingThreadWorker.h \
 
 SOURCES += \
-    Networking/Communicators/Swom/SwomProtocolCommunicator.cpp \
-    Networking/Communicators/Swom/SwomProtocolFormatter.cpp \
-    Networking/MessageSenders/TcpMessageSender.cpp \
-    Networking/MessageSenders/TcpMessageSendersManager.cpp \
-    Networking/NetworkingThreadWorker.cpp \
+    Core/Networking/Communicators/Swom/SwomProtocolCommunicator.cpp \
+    Core/Networking/Communicators/Swom/SwomProtocolFormatter.cpp \
+    Core/Networking/MessageSenders/TcpMessageSender.cpp \
+    Core/Networking/MessageSenders/TcpMessageSendersManager.cpp \
+    Core/Networking/NetworkingThreadWorker.cpp \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

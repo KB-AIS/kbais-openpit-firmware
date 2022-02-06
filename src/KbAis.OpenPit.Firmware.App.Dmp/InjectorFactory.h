@@ -9,9 +9,10 @@
 // Core.Messaging
 #include "Collectors/MessagesCollectorsAdapter.h"
 #include "ThreadWorkerMessaging.h"
-#include "Networking/NetworkingModuleFactory.h"
+#include "Core/Networking/NetworkingModuleFactory.h"
 // Core.Persisiting
-#include "BlockingMessagesCachingService.h"
+#include "Core/Persisting/BlockingMessagesCachingService.h"
+#include "Core/Persisting/CachingBootstrapper.h"
 // Modules.Legacy.Agtp
 #include "AgtpServiceModuleFactory.h"
 // Modules.Sensors.Gps
@@ -54,6 +55,8 @@ public:
             // Configure Core.Persisting
         ,   boost::di::bind<IMessagesCachingService>()
                 .to<BlockingMessagesCachingService>()
+                .in(boost::di::singleton)
+        ,   boost::di::bind<CachingBootstrapper>()
                 .in(boost::di::singleton)
         );
     }
