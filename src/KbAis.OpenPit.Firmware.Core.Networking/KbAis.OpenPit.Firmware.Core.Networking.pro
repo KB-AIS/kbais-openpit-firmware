@@ -24,7 +24,7 @@ HEADERS += \
     Core/Networking/Communicators/Swom/SwomProtocolFormatter.h \
     Core/Networking/Communicators/IProtocolCommunicator.h \
     Core/Networking/Confguration/TcpMessageSenderConfiguration.h \
-    Core/Networking/Diagnosing/IRxMessageSendersDiagPub.h \
+    Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h \
     Core/Networking/MessageSenders/IMessageSendersManager.h \
     Core/Networking/MessageSenders/TcpMessageSender.h \
     Core/Networking/MessageSenders/TcpMessageSendersManager.h \

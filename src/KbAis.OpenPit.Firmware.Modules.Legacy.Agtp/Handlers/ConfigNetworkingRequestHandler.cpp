@@ -17,10 +17,10 @@ ConfigNetworkingRequestHandler::handle(const AgtpRequest& request) {
     const auto opt_configuration = extract_configuration(request.payload);
 
     if (opt_configuration.has_value()) {
-        mConfigurationManager.updateConfiguration("Core/Networking", *opt_configuration);
+        mConfigurationManager.updateConfiguration("networking", *opt_configuration);
     }
 
-    const auto configuration = mConfigurationManager.getConfiguration("Core/Networking").j_object;
+    const auto configuration = mConfigurationManager.getConfiguration("networking").j_object;
 
     return {
         request.uid

@@ -10,7 +10,7 @@
 #include "IRxConfigurationChangePublisher.h"
 
 #include "Core/Networking/Confguration/TcpMessageSenderConfiguration.h"
-#include "Core/Networking/Diagnosing/IRxMessageSendersDiagPub.h"
+#include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "Core/Networking/MessageSenders/IMessageSendersManager.h"
 #include "Core/Networking/MessageSenders/TcpMessageSender.h"
 
@@ -41,11 +41,13 @@ public:
 private:
     IRxConfigurationChangePublisher& m_configurationPublisher;
 
-    rxcpp::composite_subscription m_subs;
+    rxcpp::composite_subscription m_subsConfigurationChanged;
 
-    rxcpp::composite_subscription m_subsMessageSenderStateCahnge;
+    rxcpp::composite_subscription m_subsMessageSenderStatesChanged;
 
-    rxcpp::rxsub::behavior<MessageSenderDiagInfos_t> m_subject;
+    rxcpp::observable<long> m_obsMessageSednersRestartInterval;
+
+    rxcpp::rxsub::behavior<MessageSenderDiagInfos_t> m_subMessageSenderDiagInfosChanged;
 
     MessageSenderConfigurations_t m_messageSenderConfigurations;
 

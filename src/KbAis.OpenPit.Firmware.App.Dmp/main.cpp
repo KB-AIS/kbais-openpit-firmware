@@ -39,7 +39,7 @@ struct ConfigurationBootstraper {
         );
 
         configurationManager.registerConfiguration(
-            "Core/Networking"
+            "networking"
         ,   R"(
                 {
                   "primary_message_server": -1,

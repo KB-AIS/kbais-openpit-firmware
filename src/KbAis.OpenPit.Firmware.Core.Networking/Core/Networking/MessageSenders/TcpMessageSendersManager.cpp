@@ -25,46 +25,39 @@ TcpMessageSendersManager::TcpMessageSendersManager(
 )
     :   QObject()
     ,   m_configurationPublisher(configurationPublisher)
-    ,   m_subject({ })
+    ,   m_subMessageSenderDiagInfosChanged({ })
 {
-
+    m_subsConfigurationChanged = rxcpp::composite_subscription();
 }
 
 void
 TcpMessageSendersManager::StartWorkOn(rxcpp::observe_on_one_worker& coordination) {
-    m_subs = rxcpp::composite_subscription();
-
     auto const onConfigurationChanged_f =
         std::bind(&TcpMessageSendersManager::OnConfigurationChanged, this, std::placeholders::_1);
-    m_configurationPublisher.getChangeObservable("Core/Networking")
-        // Workaround: nasty way to prevent fireing on file change twice
+    m_configurationPublisher.getChangeObservable("networking")
         .sample_with_time(500ms, coordination)
-        .subscribe(m_subs, onConfigurationChanged_f);
+        .subscribe(m_subsConfigurationChanged, onConfigurationChanged_f);
 
-    auto const onMessageSendersRestartRequired_f =
-        std::bind(&TcpMessageSendersManager::OnMessageSendersRestartRequired, this);
-    rxcpp::observable<>::interval(RESTART_MESSAGE_SENDERS_PERIOD, coordination)
-        .subscribe(m_subs, onMessageSendersRestartRequired_f);
+    m_obsMessageSednersRestartInterval =
+        rxcpp::observable<>::interval(RESTART_MESSAGE_SENDERS_PERIOD, coordination);
 }
 
 rxcpp::observable<std::vector<MessageSenderDiagInfo>>
 TcpMessageSendersManager::GetObservableDiagInfo() const {
-    return m_subject.get_observable();
+    return m_subMessageSenderDiagInfosChanged.get_observable();
 }
 
 void
 TcpMessageSendersManager::OnConfigurationChanged(
     AppConfiguration configuration
 ) {
-    m_subsMessageSenderStateCahnge.unsubscribe();
-    m_subsMessageSenderStateCahnge = rxcpp::composite_subscription();
+    m_subsMessageSenderStatesChanged.unsubscribe();
 
-    m_messageSenderStates.clear();
-
-    m_messageSenderConfigurations.clear();
+    m_subsMessageSenderStatesChanged = rxcpp::composite_subscription();
 
     // Stop message senders
     m_messageSenders.clear();
+    m_messageSenderStates.clear();
 
     m_messageSenderConfigurations = configuration.j_object.at("/servers"_json_pointer)
     |   ranges::views::transform([](nlohmann::json x) {
@@ -80,23 +73,37 @@ TcpMessageSendersManager::OnConfigurationChanged(
         })
     |   ranges::to<MessageSenderConfigurations_t>();
 
-    const auto onMessageSenderStateChanged_f =
-        std::bind(&TcpMessageSendersManager::OnMessageSenderStateChanged, this, std::placeholders::_1);
-
     ranges::for_each(
         m_messageSenderConfigurations
     |   ranges::views::values
-    ,   [&](TcpMessageSenderConfiguration x) {
+    ,   [&](const TcpMessageSenderConfiguration& x) {
             const auto id = x.GetMessageSenderName();
 
             m_messageSenders[id].reset(new TcpMessageSender { id });
             // Set default state: unconnected
             m_messageSenderStates[id] = { };
-
-            rxqt::from_signal(m_messageSenders[id].get(), &TcpMessageSender::StateChanged)
-                .subscribe(m_subsMessageSenderStateCahnge, onMessageSenderStateChanged_f);
         }
     );
+
+    rxcpp::observable<TcpMessageSenderStateChanged> obsMessageSenderStatesChanged =
+        rxcpp::observable<>::empty<TcpMessageSenderStateChanged>();
+    ranges::for_each(
+        m_messageSenders
+    |   ranges::views::values
+    ,   [&o = obsMessageSenderStatesChanged](const auto& x) {
+            o = rxqt::from_signal(x.get(), &TcpMessageSender::StateChanged).merge(o);
+        }
+    );
+
+    const auto onMessageSenderStateChanged_f =
+        std::bind(&TcpMessageSendersManager::OnMessageSenderStateChanged, this, std::placeholders::_1);
+    obsMessageSenderStatesChanged
+        .subscribe(m_subsMessageSenderStatesChanged, onMessageSenderStateChanged_f);
+
+    const auto onMessageSendersRestartRequired_f =
+        std::bind(&TcpMessageSendersManager::OnMessageSendersRestartRequired, this);
+    m_obsMessageSednersRestartInterval
+        .subscribe(m_subsMessageSenderStatesChanged, onMessageSendersRestartRequired_f);
 }
 
 void
@@ -104,10 +111,7 @@ TcpMessageSendersManager::OnMessageSendersRestartRequired() {
     ranges::for_each(
         m_messageSenderStates
     |   ranges::views::filter([&](const MessageSenderState_t& x) {
-            const auto has_message_sender_invalid_state =
-                x.second.socket_state == QAbstractSocket::UnconnectedState;
-
-            return has_message_sender_invalid_state;
+            return x.second.socket_state == QAbstractSocket::UnconnectedState;
         })
     |   ranges::views::keys
     ,   [&](const MessageSenderId_t& x) {
@@ -123,7 +127,7 @@ TcpMessageSendersManager::OnMessageSenderStateChanged(
     m_messageSenderStates[notification.message_sender_name] = notification.state;
 
     // Notify, diagnositc info changed
-    m_subject.get_subscriber().on_next(
+    m_subMessageSenderDiagInfosChanged.get_subscriber().on_next(
         m_messageSenderStates
     |   ranges::views::transform([&](const MessageSenderState_t& x) {
             return MessageSenderDiagInfo {

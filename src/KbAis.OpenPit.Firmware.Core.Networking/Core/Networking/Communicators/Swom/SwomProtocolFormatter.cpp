@@ -3,7 +3,6 @@
 // qt
 #include <QDataStream>
 #include <QIODevice>
-#include <QUuid>
 // oss
 #include <range/v3/all.hpp>
 
@@ -17,29 +16,27 @@ QDataStream& operator<<(QDataStream& out, const json& payload) {
 }
 
 QByteArray
-SwomProtocolFormatter::EncodeAckFrame(const QString& clientId) {
+SwomProtocolFormatter::EncodeAthFrame(const QUuid& uuid, const QString& equipmentId) {
     QByteArray bytes;
     QDataStream out { &bytes, QIODevice::WriteOnly };
 
-    out << static_cast<quint8>(0x00)
-        << QUuid::createUuid()
-        << json { { "EquipmentId", clientId } };
+    out << static_cast<quint8>(SwomFrameType::Ath)
+        << uuid
+        << json { { "EquipmentId", equipmentId } };
 
     return bytes;
 }
 
 QByteArray
-SwomProtocolFormatter::EncodeTelFrame(const QVector<MessagesBatchDto>& messageBatches) {
+SwomProtocolFormatter::EncodeTelFrame(const QUuid& uuid, const MessagesBatchDto& messageBatch) {
     QByteArray bytes;
     QDataStream out { &bytes, QIODevice::WriteOnly };
 
-    out << static_cast<quint8>(0x01)
-        << QUuid::createUuid();
+    out << static_cast<quint8>(SwomFrameType::Tel)
+        << uuid;
 
     ranges::for_each(
-        messageBatches
-    |   ranges::views::transform([](MessagesBatchDto x) { return x.messages; })
-    |   ranges::actions::join
+        messageBatch.messages
     ,   [&out](const MessageDto& x) {
             out << fromStdVector(json::to_msgpack(x.moniker))
                 << x.payload;

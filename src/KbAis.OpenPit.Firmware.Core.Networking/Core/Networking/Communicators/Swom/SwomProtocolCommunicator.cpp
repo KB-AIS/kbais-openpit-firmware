@@ -41,7 +41,7 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
 
         if (messageBatches.isEmpty()) return;
 
-        device.write(SwomProtocolFormatter::EncodeTelFrame(messageBatches));
+        //device.write(SwomProtocolFormatter::EncodeTelFrame(messageBatches));
 
         const auto messageBatch =
             ranges::max_element(messageBatches, std::greater<quint64>(), &MessagesBatchDto::id);
@@ -49,7 +49,7 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
         UpdateSenderCmd { }.handle(messageBatch->id);
     });
 
-    device.write(SwomProtocolFormatter::EncodeAckFrame("104"));
+    //device.write(SwomProtocolFormatter::EncodeAthFrame("104"));
 
     m_tEnequeReccur.start(10s);
 }
