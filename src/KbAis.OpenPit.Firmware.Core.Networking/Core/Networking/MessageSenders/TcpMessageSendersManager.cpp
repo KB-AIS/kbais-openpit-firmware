@@ -48,9 +48,8 @@ TcpMessageSendersManager::GetObservableDiagInfo() const {
 }
 
 void
-TcpMessageSendersManager::OnConfigurationChanged(
-    AppConfiguration configuration
-) {
+TcpMessageSendersManager::OnConfigurationChanged(AppConfiguration newConfiguration) {
+    // Stop getting old notifications
     m_subsMessageSenderStatesChanged.unsubscribe();
 
     m_subsMessageSenderStatesChanged = rxcpp::composite_subscription();
@@ -59,7 +58,7 @@ TcpMessageSendersManager::OnConfigurationChanged(
     m_messageSenders.clear();
     m_messageSenderStates.clear();
 
-    m_messageSenderConfigurations = configuration.j_object.at("/servers"_json_pointer)
+    m_messageSenderConfigurations = newConfiguration.j_object.at("/servers"_json_pointer)
     |   ranges::views::transform([](nlohmann::json x) {
             TcpMessageSenderConfiguration msc {
                 x.at("server_name").get<QString>()
@@ -74,36 +73,42 @@ TcpMessageSendersManager::OnConfigurationChanged(
     |   ranges::to<MessageSenderConfigurations_t>();
 
     ranges::for_each(
-        m_messageSenderConfigurations
-    |   ranges::views::values
+        m_messageSenderConfigurations | ranges::views::values
     ,   [&](const TcpMessageSenderConfiguration& x) {
             const auto id = x.GetMessageSenderName();
 
             m_messageSenders[id].reset(new TcpMessageSender { id });
-            // Set default state: unconnected
+            // Set default state - unconnected
             m_messageSenderStates[id] = { };
         }
     );
 
-    rxcpp::observable<TcpMessageSenderStateChanged> obsMessageSenderStatesChanged =
-        rxcpp::observable<>::empty<TcpMessageSenderStateChanged>();
+    auto obsMessageSenderStatesChanged = rxcpp::observable<>::empty<TcpMessageSenderStateChanged>();
+
     ranges::for_each(
-        m_messageSenders
-    |   ranges::views::values
+        m_messageSenders | ranges::views::values
     ,   [&o = obsMessageSenderStatesChanged](const auto& x) {
             o = rxqt::from_signal(x.get(), &TcpMessageSender::StateChanged).merge(o);
         }
     );
 
-    const auto onMessageSenderStateChanged_f =
-        std::bind(&TcpMessageSendersManager::OnMessageSenderStateChanged, this, std::placeholders::_1);
-    obsMessageSenderStatesChanged
-        .subscribe(m_subsMessageSenderStatesChanged, onMessageSenderStateChanged_f);
+    obsMessageSenderStatesChanged.subscribe(
+        m_subsMessageSenderStatesChanged
+    ,   std::bind(
+            &TcpMessageSendersManager::OnMessageSenderStateChanged
+        ,   this
+        ,   std::placeholders::_1
+        )
+    );
 
-    const auto onMessageSendersRestartRequired_f =
-        std::bind(&TcpMessageSendersManager::OnMessageSendersRestartRequired, this);
-    m_obsMessageSednersRestartInterval
-        .subscribe(m_subsMessageSenderStatesChanged, onMessageSendersRestartRequired_f);
+
+    m_obsMessageSednersRestartInterval.subscribe(
+        m_subsMessageSenderStatesChanged
+    ,   std::bind(
+            &TcpMessageSendersManager::OnMessageSendersRestartRequired
+        ,   this
+        )
+    );
 }
 
 void

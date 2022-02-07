@@ -42,32 +42,25 @@ TcpMessageSender::SetupSocketSignals() {
     constexpr auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
     QObject::connect(&m_socket, &QTcpSocket::connected, [&] {
-        PLOGD << m_messageSenderName << " -- connected";
-
         m_protocolCommunicator->InitCommunication(m_socket);
     });
 
     QObject::connect(&m_socket, SocketStateSignal, [&](auto state) {
-        PLOGD << m_messageSenderName << " -- change state: " << QEnumToString(state);
-
         emit StateChanged({ m_messageSenderName, { state, m_socket.error() } });
     });
 
     QObject::connect(&m_socket, SocketErrorSignal, [&](auto error) {
-        PLOGE << m_messageSenderName << " -- got error: " << QEnumToString(error);
-
         emit StateChanged({ m_messageSenderName, { m_socket.state(), error } });
     });
 
     QObject::connect(&m_socket, &QTcpSocket::disconnected, [&] {
-        PLOGD << m_messageSenderName << " -- disconnected";
-
         if (m_protocolCommunicator != nullptr) {
             m_protocolCommunicator->StopCommunication();
         }
     });
 }
 
+// TODO: To abstract factory with boost::di
 TcpMessageSender::ProtocolCommunicator_t
 TcpMessageSender::GenProtocolCommunicator(const MessageSenderProtocol protocol) {
     switch (protocol) {
