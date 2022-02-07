@@ -1,8 +1,11 @@
  #include "ViewWrapper.h"
 
-constexpr int SCREEN_W { 1024 }, SCREEN_H { 640 };
+// qt
+#include <QThread>
 
-constexpr int MAIN_VIEW_IDX { 0 };
+constexpr qint32 SCREEN_W { 1024 }, SCREEN_H { 640 };
+
+constexpr qint32 MAIN_VIEW_IDX { 0 };
 
 ViewWrapper::ViewWrapper(MainView& mainView)
     : nav { new QStackedWidget }

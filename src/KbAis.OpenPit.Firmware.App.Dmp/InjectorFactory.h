@@ -9,8 +9,10 @@
 // Core.Messaging
 #include "Collectors/MessagesCollectorsAdapter.h"
 #include "ThreadWorkerMessaging.h"
+#include "Core/Networking/NetworkingModuleFactory.h"
 // Core.Persisiting
-#include "BlockingMessagesCachingService.h"
+#include "Core/Persisting/BlockingMessagesCachingService.h"
+#include "Core/Persisting/CachingBootstrapper.h"
 // Modules.Legacy.Agtp
 #include "AgtpServiceModuleFactory.h"
 // Modules.Sensors.Gps
@@ -29,13 +31,20 @@ public:
             // Configure App.Dmp.Presentation
             boost::di::bind<ViewWrapper>()
                 .in(boost::di::singleton)
-
+            // Configure Core.Configuration
+        ,   boost::di::bind<
+                IConfigurationProvider
+            ,   IRxConfigurationChangePublisher
+            ,   ConfigurationManager
+            >()
+                .to<ConfigurationManager>()
+                .in(boost::di::singleton)
+        ,   create_di_module_networking()
         ,   createAgtpServiceModule()
             // Configure Modules.Sensors.Gps
         ,   boost::di::bind<IRxGpsSensorPublisher>()
                 .to<SerialRxGpsSensorPublisher>()
                 .in(boost::di::singleton)
-
             // Configure Core.Messaging
         ,   boost::di::bind<IRxImmediateMessageMapper*[]>
                 .to<DmpImmediateMessageMapper>()
@@ -43,10 +52,11 @@ public:
                 .to<DmpRecurrentMessageMapper>()
         ,   boost::di::bind<ThreadWorkerMessaging>()
                 .in(boost::di::singleton)
-
             // Configure Core.Persisting
         ,   boost::di::bind<IMessagesCachingService>()
                 .to<BlockingMessagesCachingService>()
+                .in(boost::di::singleton)
+        ,   boost::di::bind<CachingBootstrapper>()
                 .in(boost::di::singleton)
         );
     }

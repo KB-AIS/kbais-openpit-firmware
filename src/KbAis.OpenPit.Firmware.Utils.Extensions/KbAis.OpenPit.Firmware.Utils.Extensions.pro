@@ -2,17 +2,20 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitUtilsExtensions
 
-QT -= qt
-
 TEMPLATE = lib
 
-CONFIG += c++17
+QT -= qt \
+
+CONFIG += staticlib \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 HEADERS += \
     QtExtensions/QByteArrayExt.h \
     Casting.h \
     Crc16Alogs.h \
     Crc8Alogs.h \
+    QtExtensions/QTimerExt.h
 
 SOURCES += \
     Crc16Alogs.cpp \

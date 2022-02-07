@@ -15,23 +15,25 @@
 class RecurrentMessagesCollector {
     using RecurrentMessageMappers_t = std::vector<std::shared_ptr<IRxRecurrentMessageMapper>>;
 
+    using Scheduler_t = rxcpp::observe_on_one_worker;
+
 public:
     RecurrentMessagesCollector(RecurrentMessageMappers_t mappers);
 
     ~RecurrentMessagesCollector();
 
-    void startCollectingOn(const rxqt::run_loop& loop);
+    void StartCollectingOn(const Scheduler_t& scheduler);
 
-    QVector<Message> dumpMessages();
+    QVector<Message> DumpMessages();
 
 private:
-    rxcpp::observable<Message> mObservable;
+    rxcpp::observable<Message> m_observableRecurrentMappers;
 
-    rxcpp::composite_subscription mSubs;
+    rxcpp::composite_subscription m_subscriptions;
 
-    QHash<QString, Message> mMessages;
+    QHash<QString, Message> m_collectedMessages;
 
-    QMutex mMtxMessages;
+    QMutex m_mtxCollectedMessages;
 
 };
 

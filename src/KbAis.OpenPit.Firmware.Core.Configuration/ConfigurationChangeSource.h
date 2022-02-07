@@ -19,7 +19,7 @@ class ConfigurationChangeSource {
 
 public:
     ConfigurationChangeSource(
-        Configuration configuration
+        AppConfiguration configuration
     ,   const QString& configurationFilePath
     );
 
@@ -27,12 +27,12 @@ public:
 
     QString getConfigurationName() const;
 
-    Configuration getConfiguration();
+    AppConfiguration getConfiguration();
 
-    rxcpp::observable<Configuration> getChangeObservable();
+    rxcpp::observable<AppConfiguration> getChangeObservable();
 
 private:
-    Configuration mConfiguration;
+    AppConfiguration mConfiguration;
 
     const QString mConfigurationFilePath;
 
@@ -40,7 +40,7 @@ private:
 
     rxcpp::composite_subscription mSubs;
 
-    rxcpp::rxsub::behavior<Configuration> mChangeSubject;
+    rxcpp::rxsub::behavior<AppConfiguration> mChangeSubject;
 
     QReadWriteLock mRwlConfigurationValue;
 

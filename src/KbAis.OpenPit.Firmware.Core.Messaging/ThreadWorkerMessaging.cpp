@@ -1,30 +1,18 @@
 #include "ThreadWorkerMessaging.h"
 
-using namespace std::chrono;
-
-template <class F>
-void waitUnitl(F f, milliseconds timeout = milliseconds(1000)) {
-    QTimer timer;
-    timer.setSingleShot(true);
-    timer.setTimerType(Qt::PreciseTimer);
-    timer.start(timeout.count());
-
-    while (!f() && timer.remainingTime() >= 0) {
-        qApp->processEvents();
-    }
-}
+#include "QtExtensions/QTimerExt.h"
 
 ThreadWorkerMessaging::ThreadWorkerMessaging(
-    ImmediateMessagesCollector& immediateMessagesCollector
-,   RecurrentMessagesCollector& recurrentMessagesCollector
-,   MessagesCollectorsAdapter& messagesCollectorsAdapter
+    MessagesCollectorsAdapter& messagesCollectorsAdapter
 ) {
-    messagesCollectorsAdapter.moveToThread(&mTrdWorker);
+    m_workingThread.setObjectName("CORE.MESSAGING");
+    messagesCollectorsAdapter.moveToThread(&m_workingThread);
 
-    mTrdWorker.start();
+    m_workingThread.start();
 
-    waitUnitl([&]() { return mTrdWorker.runLoop() != nullptr; });
+    wait_using_timer([&]() { return m_workingThread.runLoop() != nullptr; });
 
-    immediateMessagesCollector.startCollectingOn(*mTrdWorker.runLoop());
-    recurrentMessagesCollector.startCollectingOn(*mTrdWorker.runLoop());
+    const auto scheduler = m_workingThread.runLoop()->observe_on_run_loop();
+
+    messagesCollectorsAdapter.StartCollectingOn(scheduler);
 }

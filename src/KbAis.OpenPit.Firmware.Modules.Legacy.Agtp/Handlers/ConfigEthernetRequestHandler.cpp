@@ -11,23 +11,22 @@ using json = nlohmann::json;
 
 const QString REQUEST_NAME { QStringLiteral("ETHERNET_SETTINGS") };
 
-const QRegularExpression RE_REQUEST_PARAM_CAPTURE { "([\\w]+):(.*)" };
+const QRegularExpression REQUEST_PARAM_CAPTURE { "([\\w]+):(.*)" };
 
-FetchConfigEthernetHandler::FetchConfigEthernetHandler(
+ConfigEthernetRequestHandler::ConfigEthernetRequestHandler(
     ConfigurationManager& configuration_service
 )
-    :   m_configuration_service { configuration_service }
+    :   mConfigurationService { configuration_service }
 {
 
 }
 
 AgtpResponse
-FetchConfigEthernetHandler::handle(const AgtpRequest& request) {
-    const auto reRequestParamMatch = RE_REQUEST_PARAM_CAPTURE.match(request.payload);
+ConfigEthernetRequestHandler::handle(const AgtpRequest& request) {
+    const auto reRequestParamMatch = REQUEST_PARAM_CAPTURE.match(request.payload);
 
     const auto configuration_value = reRequestParamMatch.captured(2);
     if (configuration_value != "?") {
-        PLOGD << configuration_value;
         updateConfiguration(configuration_value);
     }
 
@@ -39,21 +38,19 @@ FetchConfigEthernetHandler::handle(const AgtpRequest& request) {
 }
 
 QString
-FetchConfigEthernetHandler::getRequestName() const {
+ConfigEthernetRequestHandler::getRequestName() const {
     return REQUEST_NAME;
 }
 
 void
-FetchConfigEthernetHandler::updateConfiguration(const QString& configuration_value) {
+ConfigEthernetRequestHandler::updateConfiguration(const QString& configuration_value) {
     auto payload = nlohmann::json::parse(configuration_value.toStdString().c_str());
 
-    PLOGD << payload.dump(4);
-
-    m_configuration_service.updateConfiguration("ethernet", payload);
+    mConfigurationService.updateConfiguration("ethernet", payload);
 }
 
-QString FetchConfigEthernetHandler::fetchConfiguration() const {
-    auto const configuration = m_configuration_service.getConfiguration("ethernet");
+QString ConfigEthernetRequestHandler::fetchConfiguration() const {
+    auto const configuration = mConfigurationService.getConfiguration("ethernet");
 
-    return QString::fromStdString(configuration.value.dump());
+    return QString::fromStdString(configuration.j_object.dump());
 }

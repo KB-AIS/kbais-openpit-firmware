@@ -2,11 +2,13 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitUtilsTrdPartyRxQt
 
-QT -= qt gui
-
 TEMPLATE = lib
 
-CONFIG += c++14 conan_basic_setup
+QT -= qt gui \
+
+CONFIG += staticlib conan_basic_setup \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 

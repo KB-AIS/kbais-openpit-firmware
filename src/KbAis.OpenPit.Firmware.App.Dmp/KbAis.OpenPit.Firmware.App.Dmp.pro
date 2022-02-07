@@ -2,22 +2,20 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitDmp
 
-QT += core sql gui widgets serialport
-
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -Wno-psabi -faligned-new
+QT += core gui network serialport sql widgets \
 
-CONFIG += \
-    c++11 c++14 c++17 \
-    conan_basic_setup \
+CONFIG += depend_includepath conan_basic_setup \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi -faligned-new \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.App.Dmp.Presentation \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Core.EventBus \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.EventBus \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Messaging \
-    #$$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Persisting \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
@@ -43,6 +41,7 @@ LIBS += -L$$PRJDIR/binaries \
     -lOpenPitCoreConfiguration \
     -lOpenPitCoreEventBus \
     -lOpenPitCoreMessaging \
+    -lOpenPitCoreNetworking \
     -lOpenPitCorePersisting \
     -lOpenPitModulesLegacyAgtp \
     -lOpenPitModulesSensorsGps \

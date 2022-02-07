@@ -8,7 +8,7 @@
 #include <plog/Log.h>
 
 // Core.Persisting
-#include "Configuration/DatabaseConfigurator.h"
+#include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 // Utils.TrdParty.BoostDi
 #include "BoostDiExtensions.h"
 
@@ -27,18 +27,42 @@ struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
         configurationManager.registerConfiguration(
             "ethernet"
-        ,   nlohmann::json {
-                { "dns", "" }
-            ,   { "gateway", "10.214.1.1" }
-            ,   { "ip", "10.214.1.205" }
-            ,   { "manual_enable", true }
-            ,   { "mask", "255.255.0.0" }
-            }
+        ,   R"(
+                {
+                  "dns": "",
+                  "gateway": "10.214.1.1",
+                  "ip": "10.214.1.205",
+                  "manual_enable": true,
+                  "mask": "255.255.0.0"
+                }
+            )"_json
+        );
+
+        configurationManager.registerConfiguration(
+            "networking"
+        ,   R"(
+                {
+                  "primary_message_server": -1,
+                  "servers": [
+                    {
+                      "enabled": true,
+                      "protocol": 0,
+                      "reserve_enabled": false,
+                      "reserve_server_name": "",
+                      "reserve_server_port": 0,
+                      "send_interval": 10,
+                      "server_name": "10.73.212.191",
+                      "server_port": 47653
+                    }
+                  ],
+                  "version": "1.0"
+                }
+            )"_json
         );
 
         configurationManager.getChangeObservable("ethernet")
-           .subscribe([&](Configuration configuration) {
-               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.value.dump(4));
+           .subscribe([&](AppConfiguration configuration) {
+               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.j_object.dump(4));
            });
     }
 };
@@ -52,10 +76,11 @@ int main(int argc, char* argv[]) {
     DatabaseConfigurator::configure();
 
     auto injector = InjectorFactory::create();
-    eagerSingletons(injector);
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
+
+    eagerSingletons(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

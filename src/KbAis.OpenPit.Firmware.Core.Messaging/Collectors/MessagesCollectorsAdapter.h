@@ -27,6 +27,8 @@ public:
 
     ~MessagesCollectorsAdapter() noexcept;
 
+    void StartCollectingOn(const rxcpp::observe_on_one_worker& scheduler);
+
 private:
     ImmediateMessagesCollector& mImmediateMessagesCollector;
 

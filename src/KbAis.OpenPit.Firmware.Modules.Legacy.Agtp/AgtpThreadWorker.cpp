@@ -21,7 +21,7 @@ AgtpThreadWorker::AgtpThreadWorker(
     :   mRequestsReciever { requestsReciever }
     ,   mDeviceStateCollector { deviceStateCollector }
 {
-    mWorker.setObjectName("Modules.Services.Legacy.Agtp");
+    mWorker.setObjectName("MODULES.LEGACY.AGTP");
 
     mRequestsReciever.moveToThread(&mWorker);
 

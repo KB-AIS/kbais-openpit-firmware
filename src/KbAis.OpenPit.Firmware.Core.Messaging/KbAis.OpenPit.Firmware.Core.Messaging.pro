@@ -2,19 +2,17 @@ PRJDIR = $$PWD/..
 
 TARGET = OpenPitCoreMessaging
 
-QT += core
-
 TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -Wno-psabi
+QT += core
 
-CONFIG += \
-    c++11 c++14 c++17 \
-    depend_includepath \
-    conan_basic_setup \
+CONFIG += staticlib depend_includepath conan_basic_setup \
+
+QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
 

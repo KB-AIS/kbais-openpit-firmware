@@ -11,7 +11,7 @@ class IRxConfigurationChangePublisher {
 public:
     virtual ~IRxConfigurationChangePublisher() noexcept = default;
 
-    virtual rxcpp::observable<Configuration> getChangeObservable(const QString& name) = 0;
+    virtual rxcpp::observable<AppConfiguration> getChangeObservable(const QString& name) = 0;
 
 };
 

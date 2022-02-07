@@ -8,7 +8,7 @@ class IConfigurationProvider {
 public:
     virtual ~IConfigurationProvider() noexcept = default;
 
-    virtual Configuration getConfiguration(const QString& name) = 0;
+    virtual AppConfiguration getConfiguration(const QString& name) = 0;
 
 };
 

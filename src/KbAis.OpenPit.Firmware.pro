@@ -9,7 +9,7 @@ SUBDIRS += \
 #    KbAis.OpenPit.Firmware.Core.Diagnositcs \
     KbAis.OpenPit.Firmware.Core.EventBus \
     KbAis.OpenPit.Firmware.Core.Messaging \
-#    KbAis.OpenPit.Firmware.Core.Networking \
+    KbAis.OpenPit.Firmware.Core.Networking \
     KbAis.OpenPit.Firmware.Core.Persisting \
 #    KbAis.OpenPit.Firmware.Core.Persisting.Sqlite \
     KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \

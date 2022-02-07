@@ -26,9 +26,9 @@ public:
 
     void updateConfiguration(const QString& name, const nlohmann::json& value);
 
-    Configuration getConfiguration(const QString& name) override;
+    AppConfiguration getConfiguration(const QString& name) override;
 
-    rxcpp::observable<Configuration> getChangeObservable(const QString& name) override;
+    rxcpp::observable<AppConfiguration> getChangeObservable(const QString& name) override;
 
 private:
     const QDir mConfigurationLocation;
