@@ -3,7 +3,7 @@
 // qt
 #include <QRegularExpression>
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 

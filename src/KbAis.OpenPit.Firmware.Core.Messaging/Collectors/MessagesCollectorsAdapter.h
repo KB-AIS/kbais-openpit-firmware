@@ -25,9 +25,9 @@ public:
     ,   MessagesBatchesCachingQueue_t& queue
     );
 
-    ~MessagesCollectorsAdapter() noexcept;
+    ~MessagesCollectorsAdapter();
 
-    void StartCollectingOn(const rxcpp::observe_on_one_worker& scheduler);
+    void StartCollectingOn(const rxcpp::observe_on_one_worker& coordinator);
 
 private:
     ImmediateMessagesCollector& mImmediateMessagesCollector;

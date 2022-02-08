@@ -1,11 +1,9 @@
 #include "AgtpUsbCommandsReciever.h"
 
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
-
-#include "Format.h"
 
 #include "Handlers/IAgtpRequestHandler.h"
 #include "AgtpProtocolPareser.h"
@@ -55,7 +53,7 @@ AgtpUsbRequestsReciever::AgtpUsbRequestsReciever(const IAgtpRequestsMediator& me
         ,   [&](const TerminalError& x) {
                 if (x == TerminalError::NoError) return;
 
-                PLOGE << fmt::format("got a terminal error : {}", m_spUsbDevice->errorString());
+                PLOGE << fmt::format("got a terminal error : {}", m_spUsbDevice->errorString().toStdString());
 
                 ResetTerminal();
             }

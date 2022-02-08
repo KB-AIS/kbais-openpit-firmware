@@ -1,7 +1,6 @@
 #include "BlockingMessagesCachingService.h"
 
 // oss
-#include <fmt/core.h>
 #include <fmt/format.h>
 #include <plog/Log.h>
 

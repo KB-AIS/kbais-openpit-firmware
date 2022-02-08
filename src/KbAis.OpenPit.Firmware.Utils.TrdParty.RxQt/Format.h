@@ -6,6 +6,8 @@
 #include <string_view>
 // qt
 #include <QString>
+// oss
+#include <fmt/format.h>
 
 QT_BEGIN_NAMESPACE
 

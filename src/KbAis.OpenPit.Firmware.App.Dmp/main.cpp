@@ -1,7 +1,9 @@
+#define FMT_HEADER_ONLY
+
 // qt
 #include <QApplication>
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "BoostDiExtensions.h"
 #include "CompositionRootModule.h"

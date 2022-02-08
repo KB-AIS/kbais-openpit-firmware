@@ -3,9 +3,10 @@
 // qt
 #include <QUuid>
 // oss
-#include <fmt/core.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
+
+#include <Format.h>
 
 // TODO: Move to fetcher interface
 #include "Core/Persisting/Queries/SelectMessagesBatchesQry.h"
@@ -31,14 +32,14 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
 
     m_subs = rxcpp::composite_subscription();
 
-    PLOGV << fmt::format("SWOM protocol communicator is initiating communication session");
+    PLOGV << fmt::format("initiating communication session");
 
     rxqt::from_signal(&device, &QIODevice::readyRead).subscribe(m_subs, [&](auto) {
         constexpr quint32 BYTES_TO_PEEK = 1024;
 
         const auto byteToDecode = device.peek(BYTES_TO_PEEK);
 
-        PLOGV << fmt::format("SWOM protocol communicator got data of {} bytes", byteToDecode.size());
+        PLOGV << fmt::format("got data of {} bytes", byteToDecode.size());
 
         // TODO: Process bytes
 
@@ -57,7 +58,7 @@ void
 SwomProtocolCommunicator::PerformAuthenticationRequest(QIODevice& device) {
     const auto uuid = QUuid::createUuid();
 
-    PLOGV << fmt::format("SWOM protocol communicator is performing authentucation, message UUID is {}", uuid.toString().toStdString());
+    PLOGV << fmt::format("performing authentucation, message UUID is {}", uuid.toString());
 
     device.write(SwomProtocolFormatter::EncodeAthFrame(uuid, EQUIPMENT_ID));
 }

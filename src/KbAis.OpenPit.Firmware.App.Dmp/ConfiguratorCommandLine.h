@@ -4,6 +4,6 @@
 // oss
 #include <CLI/CLI.hpp>
 
-inline void ConfigureCommandLine(CLI::App& cli);
+void ConfigureCommandLine(CLI::App& cli);
 
 #endif // CONFIGURATORCOMMANDLINE_H

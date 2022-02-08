@@ -3,7 +3,7 @@
 // qt
 #include <QRegularExpression>
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <plog/Log.h>
 

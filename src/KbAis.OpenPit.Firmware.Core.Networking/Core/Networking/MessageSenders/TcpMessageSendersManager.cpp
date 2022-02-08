@@ -3,13 +3,12 @@
 // qt
 #include "QMetaEnum"
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
 // Utils.TrdParty.JsonQt
 #include "JsonQt.h"
-// Utils.TrdParty.RxQt
 #include "Format.h"
 
 using namespace std::chrono_literals;
@@ -126,7 +125,7 @@ TcpMessageSendersManager::OnMessageSendersRestartRequired() {
         })
     |   ranges::views::keys
     ,   [&](const MessageSenderId_t& x) {
-            PLOGV << fmt::format("{} message sender is being restared", x);
+            PLOGV << fmt::format("{} message sender is being restared", x.toStdString());
 
             m_messageSenders[x]->Restart(m_messageSenderConfigurations[x]);
         }
@@ -139,8 +138,8 @@ TcpMessageSendersManager::OnMessageSenderStateChanged(
 ) {
     PLOGV << fmt::format(
         "{} message sender status changed to {}"
-    ,   notification.messageSenderName
-    ,   QtEnumToString(notification.state.socket_state)
+    ,   notification.messageSenderName.toStdString()
+    ,   QtEnumToString(notification.state.socket_state).toStdString()
     );
 
     m_messageSenderStates[notification.messageSenderName] = notification.state;

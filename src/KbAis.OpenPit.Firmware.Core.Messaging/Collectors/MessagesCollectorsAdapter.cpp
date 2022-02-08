@@ -2,12 +2,8 @@
 
 // std
 #include <chrono>
-// qt
-#include <QDateTime>
-#include <QVector>
-#include <QThread>
 // oss
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <plog/Log.h>
 
 using namespace std::chrono_literals;
@@ -32,51 +28,49 @@ MessagesCollectorsAdapter::~MessagesCollectorsAdapter() {
 }
 
 void
-MessagesCollectorsAdapter::StartCollectingOn(const rxcpp::observe_on_one_worker& scheduler) {
+MessagesCollectorsAdapter::StartCollectingOn(const rxcpp::observe_on_one_worker& coordinator) {
     mSubs = rxcpp::composite_subscription();
 
     auto immediateObservable =
-        mImmediateMessagesCollector.GetMessagesCollectedObservable(scheduler);
+        mImmediateMessagesCollector.GetMessagesCollectedObservable(coordinator);
 
     auto recurrentObservable = rxcpp::observable<>
-        ::interval(COLLECT_MESSAGES_PERIOD, scheduler)
+        ::interval(COLLECT_MESSAGES_PERIOD, coordinator)
         .map([](auto) { return true; });
 
     recurrentObservable.merge(immediateObservable)
-        //.subscribe_on(rxcpp::observe_on_new_thread())
         .subscribe(mSubs, [&](auto) { handleCollectMessages(); });
 
-    mImmediateMessagesCollector.StartCollectingOn(scheduler);
+    mImmediateMessagesCollector.StartCollectingOn(coordinator);
 
-    mRecurrentMessagesCollector.StartCollectingOn(scheduler);
+    mRecurrentMessagesCollector.StartCollectingOn(coordinator);
 }
 
 void
 MessagesCollectorsAdapter::handleCollectMessages() {
-    PLOGD << "Messages collector started to dump messages";
+    PLOGV << "startin to dump messages";
 
     QVector<Message> messages;
-    messages
-        << mImmediateMessagesCollector.DumpMessages()
-        << mRecurrentMessagesCollector.DumpMessages();
+    messages << mImmediateMessagesCollector.DumpMessages()
+             << mRecurrentMessagesCollector.DumpMessages();
 
     if (messages.isEmpty()) {
-        PLOGD << "Messages collector has no messages to enqueue";
+        PLOGV << "has no messages to enqueue";
 
         return;
     }
 
-    PLOGD << fmt::format("Messages collector dumped {} messages", messages.size());
+    PLOGV << "dumped " << messages.size() << "messages";
 
     auto messagesCollectedAt { QDateTime::currentDateTimeUtc() };
 
     auto messagesBatchPlaced = mQueue.enqueue({ messages, messagesCollectedAt });
 
     if (!messagesBatchPlaced) {
-        PLOGW << "Messages collector could not enqueue messsages";
+        PLOGW << "could not enqueue messsages";
 
         return;
     }
 
-    PLOGD << "Messages collector enqueued messages";
+    PLOGV << "enqueued messages";
 }
