@@ -28,15 +28,15 @@ HEADERS += \
     Core/Networking/MessageSenders/IMessageSendersManager.h \
     Core/Networking/MessageSenders/TcpMessageSender.h \
     Core/Networking/MessageSenders/TcpMessageSendersManager.h \
-    Core/Networking/NetworkingModuleFactory.h \
-    Core/Networking/NetworkingThreadWorker.h \
+    Core/Networking/ModuleBootstraperNetworking.h \
+    Core/Networking/ModuleFactoryNetworking.h \
 
 SOURCES += \
     Core/Networking/Communicators/Swom/SwomProtocolCommunicator.cpp \
     Core/Networking/Communicators/Swom/SwomProtocolFormatter.cpp \
     Core/Networking/MessageSenders/TcpMessageSender.cpp \
     Core/Networking/MessageSenders/TcpMessageSendersManager.cpp \
-    Core/Networking/NetworkingThreadWorker.cpp \
+    Core/Networking/ModuleBootstraperNetworking.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

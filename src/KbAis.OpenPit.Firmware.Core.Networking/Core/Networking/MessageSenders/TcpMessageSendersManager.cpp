@@ -10,7 +10,6 @@
 // Utils.TrdParty.JsonQt
 #include "JsonQt.h"
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
 #include "Format.h"
 
 using namespace std::chrono_literals;
@@ -25,15 +24,14 @@ QString QtEnumToString(const QEnum value) {
 TcpMessageSendersManager::TcpMessageSendersManager(
     IRxConfigurationChangePublisher& configurationPublisher
 )
-    :   QObject()
-    ,   m_configurationPublisher(configurationPublisher)
+    :   m_configurationPublisher(configurationPublisher)
     ,   m_subMessageSenderDiagInfosChanged({ })
 {
     m_subsConfigurationChanged = rxcpp::composite_subscription();
 }
 
 void
-TcpMessageSendersManager::StartWorkOn(rxcpp::observe_on_one_worker& coordination) {
+TcpMessageSendersManager::StartWorkOn(const rxcpp::observe_on_one_worker& coordination) {
     PLOGD << "starting work";
 
     m_configurationPublisher.getChangeObservable("networking")

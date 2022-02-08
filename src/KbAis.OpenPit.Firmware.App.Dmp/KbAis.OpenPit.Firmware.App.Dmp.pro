@@ -27,11 +27,13 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
+    CompositionRootModule.h \
+    ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
-    InjectorFactory.h \
 
 SOURCES += \
+    ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
     main.cpp \

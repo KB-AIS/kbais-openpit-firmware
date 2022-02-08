@@ -3,8 +3,6 @@
 
 // qt
 #include <QObject>
-// oss
-#include <rxcpp/rx.hpp>
 
 // Core.Configuration
 #include "IRxConfigurationChangePublisher.h"
@@ -15,8 +13,7 @@
 #include "Core/Networking/MessageSenders/TcpMessageSender.h"
 
 class TcpMessageSendersManager
-    :   public QObject
-    ,   public IMessageSendersManager
+    :   public IMessageSendersManager
     ,   public IRxMessageSendersDiagPub
 {
     Q_OBJECT
@@ -34,7 +31,7 @@ class TcpMessageSendersManager
 public:
     explicit TcpMessageSendersManager(IRxConfigurationChangePublisher& configurationPublisher);
 
-    Q_SLOT void StartWorkOn(rxcpp::observe_on_one_worker& coordinator);
+    void StartWorkOn(const rxcpp::observe_on_one_worker& coordinator) override;
 
     rxcpp::observable<MessageSenderDiagInfos_t> GetObservableDiagInfo() const override;
 

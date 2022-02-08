@@ -9,8 +9,9 @@ class CarrierFirmwareConan(ConanFile):
 
     """ Support libraries """
     requires += \
-        "readerwriterqueue/1.0.5", \
-        "nlohmann_json/3.10.5"
+        "cli11/2.1.2", \
+        "nlohmann_json/3.10.5", \
+        "readerwriterqueue/1.0.5"
 
     """ Missing C++20 libraries"""
     requires += \

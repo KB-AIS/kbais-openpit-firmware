@@ -1,10 +1,15 @@
 #ifndef IMESSAGESENDERSMANAGER_H
 #define IMESSAGESENDERSMANAGER_H
 
-class IMessageSendersManager {
+// oss
+#include <RxQt.h>
+
+class IMessageSendersManager : public QObject {
 
 public:
     virtual ~IMessageSendersManager() noexcept = default;
+
+    virtual void StartWorkOn(const rxcpp::observe_on_one_worker& coordinator) = 0;
 
 };
 

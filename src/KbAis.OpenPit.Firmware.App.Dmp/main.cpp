@@ -2,32 +2,12 @@
 #include <QApplication>
 // oss
 #include <fmt/core.h>
-#include <plog/Appenders/ConsoleAppender.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Init.h>
-#include <plog/Log.h>
 
-// Core.Persisting
-#include "Core/Persisting/Configuration/DatabaseConfigurator.h"
-// Utils.TrdParty.BoostDi
 #include "BoostDiExtensions.h"
-
-#include "InjectorFactory.h"
-
-enum LogScope {
-    Networking = 0x01
-};
-
-void
-configureLogging() {
-    using namespace plog;
-
-    static ConsoleAppender<TxtFormatter> consoleAppender;
-
-    init(verbose).addAppender(&consoleAppender);
-
-    init<LogScope::Networking>(verbose).addAppender(&consoleAppender);
-}
+#include "CompositionRootModule.h"
+#include "ConfigurationsManager.h"
+#include "ConfiguratorCommandLine.h"
+#include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
@@ -65,23 +45,22 @@ struct ConfigurationBootstraper {
                 }
             )"_json
         );
-
-        configurationManager.getChangeObservable("ethernet")
-           .subscribe([&](AppConfiguration configuration) {
-               PLOGD << fmt::format("Got a new configuration: \n{}", configuration.j_object.dump(4));
-           });
     }
 };
 
 int main(int argc, char* argv[]) {
-    configureLogging();
+    CLI::App commandLine;
+
+    ConfigureCommandLine(commandLine);
+
+    CLI11_PARSE(commandLine, argc, argv);
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
     DatabaseConfigurator::configure();
 
-    auto injector = InjectorFactory::create();
+    auto injector = CompositionRootModule();
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
