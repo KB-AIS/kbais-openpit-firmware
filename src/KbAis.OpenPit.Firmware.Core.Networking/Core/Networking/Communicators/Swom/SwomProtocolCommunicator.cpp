@@ -3,6 +3,7 @@
 // qt
 #include <QUuid>
 // oss
+#include <fmt/core.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
@@ -12,6 +13,9 @@
 #include "Core/Networking/Communicators/Swom/SwomProtocolFormatter.h"
 
 using namespace std::chrono_literals;
+
+// TODO: Pass equipment id with communicator configuration
+static const QString EQUIPMENT_ID { "104" };
 
 SwomProtocolCommunicator::SwomProtocolCommunicator() {
 
@@ -23,38 +27,37 @@ SwomProtocolCommunicator::~SwomProtocolCommunicator() {
 
 void
 SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
+    m_subs.unsubscribe();
+
     m_subs = rxcpp::composite_subscription();
+
+    PLOGV << fmt::format("SWOM protocol communicator is initiating communication session");
 
     rxqt::from_signal(&device, &QIODevice::readyRead).subscribe(m_subs, [&](auto) {
         constexpr quint32 BYTES_TO_PEEK = 1024;
 
         const auto byteToDecode = device.peek(BYTES_TO_PEEK);
 
-        auto uuid = QUuid::fromRfc4122(byteToDecode);
-        PLOGD << "Got ACK UUID: " << uuid.toString();
+        PLOGV << fmt::format("SWOM protocol communicator got data of {} bytes", byteToDecode.size());
+
+        // TODO: Process bytes
 
         device.read(BYTES_TO_PEEK);
     });
 
-    rxqt::from_signal(&m_tEnequeReccur, &QTimer::timeout).subscribe(m_subs, [&](auto) {
-        const auto messageBatches = SelectMessagesBatchesQry { }.handle(10);
-
-        if (messageBatches.isEmpty()) return;
-
-        //device.write(SwomProtocolFormatter::EncodeTelFrame(messageBatches));
-
-        const auto messageBatch =
-            ranges::max_element(messageBatches, std::greater<quint64>(), &MessagesBatchDto::id);
-
-        UpdateSenderCmd { }.handle(messageBatch->id);
-    });
-
-    //device.write(SwomProtocolFormatter::EncodeAthFrame("104"));
-
-    m_tEnequeReccur.start(10s);
+    PerformAuthenticationRequest(device);
 }
 
 void
 SwomProtocolCommunicator::StopCommunication() {
-    PLOGD << "SWOM STOP";
+    m_subs.unsubscribe();
+}
+
+void
+SwomProtocolCommunicator::PerformAuthenticationRequest(QIODevice& device) {
+    const auto uuid = QUuid::createUuid();
+
+    PLOGV << fmt::format("SWOM protocol communicator is performing authentucation, message UUID is {}", uuid.toString().toStdString());
+
+    device.write(SwomProtocolFormatter::EncodeAthFrame(uuid, EQUIPMENT_ID));
 }

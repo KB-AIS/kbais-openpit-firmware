@@ -1,8 +1,11 @@
 #include "TcpMessageSendersManager.h"
 
+// std
+#include <string_view>
 // qt
 #include "QMetaEnum"
 // oss
+#include <fmt/core.h>
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
@@ -14,6 +17,18 @@
 using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_PERIOD { 5s };
+
+#include <QString>
+QT_BEGIN_NAMESPACE
+
+inline std::string_view to_string_view(const QString& s) noexcept {
+    return {
+        reinterpret_cast<const char*>(s.utf16())
+    ,   static_cast<size_t>(s.length())
+    };
+}
+
+QT_END_NAMESPACE
 
 template<typename QEnum>
 QString QtEnumToString(const QEnum value) {
@@ -32,11 +47,14 @@ TcpMessageSendersManager::TcpMessageSendersManager(
 
 void
 TcpMessageSendersManager::StartWorkOn(rxcpp::observe_on_one_worker& coordination) {
-    auto const onConfigurationChanged_f =
-        std::bind(&TcpMessageSendersManager::OnConfigurationChanged, this, std::placeholders::_1);
+    PLOGD << "starting work";
+
     m_configurationPublisher.getChangeObservable("networking")
         .sample_with_time(500ms, coordination)
-        .subscribe(m_subsConfigurationChanged, onConfigurationChanged_f);
+        .subscribe(
+            m_subsConfigurationChanged
+        ,   [&](const AppConfiguration& x) { OnConfigurationChanged(x); }
+        );
 
     m_obsMessageSednersRestartInterval =
         rxcpp::observable<>::interval(RESTART_MESSAGE_SENDERS_PERIOD, coordination);
@@ -48,13 +66,16 @@ TcpMessageSendersManager::GetObservableDiagInfo() const {
 }
 
 void
-TcpMessageSendersManager::OnConfigurationChanged(AppConfiguration newConfiguration) {
+TcpMessageSendersManager::OnConfigurationChanged(const AppConfiguration& newConfiguration) {
+    PLOGV << "got a new 'networking' configuration";
+
     // Stop getting old notifications
     m_subsMessageSenderStatesChanged.unsubscribe();
 
     m_subsMessageSenderStatesChanged = rxcpp::composite_subscription();
 
-    // Stop message senders
+    PLOGV << "stopping message senders...";
+
     m_messageSenders.clear();
     m_messageSenderStates.clear();
 
@@ -72,18 +93,25 @@ TcpMessageSendersManager::OnConfigurationChanged(AppConfiguration newConfigurati
         })
     |   ranges::to<MessageSenderConfigurations_t>();
 
+    PLOGV << fmt::format("got {} sender configuration(s)", m_messageSenderConfigurations.size());
+
     ranges::for_each(
         m_messageSenderConfigurations | ranges::views::values
     ,   [&](const TcpMessageSenderConfiguration& x) {
             const auto id = x.GetMessageSenderName();
 
+            PLOGV << fmt::format("{} message sender is being created", id);
+
+            // TODO: create message sender form factory
             m_messageSenders[id].reset(new TcpMessageSender { id });
+
             // Set default state - unconnected
             m_messageSenderStates[id] = { };
         }
     );
 
-    auto obsMessageSenderStatesChanged = rxcpp::observable<>::empty<TcpMessageSenderStateChanged>();
+    rxcpp::observable<TcpMessageSenderStateChanged> obsMessageSenderStatesChanged =
+        rxcpp::observable<>::empty<TcpMessageSenderStateChanged>();
 
     ranges::for_each(
         m_messageSenders | ranges::views::values
@@ -94,20 +122,13 @@ TcpMessageSendersManager::OnConfigurationChanged(AppConfiguration newConfigurati
 
     obsMessageSenderStatesChanged.subscribe(
         m_subsMessageSenderStatesChanged
-    ,   std::bind(
-            &TcpMessageSendersManager::OnMessageSenderStateChanged
-        ,   this
-        ,   std::placeholders::_1
-        )
+    ,   [&](const TcpMessageSenderStateChanged& x) { OnMessageSenderStateChanged(x); }
     );
 
 
     m_obsMessageSednersRestartInterval.subscribe(
         m_subsMessageSenderStatesChanged
-    ,   std::bind(
-            &TcpMessageSendersManager::OnMessageSendersRestartRequired
-        ,   this
-        )
+    ,   [&](auto) { OnMessageSendersRestartRequired(); }
     );
 }
 
@@ -120,6 +141,8 @@ TcpMessageSendersManager::OnMessageSendersRestartRequired() {
         })
     |   ranges::views::keys
     ,   [&](const MessageSenderId_t& x) {
+            PLOGV << fmt::format("{} message sender is being restared", x);
+
             m_messageSenders[x]->Restart(m_messageSenderConfigurations[x]);
         }
     );
@@ -129,9 +152,15 @@ void
 TcpMessageSendersManager::OnMessageSenderStateChanged(
     TcpMessageSenderStateChanged notification
 ) {
-    m_messageSenderStates[notification.message_sender_name] = notification.state;
+    PLOGV << fmt::format(
+        "{} message sender status changed to {}"
+    ,   notification.messageSenderName
+    ,   QtEnumToString(notification.state.socket_state)
+    );
 
-    // Notify, diagnositc info changed
+    m_messageSenderStates[notification.messageSenderName] = notification.state;
+
+    // Notify diagnositc info has been changed
     m_subMessageSenderDiagInfosChanged.get_subscriber().on_next(
         m_messageSenderStates
     |   ranges::views::transform([&](const MessageSenderState_t& x) {

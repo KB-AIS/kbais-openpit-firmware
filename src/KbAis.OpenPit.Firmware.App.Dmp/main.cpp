@@ -14,6 +14,10 @@
 
 #include "InjectorFactory.h"
 
+enum LogScope {
+    Networking = 0x01
+};
+
 void
 configureLogging() {
     using namespace plog;
@@ -21,6 +25,8 @@ configureLogging() {
     static ConsoleAppender<TxtFormatter> consoleAppender;
 
     init(verbose).addAppender(&consoleAppender);
+
+    init<LogScope::Networking>(verbose).addAppender(&consoleAppender);
 }
 
 struct ConfigurationBootstraper {

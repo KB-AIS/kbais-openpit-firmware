@@ -28,9 +28,13 @@ public:
     void StopCommunication();
 
 private:
+    SwomProtocolCommunicatorState m_currentState;
+
     rxcpp::composite_subscription m_subs;
 
     QTimer m_tEnequeReccur;
+
+    void PerformAuthenticationRequest(QIODevice& device);
 };
 
 #endif // SWOMPROTOCOLCOMMUNICATOR_H

@@ -25,7 +25,7 @@ struct TcpMessageSenderState {
 
 struct TcpMessageSenderStateChanged {
 
-    QString message_sender_name;
+    QString messageSenderName;
 
     TcpMessageSenderState state;
 

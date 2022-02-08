@@ -55,7 +55,7 @@ private:
 
     MessageSenders_t m_messageSenders;
 
-    void OnConfigurationChanged(AppConfiguration configuration);
+    void OnConfigurationChanged(const AppConfiguration& configuration);
 
     void OnMessageSendersRestartRequired();
 
