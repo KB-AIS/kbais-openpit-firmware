@@ -15,8 +15,8 @@ ImmediateMessagesCollector::ImmediateMessagesCollector(
 
     ranges::for_each(
         mappers
-    |   ranges::view::drop(1)
-    |   ranges::view::transform([](auto x) { return x->getObservable(); })
+    |   ranges::views::drop(1)
+    |   ranges::views::transform([](auto x) { return x->getObservable(); })
     ,   [&](const auto& x) {
             m_observableImmediateMappers = m_observableImmediateMappers.merge(x);
         }

@@ -1,7 +1,5 @@
 #include "TcpMessageSendersManager.h"
 
-// std
-#include <string_view>
 // qt
 #include "QMetaEnum"
 // oss
@@ -13,22 +11,11 @@
 #include "JsonQt.h"
 // Utils.TrdParty.RxQt
 #include "RxQt.h"
+#include "Format.h"
 
 using namespace std::chrono_literals;
 
 constexpr std::chrono::milliseconds RESTART_MESSAGE_SENDERS_PERIOD { 5s };
-
-#include <QString>
-QT_BEGIN_NAMESPACE
-
-inline std::string_view to_string_view(const QString& s) noexcept {
-    return {
-        reinterpret_cast<const char*>(s.utf16())
-    ,   static_cast<size_t>(s.length())
-    };
-}
-
-QT_END_NAMESPACE
 
 template<typename QEnum>
 QString QtEnumToString(const QEnum value) {

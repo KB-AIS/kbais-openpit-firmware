@@ -13,6 +13,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
+    Format.h \
     RxQt.h \
     RxQtEvent.h \
     RxQtRunLoop.h \

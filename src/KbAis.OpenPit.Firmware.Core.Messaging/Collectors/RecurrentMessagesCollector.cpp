@@ -1,24 +1,17 @@
 #include "RecurrentMessagesCollector.h"
 
 // oss
-#include "pipes/drop.hpp"
-#include "pipes/for_each.hpp"
-#include "pipes/operator.hpp"
-#include "pipes/push_back.hpp"
-#include "pipes/transform.hpp"
 #include <range/v3/all.hpp>
 
 RecurrentMessagesCollector::RecurrentMessagesCollector(RecurrentMessageMappers_t mappers) {
-    m_observableRecurrentMappers = mappers.at(0)->getObservable();
+    m_obsRecurrentMappers = mappers.at(0)->getObservable();
 
-    mappers
-        >>= pipes::drop(1)
-        >>= pipes::transform([](auto mapper) {
-                return mapper->getObservable();
-            })
-        >>= pipes::for_each([&](const auto& mapperObservable) {
-                m_observableRecurrentMappers = m_observableRecurrentMappers.merge(mapperObservable);
-            });
+    ranges::for_each(
+        mappers
+    |   ranges::views::drop(1)
+    |   ranges::views::transform([](auto x) { return x->getObservable(); })
+    ,   [&o = m_obsRecurrentMappers](const auto& x) { o = o.merge(x); }
+    );
 }
 
 RecurrentMessagesCollector::~RecurrentMessagesCollector() {
@@ -28,7 +21,7 @@ RecurrentMessagesCollector::~RecurrentMessagesCollector() {
 void RecurrentMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler) {
     m_subscriptions = rxcpp::composite_subscription();
 
-    m_observableRecurrentMappers
+    m_obsRecurrentMappers
         .observe_on(scheduler)
         .subscribe(
             m_subscriptions

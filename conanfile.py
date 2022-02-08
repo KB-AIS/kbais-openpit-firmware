@@ -9,7 +9,6 @@ class CarrierFirmwareConan(ConanFile):
 
     """ Support libraries """
     requires += \
-        "pipes/1.0.0", \
         "readerwriterqueue/1.0.5", \
         "nlohmann_json/3.10.5"
 

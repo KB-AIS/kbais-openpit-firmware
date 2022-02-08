@@ -27,7 +27,7 @@ public:
     QVector<Message> DumpMessages();
 
 private:
-    rxcpp::observable<Message> m_observableRecurrentMappers;
+    rxcpp::observable<Message> m_obsRecurrentMappers;
 
     rxcpp::composite_subscription m_subscriptions;
 

@@ -9,7 +9,7 @@ class IAgtpRequetsReciever : public QObject {
 public:
     virtual ~IAgtpRequetsReciever() noexcept = default;
 
-    virtual void start() = 0;
+    virtual void Start() = 0;
 
 };
 

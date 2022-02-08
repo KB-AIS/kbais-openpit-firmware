@@ -14,7 +14,7 @@ public:
 
     static QVector<AgtpRequest> parseRequest(QByteArray&& bytes);
 
-    static QByteArray createResponse(const QVector<AgtpResponse>& responses);
+    static QByteArray createResponse(const std::vector<AgtpResponse>& responses);
 
 };
 

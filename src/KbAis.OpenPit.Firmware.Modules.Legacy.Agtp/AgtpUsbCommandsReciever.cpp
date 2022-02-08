@@ -2,10 +2,10 @@
 
 // oss
 #include <fmt/core.h>
-#include <pipes/operator.hpp>
-#include <pipes/push_back.hpp>
-#include <pipes/transform.hpp>
 #include <plog/Log.h>
+#include <range/v3/all.hpp>
+
+#include "Format.h"
 
 #include "Handlers/IAgtpRequestHandler.h"
 #include "AgtpProtocolPareser.h"
@@ -16,87 +16,77 @@ using TerminalError = QSerialPort::SerialPortError;
 
 AgtpUsbRequestsReciever::AgtpUsbRequestsReciever(const IAgtpRequestsMediator& mediator)
     :   IAgtpRequetsReciever()
-    ,   mMediator { mediator }
-    ,   mSpUsbDevice { new QSerialPort(this) }
+    ,   m_mediator { mediator }
+    ,   m_spUsbDevice { new QSerialPort(this) }
 {
-    mSubs = rxcpp::composite_subscription();
+    m_subscriptions = rxcpp::composite_subscription();
 
     constexpr int PEEK_BYTES = 512 * 1024;
 
-    rxqt::from_signal(mSpUsbDevice, &QIODevice::readyRead)
+    rxqt::from_signal(m_spUsbDevice, &QIODevice::readyRead)
         .map([&](auto) {
-            PLOGV << "AGTP service recived data to read";
+            PLOGV << "recived data to read";
 
             const auto requests =
-                AgtpProtocolParser::parseRequest((*mSpUsbDevice).read(PEEK_BYTES));
+                AgtpProtocolParser::parseRequest((*m_spUsbDevice).read(PEEK_BYTES));
 
-            PLOGD << fmt::format("AGTP serivce deserialized {} request(s)", requests.size());
-            QVector<AgtpResponse> responses;
+            PLOGD << fmt::format("deserialized {} request(s)", requests.size());
 
-            requests
-                >>= pipes::transform([&](auto command) { return mMediator.handle(command); })
-                >>= pipes::push_back(responses);
-
-            return AgtpProtocolParser::createResponse(responses);
+            return AgtpProtocolParser::createResponse(
+                requests
+            |   ranges::views::transform([&](auto x) { return m_mediator.handle(x); })
+            |   ranges::to<std::vector<AgtpResponse>>()
+            );
         })
         .subscribe(
-            mSubs
+            m_subscriptions
         ,   [&](const QByteArray& x) {
-                const auto bytesWrittenCount = mSpUsbDevice->write(x);
-                PLOGD << fmt::format(
-                    "AGTP service answered with frame of {} bytes"
-                ,   bytesWrittenCount
-                );
+                const auto bytesWrittenCount = m_spUsbDevice->write(x);
+                PLOGD << fmt::format("answered with frame of {} bytes", bytesWrittenCount);
             }
         ,   [](std::exception_ptr ep){
-                PLOGE << fmt::format(
-                    "AGTP service got an exception during command handling: {}"
-                ,   rxcpp::util::what(ep)
-                );
+                PLOGE << fmt::format("got an exception during command: {}", rxcpp::util::what(ep));
             }
         );
 
-    rxqt::from_signal(mSpUsbDevice, &QSerialPort::errorOccurred)
+    rxqt::from_signal(m_spUsbDevice, &QSerialPort::errorOccurred)
         .subscribe(
-            mSubs
+            m_subscriptions
         ,   [&](const TerminalError& x) {
                 if (x == TerminalError::NoError) return;
 
-                PLOGE << fmt::format(
-                    "AGTP service got an error from terminal device: {}, resetting"
-                ,   mSpUsbDevice->errorString().toStdString()
-                );
+                PLOGE << fmt::format("got a terminal error : {}", m_spUsbDevice->errorString());
 
-                resetTerminal();
+                ResetTerminal();
             }
         );
 }
 
 AgtpUsbRequestsReciever::~AgtpUsbRequestsReciever() {
-    mSubs.unsubscribe();
+    m_subscriptions.unsubscribe();
 
-    delete mSpUsbDevice;
+    delete m_spUsbDevice;
 }
 
 void
-AgtpUsbRequestsReciever::start() {
-    PLOGI << "AGTP service is starting processing";
-    setupTerminal();
+AgtpUsbRequestsReciever::Start() {
+    PLOGI << "starting processing";
+    SetupTerminal();
 
-    mSpUsbDevice->open(QIODevice::ReadWrite);
+    m_spUsbDevice->open(QIODevice::ReadWrite);
 }
 
 void
-AgtpUsbRequestsReciever::setupTerminal() {
+AgtpUsbRequestsReciever::SetupTerminal() {
     const QString AGTP_TERMINAL_PATH { QStringLiteral("/dev/ttyGS1") };
 
-    mSpUsbDevice->setPortName(AGTP_TERMINAL_PATH);
-    mSpUsbDevice->setBaudRate(9600);
-    mSpUsbDevice->setDataBits(QSerialPort::Data8);
+    m_spUsbDevice->setPortName(AGTP_TERMINAL_PATH);
+    m_spUsbDevice->setBaudRate(9600);
+    m_spUsbDevice->setDataBits(QSerialPort::Data8);
 }
 
 void
-AgtpUsbRequestsReciever::resetTerminal() {
-    mSpUsbDevice->close();
-    mSpUsbDevice->open(QIODevice::ReadWrite);
+AgtpUsbRequestsReciever::ResetTerminal() {
+    m_spUsbDevice->close();
+    m_spUsbDevice->open(QIODevice::ReadWrite);
 }

@@ -27,7 +27,7 @@ AgtpThreadWorker::AgtpThreadWorker(
 
     QObject::connect(
         &mWorker, &QThread::started
-    ,   &mRequestsReciever, &IAgtpRequetsReciever::start
+    ,   &mRequestsReciever, &IAgtpRequetsReciever::Start
     );
 
     QObject::connect(&mWorker, &QThread::finished, &mWorker, &QObject::deleteLater);

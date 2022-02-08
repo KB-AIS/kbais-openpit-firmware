@@ -8,8 +8,8 @@
 // Utils.TrdParty.RxQt
 #include "RxQt.h"
 
-#include "IAgtpRequestsReciever.h"
 #include "IAgtpRequestsMediator.h"
+#include "IAgtpRequestsReciever.h"
 
 class AgtpUsbRequestsReciever : public IAgtpRequetsReciever {
     Q_OBJECT
@@ -19,20 +19,20 @@ public:
 
     ~AgtpUsbRequestsReciever();
 
-    Q_SLOT void start() override;
+    Q_SLOT void Start() override;
 
-    Q_SIGNAL void processingFinished();
+    Q_SIGNAL void ProcessingFinished();
 
 private:
-    const IAgtpRequestsMediator& mMediator;
+    const IAgtpRequestsMediator& m_mediator;
 
-    QSerialPort* mSpUsbDevice;
+    QSerialPort* m_spUsbDevice;
 
-    rxcpp::composite_subscription mSubs;
+    rxcpp::composite_subscription m_subscriptions;
 
-    void setupTerminal();
+    void SetupTerminal();
 
-    void resetTerminal();
+    void ResetTerminal();
 
 };
 

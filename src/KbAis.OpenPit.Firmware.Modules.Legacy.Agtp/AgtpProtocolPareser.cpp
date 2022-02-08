@@ -68,11 +68,11 @@ AgtpProtocolParser::parseRequest(QByteArray&& bytes) {
 }
 
 QByteArray
-AgtpProtocolParser::createResponse(const QVector<AgtpResponse>& commandResults) {
+AgtpProtocolParser::createResponse(const std::vector<AgtpResponse>& commandResults) {
     constexpr int AGTP_PCK_BASE_LEN = 12;
 
     const auto pcksLength = std::accumulate(
-        commandResults.constBegin(), commandResults.constEnd(), 0,
+        commandResults.cbegin(), commandResults.cend(), 0,
         [](int a, AgtpResponse x) {
             return a + AGTP_PCK_BASE_LEN + x.bytes.size();
         }
