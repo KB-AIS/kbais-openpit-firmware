@@ -26,6 +26,9 @@ MainView::MainView(const NavEmmiter& navigationEmmiter)
 
     m_subscriptions = rxcpp::composite_subscription();
 
+    rxqt::from_signal(ui->btn_navToMain, &QPushButton::released)
+        .subscribe(m_subscriptions, [&](auto) { emit notifyTestUserEvent(); });
+
     rxqt::from_signal(ui->btn_navToDiag, &QPushButton::released)
         .subscribe(m_subscriptions, [&](auto) { m_navigationEmmiter.RequestNavTo(1); });
 

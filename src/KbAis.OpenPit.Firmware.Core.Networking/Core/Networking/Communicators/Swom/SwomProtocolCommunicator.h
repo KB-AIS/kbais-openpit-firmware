@@ -31,9 +31,13 @@ private:
 
     rxcpp::composite_subscription m_subscriptions;
 
+    QTimer m_tmAckTimeout;
+
     QTimer m_tmEnequeReccur;
 
     void OnReadyRead(QIODevice& device);
+
+    void OnAckTimeout(QIODevice& device);
 
     void SendAth(QIODevice& device);
 

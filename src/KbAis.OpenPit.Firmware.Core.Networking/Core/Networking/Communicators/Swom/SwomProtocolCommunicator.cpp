@@ -38,6 +38,9 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
     rxqt::from_signal(&device, &QIODevice::readyRead)
         .subscribe(m_subscriptions, [this, &d = device](auto) { OnReadyRead(d); });
 
+    rxqt::from_signal(&m_tmAckTimeout, &QTimer::timeout)
+        .subscribe(m_subscriptions, [this, &d = device](auto) { OnAckTimeout(d); });
+
     rxqt::from_signal(&m_tmEnequeReccur, &QTimer::timeout)
         .subscribe(m_subscriptions, [this, &d = device](auto) { SendTel(d); });
 
@@ -52,7 +55,9 @@ SwomProtocolCommunicator::StopCommunication() {
 }
 
 void
-SwomProtocolCommunicator::OnReadyRead(QIODevice &device) {
+SwomProtocolCommunicator::OnReadyRead(QIODevice& device) {
+    m_tmAckTimeout.stop();
+
     constexpr quint32 BYTES_TO_PEEK = 1024;
 
     const auto byteToDecode = device.peek(BYTES_TO_PEEK);
@@ -60,6 +65,11 @@ SwomProtocolCommunicator::OnReadyRead(QIODevice &device) {
     PLOGV << fmt::format("SWOM communicator got data of {} bytes", byteToDecode.size());
 
     device.read(BYTES_TO_PEEK);
+}
+
+void
+SwomProtocolCommunicator::OnAckTimeout(QIODevice& device) {
+    device.close();
 }
 
 void
@@ -71,10 +81,15 @@ SwomProtocolCommunicator::SendAth(QIODevice& device) {
     const auto encodedAthPacket = SwomProtocolFormatter::EncodeAthPacket(uuid, EQUIPMENT_ID);
 
     device.write(SwomProtocolFormatter::EncodeFrame(encodedAthPacket));
+
+    PLOGV << "SWOM communicator is waiting for authentication replay";
+
+    m_tmAckTimeout.setSingleShot(true);
+    m_tmAckTimeout.start(30s);
 }
 
 void
-SwomProtocolCommunicator::SendTel(QIODevice &device) {
+SwomProtocolCommunicator::SendTel(QIODevice& device) {
     const auto messageBatches = SelectMessagesBatchesQry { }.handle(MAX_MESSAGE_BATCHES_IN_FRAME);
 
     if (messageBatches.isEmpty()) return;

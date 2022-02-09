@@ -7,7 +7,7 @@
 
 SetupDateTimeService::SetupDateTimeService(const IRxGpsSensorPublisher& gpsSensorPublisher) {
     gpsSensorPublisher.getObservable()
-        .subscribe(m_subscriptions, [this](const auto& x) { handle(x); });
+        .subscribe(m_subscriptions, [this](const GpsMessage& x) { handle(x); });
 }
 
 SetupDateTimeService::~SetupDateTimeService() noexcept {
@@ -15,7 +15,7 @@ SetupDateTimeService::~SetupDateTimeService() noexcept {
 }
 
 void
-SetupDateTimeService::handle(const GpsMessage &gpsMessage) {
+SetupDateTimeService::handle(const GpsMessage& gpsMessage) {
     if (!gpsMessage.isValid) return;
 
    // Workaround: Using obsolet methods just to do the same thing as the original implementation.
