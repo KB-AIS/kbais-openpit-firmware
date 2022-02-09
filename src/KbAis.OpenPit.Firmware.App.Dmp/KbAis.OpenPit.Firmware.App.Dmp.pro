@@ -31,11 +31,13 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
+    System/SetupDateTimeService.h
 
 SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
+    System/SetupDateTimeService.cpp \
     main.cpp \
 
 LIBS += -L$$PRJDIR/binaries \

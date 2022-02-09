@@ -2,6 +2,8 @@
 #ifndef FORMAT_H
 #define FORMAT_H
 
+#define FMT_HEADER_ONLY
+
 // std
 #include <string_view>
 // qt
@@ -12,10 +14,7 @@
 QT_BEGIN_NAMESPACE
 
 inline std::string_view to_string_view(const QString& s) noexcept {
-    return {
-        reinterpret_cast<const char*>(s.utf16())
-    ,   static_cast<size_t>(s.length())
-    };
+    return { s.toStdString() };
 }
 
 QT_END_NAMESPACE

@@ -3,8 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     KbAis.OpenPit.Firmware.App.Dmp \
     KbAis.OpenPit.Firmware.App.Dmp.Presentation \
-#    KbAis.OpenPit.Firmware.App.Ful.CompRoot \
-#    KbAis.OpenPit.Firmware.App.Shv.CompRoot \
     KbAis.OpenPit.Firmware.Core.Configuration \
 #    KbAis.OpenPit.Firmware.Core.Diagnositcs \
     KbAis.OpenPit.Firmware.Core.EventBus \

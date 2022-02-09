@@ -4,11 +4,15 @@
 #include <QApplication>
 // oss
 #include <fmt/format.h>
+#include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Init.h>
+#include <plog/Log.h>
+#include <CLI/CLI.hpp>
 
 #include "BoostDiExtensions.h"
 #include "CompositionRootModule.h"
 #include "ConfigurationsManager.h"
-#include "ConfiguratorCommandLine.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 
 struct ConfigurationBootstraper {
@@ -50,12 +54,36 @@ struct ConfigurationBootstraper {
     }
 };
 
+using namespace plog;
+
 int main(int argc, char* argv[]) {
     CLI::App commandLine;
+    commandLine.allow_extras();
 
-    ConfigureCommandLine(commandLine);
+    std::map<std::string, Severity> plogSeverityLevels {
+        { "v", Severity::verbose }
+    ,   { "d", Severity::debug }
+    ,   { "i", Severity::info }
+    ,   { "w", Severity::warning }
+    ,   { "e", Severity::error }
+    ,   { "f", Severity::fatal }
+    };
+
+    auto logSeverityLevel = Severity::none;
+
+    commandLine.add_option("-l,--level", logSeverityLevel, "Log severity level")
+        -> transform(CLI::CheckedTransformer(plogSeverityLevels, CLI::ignore_case));
+
+    commandLine.callback([&]() {
+        static ConsoleAppender<TxtFormatter> consoleAppender;
+
+        init(logSeverityLevel).addAppender(&consoleAppender);
+    });
 
     CLI11_PARSE(commandLine, argc, argv);
+
+    QLocale appDefaultLocale { QLocale::Russian, QLocale::Russia };
+    QLocale::setDefault(appDefaultLocale);
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);

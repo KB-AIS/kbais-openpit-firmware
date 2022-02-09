@@ -4,15 +4,9 @@
 // qt
 #include <QTimer>
 #include <QWidget>
-// oss
-#include <plog/Log.h>
-#include <rxcpp/rx.hpp>
 
-// cfw::infra::sensors::gps
-#include "GpsMessage.h"
-#include "IRxGpsSensorPublisher.h"
-
-#include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
+#include "NavigationEmmiter.h"
+#include "RxQt.h"
 
 namespace Ui { class MainView; }
 
@@ -20,10 +14,7 @@ class MainView : public QWidget {
     Q_OBJECT
 
 public:
-    MainView(
-        const IRxGpsSensorPublisher& gpsSensorPublisher
-    ,   const IRxMessageSendersDiagPub& message_sender_diag_pub
-    );
+    MainView(const NavEmmiter& navigationEmmiter);
 
     ~MainView();
 
@@ -32,12 +23,16 @@ public:
 private:
     Ui::MainView* ui;
 
+    const NavEmmiter& m_navigationEmmiter;
+
     rxcpp::composite_subscription m_subscriptions;
 
     /*!
      * \brief Timer to update current time on screen.
      */
-    QTimer* tUpdateDisplayTime;
+    QTimer m_tmUpdateDisplayTime;
+
+    void OnUpdateDisplayTime();
 
 };
 

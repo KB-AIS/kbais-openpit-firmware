@@ -20,13 +20,13 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
+    Core/Networking/Communicators/IProtocolCommunicator.h \
     Core/Networking/Communicators/Swom/SwomProtocolCommunicator.h \
     Core/Networking/Communicators/Swom/SwomProtocolFormatter.h \
-    Core/Networking/Communicators/IProtocolCommunicator.h \
-    Core/Networking/Confguration/TcpMessageSenderConfiguration.h \
     Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h \
     Core/Networking/MessageSenders/IMessageSendersManager.h \
     Core/Networking/MessageSenders/TcpMessageSender.h \
+    Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h \
     Core/Networking/MessageSenders/TcpMessageSendersManager.h \
     Core/Networking/ModuleBootstraperNetworking.h \
     Core/Networking/ModuleFactoryNetworking.h \
@@ -36,7 +36,7 @@ SOURCES += \
     Core/Networking/Communicators/Swom/SwomProtocolFormatter.cpp \
     Core/Networking/MessageSenders/TcpMessageSender.cpp \
     Core/Networking/MessageSenders/TcpMessageSendersManager.cpp \
-    Core/Networking/ModuleBootstraperNetworking.cpp
+    Core/Networking/ModuleBootstraperNetworking.cpp \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

@@ -12,8 +12,7 @@ enum class SwomProtocolCommunicatorState {
     Authenticating,
     ReadyToSend,
     WaitAcknowledge,
-
-    Stoped = -1,
+    Stopped = -1,
 };
 
 class SwomProtocolCommunicator : public IProtocolCommunicator {
@@ -23,18 +22,22 @@ public:
 
     ~SwomProtocolCommunicator();
 
-    void InitCommunication(QIODevice &device);
+    void InitCommunication(QIODevice& device);
 
     void StopCommunication();
 
 private:
-    SwomProtocolCommunicatorState m_currentState;
+    SwomProtocolCommunicatorState m_currentState { SwomProtocolCommunicatorState::Stopped };
 
-    rxcpp::composite_subscription m_subs;
+    rxcpp::composite_subscription m_subscriptions;
 
-    QTimer m_tEnequeReccur;
+    QTimer m_tmEnequeReccur;
 
-    void PerformAuthenticationRequest(QIODevice& device);
+    void OnReadyRead(QIODevice& device);
+
+    void SendAth(QIODevice& device);
+
+    void SendTel(QIODevice& device);
 };
 
 #endif // SWOMPROTOCOLCOMMUNICATOR_H

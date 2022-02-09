@@ -18,9 +18,13 @@ class SwomProtocolFormatter {
 public:
     SwomProtocolFormatter() = delete;
 
-    static QByteArray EncodeAthFrame(const QUuid& uuid, const QString& equipmentId);
+    static void DecodeFrame(const QByteArray& encodedFrame);
 
-    static QByteArray EncodeTelFrame(const QUuid& uuid, const MessagesBatchDto& messageBatch);
+    static QByteArray EncodeFrame(const QByteArray& encodedPackets);
+
+    static QByteArray EncodeAthPacket(const QUuid& uuid, const QString& equipmentId);
+
+    static QByteArray EncodeTelPacket(const QUuid& uuid, const MessagesBatchDto& messageBatch);
 
 };
 

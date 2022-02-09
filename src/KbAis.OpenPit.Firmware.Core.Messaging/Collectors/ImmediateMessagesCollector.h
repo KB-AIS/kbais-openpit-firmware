@@ -2,7 +2,6 @@
 #define IMMEDIATEMESSAGESCOLLECTOR_H
 
 // qt
-#include <QMutex>
 #include <QVector>
 
 // Utils.TrdParty.RxQt
@@ -35,8 +34,6 @@ private:
     rxcpp::rxsub::subject<bool> m_messagesCollectedSubject;
 
     QVector<Message> m_collectedMessages;
-
-    QMutex m_mtxCollectedMessages;
 
 };
 

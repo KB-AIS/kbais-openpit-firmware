@@ -9,7 +9,7 @@
 #include <QTcpSocket>
 
 #include "Core/Networking/Communicators/IProtocolCommunicator.h"
-#include "Core/Networking/Confguration/TcpMessageSenderConfiguration.h"
+#include "Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h"
 
 struct TcpMessageSenderState {
 

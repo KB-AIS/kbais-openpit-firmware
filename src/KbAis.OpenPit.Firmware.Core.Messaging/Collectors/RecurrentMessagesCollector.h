@@ -3,7 +3,6 @@
 
 // qt
 #include <QHash>
-#include <QMutex>
 #include <QVector>
 
 // Utils.TrdParty.RxQt
@@ -32,8 +31,6 @@ private:
     rxcpp::composite_subscription m_subscriptions;
 
     QHash<QString, Message> m_collectedMessages;
-
-    QMutex m_mtxCollectedMessages;
 
 };
 

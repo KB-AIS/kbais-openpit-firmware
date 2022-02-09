@@ -5,30 +5,31 @@
 #include <QObject>
 #include <QStackedWidget>
 
-// cfw::infra::sensors::gps
-#include "SerialRxGpsSensorPublisher.h"
-
+#include "Diag/DiagView.h"
 #include "MainView.h"
+#include "NavigationEmmiter.h"
+#include "SerialRxGpsSensorPublisher.h"
 
 class ViewWrapper : public QObject {
     Q_OBJECT
 
 public:
-    ViewWrapper(MainView& mainView);
-
-    // Copy constructor to satisfy boost::di
-    //ViewWrapper(const ViewWrapper& w) : QObject(), mainView { w.mainView } {}
+    ViewWrapper(MainView& mainView, DiagView& diagView, NavEmmiter& navigationEmmiter);
 
     ~ViewWrapper();
 
-    void navigateToMain();
+    void NavigateToMain();
 
-    void navigateToDiag();
+    void NavigateToDiag();
 
 private:
-    QStackedWidget* nav;
+    QStackedWidget* m_nav;
 
-    MainView& mainView;
+    MainView& m_mainView;
+
+    DiagView& m_diagView;
+
+    NavEmmiter& m_navigationEmmiter;
 };
 
 #endif // VIEWWRAPPER_H

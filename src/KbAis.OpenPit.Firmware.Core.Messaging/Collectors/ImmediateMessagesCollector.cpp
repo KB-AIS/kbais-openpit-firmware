@@ -32,11 +32,7 @@ ImmediateMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler) {
     m_subs = rxcpp::composite_subscription();
 
     const auto messageMapped_f = [&](Message message) {
-        //m_mtxCollectedMessages.lock();
-
         m_collectedMessages.append(message);
-
-        //m_mtxCollectedMessages.unlock();
 
         m_messagesCollectedSubject.get_subscriber().on_next(true);
     };
@@ -54,8 +50,6 @@ ImmediateMessagesCollector::GetMessagesCollectedObservable(const Scheduler_t& sc
 
 QVector<Message>
 ImmediateMessagesCollector::DumpMessages() {
-    //QMutexLocker lock(&m_mtxCollectedMessages);
-
     QVector<Message> messages(m_collectedMessages);
     m_collectedMessages.clear();
 

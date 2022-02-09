@@ -7,10 +7,10 @@
 // Core.Configuration
 #include "IRxConfigurationChangePublisher.h"
 
-#include "Core/Networking/Confguration/TcpMessageSenderConfiguration.h"
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "Core/Networking/MessageSenders/IMessageSendersManager.h"
 #include "Core/Networking/MessageSenders/TcpMessageSender.h"
+#include "Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h"
 
 class TcpMessageSendersManager
     :   public IMessageSendersManager

@@ -2,6 +2,7 @@
 
 // oss
 #include <range/v3/all.hpp>
+#include <plog/Log.h>
 
 RecurrentMessagesCollector::RecurrentMessagesCollector(RecurrentMessageMappers_t mappers) {
     m_obsRecurrentMappers = mappers.at(0)->getObservable();
@@ -26,7 +27,6 @@ void RecurrentMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler)
         .subscribe(
             m_subscriptions
         ,   [&](Message message) {
-                //QMutexLocker locker(&m_mtxCollectedMessages);
                 m_collectedMessages.insert(message.moniker, message);
             }
         );
@@ -34,8 +34,6 @@ void RecurrentMessagesCollector::StartCollectingOn(const Scheduler_t& scheduler)
 
 QVector<Message>
 RecurrentMessagesCollector::DumpMessages() {
-    //QMutexLocker lock(&m_mtxCollectedMessages);
-
     QVector<Message> messages { m_collectedMessages.values().toVector() };
 
     return messages;

@@ -48,29 +48,29 @@ MessagesCollectorsAdapter::StartCollectingOn(const rxcpp::observe_on_one_worker&
 
 void
 MessagesCollectorsAdapter::handleCollectMessages() {
-    PLOGV << "startin to dump messages";
+    PLOGV << "Starting dump collected messages";
 
     QVector<Message> messages;
     messages << mImmediateMessagesCollector.DumpMessages()
              << mRecurrentMessagesCollector.DumpMessages();
 
     if (messages.isEmpty()) {
-        PLOGV << "has no messages to enqueue";
+        PLOGV << fmt::format("Collected no messages to dump");
 
         return;
     }
 
-    PLOGV << "dumped " << messages.size() << "messages";
+    PLOGV << fmt::format("Dumped {} message(s)", messages.size());
 
     auto messagesCollectedAt { QDateTime::currentDateTimeUtc() };
 
     auto messagesBatchPlaced = mQueue.enqueue({ messages, messagesCollectedAt });
 
     if (!messagesBatchPlaced) {
-        PLOGW << "could not enqueue messsages";
+        PLOGW << fmt::format("Filed to enqueue dumped messsage(s)");
 
         return;
     }
 
-    PLOGV << "enqueued messages";
+    PLOGV << "Dumped message(s) has been enqueue successfuly";
 }

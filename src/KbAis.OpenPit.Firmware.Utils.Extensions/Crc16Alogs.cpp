@@ -36,7 +36,7 @@ constexpr quint16 CRC_16_CCITT_FALSE_TABLE[256] = {
 };
 
 quint16
-calcCrc16CcittFalse(const QByteArray bytes, quint16 crc16) {
+calcCrc16CcittFalse(const QByteArray& bytes, quint16 crc16) {
     auto bytesLeft = bytes.size();
     auto bytesIndex = 0;
 

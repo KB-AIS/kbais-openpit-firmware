@@ -84,7 +84,7 @@ TcpMessageSendersManager::OnConfigurationChanged(const AppConfiguration& newConf
     ,   [&](const TcpMessageSenderConfiguration& x) {
             const auto id = x.GetMessageSenderName();
 
-            PLOGV << fmt::format("{} message sender is being created", id);
+            PLOGV << fmt::format("{} message sender is being created", id.toStdString());
 
             // TODO: create message sender form factory
             m_messageSenders[id].reset(new TcpMessageSender { id });

@@ -19,11 +19,10 @@ void ConfigureCommandLine(CLI::App &commandLine) {
     };
 
     auto logSeverityLevel = Severity::none;
-
     commandLine.add_option("-l,--level", logSeverityLevel, "Log severity level")
         -> transform(CLI::CheckedTransformer(plogSeverityLevels, CLI::ignore_case));
 
-    commandLine.callback([&logSeverityLevel]() {
+    commandLine.callback([&]() {
         static ConsoleAppender<TxtFormatter> consoleAppender;
 
         init(logSeverityLevel).addAppender(&consoleAppender);
