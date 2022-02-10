@@ -2,12 +2,19 @@
 #define UPDATESENDERCMD_H
 
 // qt
-#include <QtGlobal>
+#include <QSqlQuery>
 
 class UpdateSenderCmd {
 
 public:
+    UpdateSenderCmd();
+
+    ~UpdateSenderCmd();
+
     void handle(quint64 messagesBatchId) const;
+
+private:
+    QSqlQuery m_qryUpdateSenders;
 
 };
 

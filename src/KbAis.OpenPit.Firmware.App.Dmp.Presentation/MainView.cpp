@@ -5,6 +5,8 @@
 // qt
 #include <QDateTime>
 #include <QLabel>
+// oss
+#include <range/v3/all.hpp>
 
 #include "ui_MainView.h"
 
@@ -16,7 +18,21 @@ const QString DATE_FMT { "ddd, d MMM yyyy" };
 
 constexpr auto TIMER_UPDATE_TIME_INTERVAL { 1s };
 
-MainView::MainView(const NavEmmiter& navigationEmmiter)
+const auto invalidSs = QStringLiteral(R"(
+    color: rgb(255, 0, 0);
+    background-color: rgba(255, 255, 255, 0);
+)");
+
+const auto validSs = QStringLiteral(R"(
+    color: rgb(0, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
+)");
+
+MainView::MainView(
+    const IRxGpsSensorPublisher& gpsPublisher
+,   const IRxMessageSendersDiagPub& messageSenderPub
+,   const NavEmmiter& navigationEmmiter
+)
     :   QWidget()
     ,   ui { new Ui::MainView }
     ,   m_navigationEmmiter(navigationEmmiter)
@@ -34,6 +50,19 @@ MainView::MainView(const NavEmmiter& navigationEmmiter)
 
     rxqt::from_signal(&m_tmUpdateDisplayTime, &QTimer::timeout)
         .subscribe(m_subscriptions, [&](auto) { OnUpdateDisplayTime(); });
+
+
+    gpsPublisher.GetObservable()
+        .subscribe(m_subscriptions, [&](const GpsMessage& x) {
+            ui->lbl_diagGps->setStyleSheet(x.isValid ? validSs : invalidSs);
+        });
+
+    messageSenderPub.GetObservableDiagInfo()
+        .subscribe(m_subscriptions, [&](const std::vector<MessageSenderDiagInfo>& x) {
+            auto isConnected = ranges::contains(x, QString("ConnectedState"), &MessageSenderDiagInfo::state_text);
+
+            ui->lbl_diagSrv->setStyleSheet(isConnected ? validSs : invalidSs);
+        });
 
     m_tmUpdateDisplayTime.start(TIMER_UPDATE_TIME_INTERVAL);
 }

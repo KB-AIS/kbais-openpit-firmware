@@ -20,7 +20,7 @@ DmpRecurrentMessageMapper::DmpRecurrentMessageMapper(
 
 rxcpp::observable<Message>
 DmpRecurrentMessageMapper::getObservable() const {
-    auto const gpsMessageObservable = mGpsSensorPublisher.getObservable()
+    auto const gpsMessageObservable = mGpsSensorPublisher.GetObservable()
         .map([&](const GpsMessage& x) -> Message {
             return {
                 MESSAGE_MONKIER_GPS,

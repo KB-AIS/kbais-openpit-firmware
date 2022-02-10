@@ -254,7 +254,7 @@ color: rgb(0, 0, 0);</string>
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="lbl_time_2">
+  <widget class="QLabel" name="lbl_diagGps">
    <property name="geometry">
     <rect>
      <x>860</x>
@@ -286,7 +286,7 @@ background-color: rgba(255, 255, 255, 0);</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="lbl_time_3">
+  <widget class="QLabel" name="lbl_diagSrv">
    <property name="geometry">
     <rect>
      <x>940</x>
@@ -322,8 +322,8 @@ background-color: rgba(255, 255, 255, 0);</string>
   <zorder>label</zorder>
   <zorder>lbl_time</zorder>
   <zorder>lbl_date</zorder>
-  <zorder>lbl_time_2</zorder>
-  <zorder>lbl_time_3</zorder>
+  <zorder>lbl_diagGps</zorder>
+  <zorder>lbl_diagSrv</zorder>
  </widget>
  <resources/>
  <connections/>

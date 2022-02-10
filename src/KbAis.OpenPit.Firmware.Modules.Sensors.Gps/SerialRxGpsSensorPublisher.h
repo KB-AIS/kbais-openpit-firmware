@@ -10,9 +10,9 @@
 //oss
 #include <rxcpp/rx.hpp>
 
-#include "Nmea/NmeaParser.h"
 #include "GpsMessage.h"
 #include "IRxGpsSensorPublisher.h"
+#include "Nmea/NmeaParser.h"
 
 class SerialRxGpsSensorPublisher : public IRxGpsSensorPublisher {
 
@@ -21,7 +21,7 @@ public:
 
     ~SerialRxGpsSensorPublisher();
 
-    const rxcpp::observable<GpsMessage> getObservable() const override;
+    const rxcpp::observable<GpsMessage> GetObservable() const override;
 
 private:
     QSerialPort serialGpsSensor;
@@ -34,15 +34,15 @@ private:
 
     std::shared_ptr<RmcSentence> lastRmcSentence;
 
-    void setupGpsDevice();
+    void SetupGpsDevice();
 
-    bool resetGpsDevice();
+    bool ResetGpsDevice();
 
-    void handleGpsSensorRead();
+    void OnGpsSensorReadyRead();
 
-    bool needPublishGpsMessage() const;
+    bool NeedPublishGpsMessage() const;
 
-    GpsMessage mapGpsMessage() const;
+    GpsMessage MapGpsMessage() const;
 
 };
 

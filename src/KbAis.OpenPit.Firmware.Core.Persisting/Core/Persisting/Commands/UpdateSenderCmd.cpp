@@ -1,12 +1,11 @@
 #include "UpdateSenderCmd.h"
 
 // qt
-#include <QVariant>
-// qt sql
 #include <QSqlDatabase>
 #include <QSqlError>
-#include <QSqlQuery>
+#include <QVariant>
 // oss
+#include <fmt/format.h>
 #include <plog/Log.h>
 
 const QString DML_UPDATE_SENDER { QStringLiteral(
@@ -17,15 +16,25 @@ const QString DML_UPDATE_SENDER { QStringLiteral(
     "   [host] = '10.214.1.208' AND [port] = 9900;"
 ) };
 
+UpdateSenderCmd::UpdateSenderCmd() {
+
+}
+
+UpdateSenderCmd::~UpdateSenderCmd() {
+    m_qryUpdateSenders.finish();
+}
+
 void UpdateSenderCmd::handle(quint64 messagesBatchId) const {
     auto connection = QSqlDatabase::database();
 
-    QSqlQuery query { connection };
+    QSqlQuery m_qryUpdateSenders { connection };
 
-    query.prepare(DML_UPDATE_SENDER);
-    query.bindValue(":messages_batch_id", messagesBatchId);
+    m_qryUpdateSenders.prepare(DML_UPDATE_SENDER);
+    m_qryUpdateSenders.bindValue(":messages_batch_id", messagesBatchId);
 
-    if (!query.exec()) {
-        PLOGE << "Could not update sender: {0}" << query.lastError().text();
+    if (!m_qryUpdateSenders.exec()) {
+        const auto error = m_qryUpdateSenders.lastError().text().toStdString();
+
+        PLOGE << fmt::format("Could not update sender: {}", error);
     }
 }

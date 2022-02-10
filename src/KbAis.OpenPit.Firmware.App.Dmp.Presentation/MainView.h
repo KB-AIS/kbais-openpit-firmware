@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QWidget>
 
+#include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
+#include "IRxGpsSensorPublisher.h"
 #include "NavigationEmmiter.h"
 #include "RxQt.h"
 
@@ -14,7 +16,11 @@ class MainView : public QWidget {
     Q_OBJECT
 
 public:
-    MainView(const NavEmmiter& navigationEmmiter);
+    MainView(
+        const IRxGpsSensorPublisher& gpsPublisher
+    ,   const IRxMessageSendersDiagPub& messageSenderPub
+    ,   const NavEmmiter& navigationEmmiter
+    );
 
     ~MainView();
 

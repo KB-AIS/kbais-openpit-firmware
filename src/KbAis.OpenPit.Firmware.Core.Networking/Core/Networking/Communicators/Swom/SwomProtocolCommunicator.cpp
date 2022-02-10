@@ -38,13 +38,10 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
     rxqt::from_signal(&device, &QIODevice::readyRead)
         .subscribe(m_subscriptions, [this, &d = device](auto) { OnReadyRead(d); });
 
-    rxqt::from_signal(&m_tmAckTimeout, &QTimer::timeout)
-        .subscribe(m_subscriptions, [this, &d = device](auto) { OnAckTimeout(d); });
-
     rxqt::from_signal(&m_tmEnequeReccur, &QTimer::timeout)
-        .subscribe(m_subscriptions, [this, &d = device](auto) { SendTel(d); });
+        .subscribe(m_subscriptions, [this, &d = device](auto) { SendCollectedMessages(d); });
 
-    SendAth(device);
+    PerformAuthentication(device);
 
     m_tmEnequeReccur.start(SEND_TEL_INTERVAL);
 }
@@ -56,40 +53,57 @@ SwomProtocolCommunicator::StopCommunication() {
 
 void
 SwomProtocolCommunicator::OnReadyRead(QIODevice& device) {
-    m_tmAckTimeout.stop();
-
     constexpr quint32 BYTES_TO_PEEK = 1024;
 
-    const auto byteToDecode = device.peek(BYTES_TO_PEEK);
+    auto byteToDecode = device.peek(BYTES_TO_PEEK);
 
     PLOGV << fmt::format("SWOM communicator got data of {} bytes", byteToDecode.size());
+
+    auto frameDecodeResult = SwomProtocolFormatter::DecodeAckFrame(byteToDecode);
+    if (!frameDecodeResult) {
+        // TODO: handle unexpected
+        device.read(BYTES_TO_PEEK);
+        return;
+    }
+
+    if (m_currentState == SwomProtocolCommunicatorState::Authenticating) {
+        auto hasAthUuidBeenRecived = ranges::contains(*frameDecodeResult, athUuid);
+
+        if (!hasAthUuidBeenRecived) {
+            // TODO: emit disconnect request
+            return;
+        }
+
+        m_currentState = SwomProtocolCommunicatorState::ReadyToSend;
+    }
+
+    if (m_currentState == SwomProtocolCommunicatorState::WaitAcknowledge) {
+        m_currentState = SwomProtocolCommunicatorState::ReadyToSend;
+    }
 
     device.read(BYTES_TO_PEEK);
 }
 
 void
-SwomProtocolCommunicator::OnAckTimeout(QIODevice& device) {
-    device.close();
-}
-
-void
-SwomProtocolCommunicator::SendAth(QIODevice& device) {
-    const auto uuid = QUuid::createUuid();
+SwomProtocolCommunicator::PerformAuthentication(QIODevice& device) {
+    m_currentState = SwomProtocolCommunicatorState::Authenticating;
 
     PLOGV << "SWOM communicator is authenticating";
 
-    const auto encodedAthPacket = SwomProtocolFormatter::EncodeAthPacket(uuid, EQUIPMENT_ID);
+    athUuid = QUuid::createUuid();
+    const auto encodedAthPacket = SwomProtocolFormatter::EncodeAthPacket(athUuid, EQUIPMENT_ID);
 
-    device.write(SwomProtocolFormatter::EncodeFrame(encodedAthPacket));
-
-    PLOGV << "SWOM communicator is waiting for authentication replay";
-
-    m_tmAckTimeout.setSingleShot(true);
-    m_tmAckTimeout.start(30s);
+    if (!device.write(SwomProtocolFormatter::EncodeFrame(encodedAthPacket))) {
+        PLOGE << "SWOM communicator could not send authentication requset";
+    }
 }
 
 void
-SwomProtocolCommunicator::SendTel(QIODevice& device) {
+SwomProtocolCommunicator::SendCollectedMessages(QIODevice& device) {
+    if (m_currentState != SwomProtocolCommunicatorState::ReadyToSend) {
+        return;
+    }
+
     const auto messageBatches = SelectMessagesBatchesQry { }.handle(MAX_MESSAGE_BATCHES_IN_FRAME);
 
     if (messageBatches.isEmpty()) return;

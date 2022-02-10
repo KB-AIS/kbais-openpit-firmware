@@ -13,7 +13,7 @@ DeviceStateCollector::DeviceStateCollector(
 }
 
 void DeviceStateCollector::start(const rxqt::run_loop& loop) {
-    mGpsSensorPublisher.getObservable()
+    mGpsSensorPublisher.GetObservable()
         .observe_on(loop.observe_on_run_loop())
         .subscribe(
             mSubs

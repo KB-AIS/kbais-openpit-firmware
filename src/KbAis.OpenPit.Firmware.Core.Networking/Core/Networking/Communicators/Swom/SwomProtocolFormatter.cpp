@@ -3,6 +3,7 @@
 // qt
 #include <QDataStream>
 #include <QIODevice>
+#include <QtEndian>
 // oss
 #include <range/v3/all.hpp>
 
@@ -16,22 +17,46 @@ QDataStream& operator<<(QDataStream& out, const json& payload) {
     return out << fromStdVector(json::to_msgpack(payload));
 }
 
-void
-SwomProtocolFormatter::DecodeFrame(const QByteArray &encodedFrame) {
-    //auto uuid = QUuid::fromRfc4122(byteToDecode);
-}
+DecodeAckFrameResult_t
+SwomProtocolFormatter::DecodeAckFrame(QByteArray& bytes) {
+    auto offset { 0 };
+    const auto frameLen = qFromLittleEndian<qint32>(bytes.mid(offset, 4));
+    offset += 4;
 
-QByteArray
-SwomProtocolFormatter::EncodeFrame(const QByteArray &encodedPackets) {
-    QByteArray encodedFrame;
-    QDataStream out { &encodedFrame, QIODevice::WriteOnly };
-    out.setByteOrder(QDataStream::LittleEndian);
+    if (bytes.size() < frameLen + offset) {
+        return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeFrameIsTooShort);
+    }
 
-    out << encodedPackets.length();
-    out.writeRawData(encodedPackets.data(), encodedPackets.length());
-    out << calcCrc16CcittFalse(encodedFrame);
+    const auto frameCrc = qFromLittleEndian<quint16>(bytes.mid(frameLen + offset, 2));
+    if (frameCrc != calcCrc16CcittFalse(bytes.mid(0, offset + frameLen))) {
+        return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeChecksumInvalid);
+    }
 
-    return encodedFrame;
+    std::vector<QUuid> uuids;
+    while (offset != frameLen + 4) {
+        const auto packetType = static_cast<quint8>(bytes[offset]);
+        offset += 1;
+
+        if (packetType != static_cast<quint8>(SwomPacketType::Ack)) {
+            return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeUnsupportedFrame);
+        }
+
+        const auto packetUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
+        offset += 16;
+
+        const auto packetLen = qFromLittleEndian<qint32>(bytes.mid(offset, 4));
+        offset += 4;
+
+        const auto ackPacketUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
+        offset += 16;
+
+        uuids.emplace_back(ackPacketUuid);
+
+        const auto ackPacketStatus = static_cast<quint8>(bytes[offset]);
+        offset += 1;
+    }
+
+    return uuids;
 }
 
 QByteArray
@@ -40,7 +65,7 @@ SwomProtocolFormatter::EncodeAthPacket(const QUuid& uuid, const QString& equipme
     QDataStream out { &encodedPacket, QIODevice::WriteOnly };
     out.setByteOrder(QDataStream::LittleEndian);
 
-    out << static_cast<quint8>(SwomFrameType::Ath)
+    out << static_cast<quint8>(SwomPacketType::Ath)
         << uuid
         << json { { "EquipmentId", equipmentId } };
 
@@ -55,7 +80,7 @@ SwomProtocolFormatter::EncodeTelPacket(const QUuid& uuid, const MessagesBatchDto
     QDataStream out { &encodedPacket, QIODevice::WriteOnly };
     out.setByteOrder(QDataStream::LittleEndian);
 
-    out << static_cast<quint8>(SwomFrameType::Tel)
+    out << static_cast<quint8>(SwomPacketType::Tel)
         << uuid;
 
     ranges::for_each(messageBatch.messages, [&](const MessageDto& x) {
@@ -69,4 +94,17 @@ SwomProtocolFormatter::EncodeTelPacket(const QUuid& uuid, const MessagesBatchDto
     encodedPacket.insert(17, payloadLenBytes);
 
     return encodedPacket;
+}
+
+QByteArray
+SwomProtocolFormatter::EncodeFrame(const QByteArray &encodedPackets) {
+    QByteArray encodedFrame;
+    QDataStream out { &encodedFrame, QIODevice::WriteOnly };
+    out.setByteOrder(QDataStream::LittleEndian);
+
+    out << encodedPackets.length();
+    out.writeRawData(encodedPackets.data(), encodedPackets.length());
+    out << calcCrc16CcittFalse(encodedFrame);
+
+    return encodedFrame;
 }

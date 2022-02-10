@@ -3,6 +3,7 @@
 
 // qt
 #include <QTimer>
+#include <QUuid>
 
 #include "RxQt.h"
 
@@ -35,13 +36,17 @@ private:
 
     QTimer m_tmEnequeReccur;
 
+    QUuid athUuid;
+
+    std::vector<QUuid> m_recivedUuid;
+
     void OnReadyRead(QIODevice& device);
 
     void OnAckTimeout(QIODevice& device);
 
-    void SendAth(QIODevice& device);
+    void PerformAuthentication(QIODevice& device);
 
-    void SendTel(QIODevice& device);
+    void SendCollectedMessages(QIODevice& device);
 };
 
 #endif // SWOMPROTOCOLCOMMUNICATOR_H

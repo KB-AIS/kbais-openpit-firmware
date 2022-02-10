@@ -19,11 +19,11 @@ SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher()
 {
     connect(
         &serialGpsSensor, &QSerialPort::readyRead,
-        this, &SerialRxGpsSensorPublisher::handleGpsSensorRead
+        this, &SerialRxGpsSensorPublisher::OnGpsSensorReadyRead
     );
 
-    setupGpsDevice();
-    resetGpsDevice();
+    SetupGpsDevice();
+    ResetGpsDevice();
 }
 
 SerialRxGpsSensorPublisher::~SerialRxGpsSensorPublisher() {
@@ -33,12 +33,12 @@ SerialRxGpsSensorPublisher::~SerialRxGpsSensorPublisher() {
 }
 
 const rxcpp::observable<GpsMessage>
-SerialRxGpsSensorPublisher::getObservable() const {
+SerialRxGpsSensorPublisher::GetObservable() const {
     return subject.get_observable();
 }
 
 void
-SerialRxGpsSensorPublisher::setupGpsDevice() {
+SerialRxGpsSensorPublisher::SetupGpsDevice() {
     serialGpsSensor.setDataBits(QSerialPort::Data8);
     serialGpsSensor.setFlowControl(QSerialPort::NoFlowControl);
     serialGpsSensor.setParity(QSerialPort::NoParity);
@@ -46,7 +46,7 @@ SerialRxGpsSensorPublisher::setupGpsDevice() {
     serialGpsSensor.setStopBits(QSerialPort::OneStop);
 }
 
-bool SerialRxGpsSensorPublisher::resetGpsDevice() {
+bool SerialRxGpsSensorPublisher::ResetGpsDevice() {
     serialGpsSensor.setBaudRate(QSerialPort::Baud9600);
 
     // TOOD: Reset power on pins
@@ -56,7 +56,7 @@ bool SerialRxGpsSensorPublisher::resetGpsDevice() {
 }
 
 void
-SerialRxGpsSensorPublisher::handleGpsSensorRead() {
+SerialRxGpsSensorPublisher::OnGpsSensorReadyRead() {
     // Remove sentences from read buffer
     nmeaSentences.clear();
     processDeviceRead(serialGpsSensor, nmeaSentences);
@@ -71,19 +71,14 @@ SerialRxGpsSensorPublisher::handleGpsSensorRead() {
             lastRmcSentence = sentence;
         });
 
-        if (!needPublishGpsMessage()) continue;
+        if (!NeedPublishGpsMessage()) continue;
 
-        subject.get_subscriber().on_next(mapGpsMessage());
+        subject.get_subscriber().on_next(MapGpsMessage());
     }
 }
 
 bool
-SerialRxGpsSensorPublisher::needPublishGpsMessage() const {
-    // Check if sentences have valid time
-    if (!lastGgaSentence->time.isValid() || !lastRmcSentence->datetime.isValid()) {
-        return false;
-    }
-
+SerialRxGpsSensorPublisher::NeedPublishGpsMessage() const {
     // Check if sentences from same receive frame
     if (lastGgaSentence->time != lastRmcSentence->datetime.time()) {
         return false;
@@ -93,7 +88,7 @@ SerialRxGpsSensorPublisher::needPublishGpsMessage() const {
 }
 
 GpsMessage
-SerialRxGpsSensorPublisher::mapGpsMessage() const {
+SerialRxGpsSensorPublisher::MapGpsMessage() const {
     return GpsMessage {
         lastRmcSentence->datetime,
         lastRmcSentence->isValid,
