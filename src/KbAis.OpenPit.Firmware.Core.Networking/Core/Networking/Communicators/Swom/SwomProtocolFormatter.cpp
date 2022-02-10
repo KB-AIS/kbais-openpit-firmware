@@ -24,39 +24,39 @@ SwomProtocolFormatter::DecodeAckFrame(QByteArray& bytes) {
     offset += 4;
 
     if (bytes.size() < frameLen + offset) {
-        return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeFrameIsTooShort);
+        return nonstd::make_unexpected("Frame is too short");
     }
 
-    const auto frameCrc = qFromLittleEndian<quint16>(bytes.mid(frameLen + offset, 2));
+    const auto frameCrc = qFromLittleEndian<quint16>(bytes.mid(offset + frameLen, 2));
     if (frameCrc != calcCrc16CcittFalse(bytes.mid(0, offset + frameLen))) {
-        return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeChecksumInvalid);
+        return nonstd::make_unexpected("Crc is invalid");
     }
 
-    std::vector<QUuid> uuids;
+    std::vector<SwomAckPacket> packets;
     while (offset != frameLen + 4) {
         const auto packetType = static_cast<quint8>(bytes[offset]);
         offset += 1;
 
         if (packetType != static_cast<quint8>(SwomPacketType::Ack)) {
-            return nonstd::make_unexpected(SwomProtocolFormatterError::DecodeUnsupportedFrame);
+            return nonstd::make_unexpected("Unexpected packet type");
         }
 
         const auto packetUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
         offset += 16;
 
-        const auto packetLen = qFromLittleEndian<qint32>(bytes.mid(offset, 4));
+        qFromLittleEndian<qint32>(bytes.mid(offset, 4));
         offset += 4;
 
-        const auto ackPacketUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
+        const auto packetAckUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
         offset += 16;
 
-        uuids.emplace_back(ackPacketUuid);
-
-        const auto ackPacketStatus = static_cast<quint8>(bytes[offset]);
+        const SwomAckPacket::AckResultCode packetAckResult { static_cast<quint8>(bytes[offset]) };
         offset += 1;
+
+        packets.push_back({ packetUuid, packetAckUuid, packetAckResult });
     }
 
-    return uuids;
+    return packets;
 }
 
 QByteArray
@@ -90,7 +90,7 @@ SwomProtocolFormatter::EncodeTelPacket(const QUuid& uuid, const MessagesBatchDto
 
     auto payloadLen = encodedPacket.length() - PAYLOAD_LEN_SHIFT;
 
-    QByteArray payloadLenBytes(reinterpret_cast<const char *>(&payloadLen), sizeof(int));
+    QByteArray payloadLenBytes(reinterpret_cast<const char*>(&payloadLen), sizeof(int));
     encodedPacket.insert(17, payloadLenBytes);
 
     return encodedPacket;

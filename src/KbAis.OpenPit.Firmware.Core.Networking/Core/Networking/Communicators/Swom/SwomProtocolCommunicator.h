@@ -8,8 +8,15 @@
 #include "RxQt.h"
 
 #include "Core/Networking/Communicators/IProtocolCommunicator.h"
+#include "Core/Networking/Communicators/Swom/SwomProtocolFormatter.h"
 
-enum class SwomProtocolCommunicatorState {
+struct SwomPacketMeta {
+    QUuid uuid;
+
+    SwomPacketType type;
+};
+
+enum SwomProtocolCommunicatorState {
     Authenticating,
     ReadyToSend,
     WaitAcknowledge,
@@ -32,19 +39,17 @@ private:
 
     rxcpp::composite_subscription m_subscriptions;
 
-    QTimer m_tmAckTimeout;
+    SwomPacketMeta m_sndAthPacket;
 
-    QTimer m_tmEnequeReccur;
-
-    QUuid athUuid;
-
-    std::vector<QUuid> m_recivedUuid;
+    std::vector<SwomPacketMeta> m_sndPackets;
 
     void OnReadyRead(QIODevice& device);
 
     void OnAckTimeout(QIODevice& device);
 
-    void PerformAuthentication(QIODevice& device);
+    void HandleAthReq(QIODevice& device);
+
+    void HandleAthRsp(const std::vector<SwomAckPacket>& ackPackets);
 
     void SendCollectedMessages(QIODevice& device);
 };

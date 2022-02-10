@@ -18,16 +18,6 @@ const QString DATE_FMT { "ddd, d MMM yyyy" };
 
 constexpr auto TIMER_UPDATE_TIME_INTERVAL { 1s };
 
-const auto invalidSs = QStringLiteral(R"(
-    color: rgb(255, 0, 0);
-    background-color: rgba(255, 255, 255, 0);
-)");
-
-const auto validSs = QStringLiteral(R"(
-    color: rgb(0, 255, 0);
-    background-color: rgba(255, 255, 255, 0);
-)");
-
 MainView::MainView(
     const IRxGpsSensorPublisher& gpsPublisher
 ,   const IRxMessageSendersDiagPub& messageSenderPub
@@ -54,12 +44,32 @@ MainView::MainView(
 
     gpsPublisher.GetObservable()
         .subscribe(m_subscriptions, [&](const GpsMessage& x) {
+            const auto invalidSs = QString(R"(
+                color: rgb(255, 0, 0);
+                background-color: rgba(255, 255, 255, 0);
+            )");
+
+            const auto validSs = QString(R"(
+                color: rgb(0, 255, 0);
+                background-color: rgba(255, 255, 255, 0);
+            )");
+
             ui->lbl_diagGps->setStyleSheet(x.isValid ? validSs : invalidSs);
         });
 
     messageSenderPub.GetObservableDiagInfo()
         .subscribe(m_subscriptions, [&](const std::vector<MessageSenderDiagInfo>& x) {
             auto isConnected = ranges::contains(x, QString("ConnectedState"), &MessageSenderDiagInfo::state_text);
+
+            const auto invalidSs = QString(R"(
+                color: rgb(255, 0, 0);
+                background-color: rgba(255, 255, 255, 0);
+            )");
+
+            const auto validSs = QString(R"(
+                color: rgb(0, 255, 0);
+                background-color: rgba(255, 255, 255, 0);
+            )");
 
             ui->lbl_diagSrv->setStyleSheet(isConnected ? validSs : invalidSs);
         });

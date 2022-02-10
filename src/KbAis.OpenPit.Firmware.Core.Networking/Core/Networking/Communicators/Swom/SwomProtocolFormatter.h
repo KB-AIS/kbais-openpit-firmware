@@ -1,6 +1,8 @@
 #ifndef SWOMPROTOCOLFORMATTER_H
 #define SWOMPROTOCOLFORMATTER_H
 
+// std
+#include <variant>
 // qt
 #include <QByteArray>
 #include <QUuid>
@@ -15,13 +17,22 @@ enum class SwomPacketType : quint8 {
 ,   Ack = 0xFF
 };
 
-enum class SwomProtocolFormatterError {
-    DecodeFrameIsTooShort
-,   DecodeUnsupportedFrame
-,   DecodeChecksumInvalid
+struct SwomAckPacket {
+
+    enum AckResultCode : quint8 {
+        Ok = 0x00
+    ,   Error = 0xFF
+    };
+
+    QUuid Uuid;
+
+    QUuid AckUuid;
+
+    AckResultCode Result;
+
 };
 
-using DecodeAckFrameResult_t = nonstd::expected<std::vector<QUuid>, SwomProtocolFormatterError>;
+using DecodeAckFrameResult_t = nonstd::expected<std::vector<SwomAckPacket>, std::string>;
 
 class SwomProtocolFormatter {
 
