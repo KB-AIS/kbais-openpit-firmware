@@ -5,6 +5,7 @@
 #include <boost/di.hpp>
 
 #include "AgtpServiceModuleFactory.h"
+#include "App/Dmp/Presentation/ModuleFactoryPresentation.h"
 #include "Collectors/MessagesCollectorsAdapter.h"
 #include "Core/Networking/ModuleFactoryNetworking.h"
 #include "Core/Persisting/BlockingMessagesCachingService.h"
@@ -14,14 +15,12 @@
 #include "SerialRxGpsSensorPublisher.h"
 #include "System/SetupDateTimeService.h"
 #include "ThreadWorkerMessaging.h"
-#include "ViewWrapper.h"
 
 inline auto CompositionRootModule() noexcept {
     return boost::di::make_injector(
         CreateInjectorCoreNetworking()
+    ,   CreateModulePresentation()
     ,   boost::di::bind<SetupDateTimeService>()
-            .in(boost::di::singleton)
-    ,   boost::di::bind<ViewWrapper>()
             .in(boost::di::singleton)
     ,   boost::di::bind<
             IConfigurationProvider

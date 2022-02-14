@@ -1,10 +1,7 @@
 #include "DmpImmediateMessageMapper.h"
 
-// Core.Messsaging
 #include "Mappers/JsonMappers.h"
-// Utils.Extensions
 #include "QtExtensions/QByteArrayExt.h"
-// Utils.TrdParty.RxQt
 #include "RxQt.h"
 
 const QString MESSAGE_MONKIER_USR { QStringLiteral("USR") };

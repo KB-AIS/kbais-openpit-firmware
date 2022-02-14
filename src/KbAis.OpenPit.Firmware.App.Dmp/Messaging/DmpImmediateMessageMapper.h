@@ -4,11 +4,8 @@
 // qt
 #include <QObject>
 
-// App.Dmp.Presentation
-#include "MainView.h"
-// Core.Messaging
+#include "App/Dmp/Presentation/Views/Main/MainView.h"
 #include "IRxImmediateMessageMapper.h"
-// Utils.TrdParty.RxQt
 #include "RxQt.h"
 
 class DmpImmediateMessageMapper : public IRxImmediateMessageMapper {

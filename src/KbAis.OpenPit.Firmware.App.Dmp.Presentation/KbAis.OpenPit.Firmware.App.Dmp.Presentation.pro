@@ -18,20 +18,24 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Diag/DiagView.h \
-    MainView.h \
-    NavigationEmmiter.h \
-    ViewWrapper.h
+    App/Dmp/Presentation/BootstrapperPresentation.h \
+    App/Dmp/Presentation/HostWindow.h \
+    App/Dmp/Presentation/ModuleFactoryPresentation.h \
+    App/Dmp/Presentation/Utils/NavController.h \
+    App/Dmp/Presentation/Views/Diag/DiagView.h \
+    App/Dmp/Presentation/Views/Main/MainView.h \
 
 SOURCES += \
-    Diag/DiagView.cpp \
-    MainView.cpp \
-    NavigationEmmiter.cpp \
-    ViewWrapper.cpp
+    App/Dmp/Presentation/BootstrapperPresentation.cpp \
+    App/Dmp/Presentation/HostWindow.cpp \
+    App/Dmp/Presentation/Utils/NavController.cpp \
+    App/Dmp/Presentation/Views/Diag/DiagView.cpp \
+    App/Dmp/Presentation/Views/Main/MainView.cpp \
 
 FORMS += \
-    Diag/DiagView.ui \
-    MainView.ui \
+    App/Dmp/Presentation/HostWindow.ui \
+    App/Dmp/Presentation/Views/Diag/DiagView.ui \
+    App/Dmp/Presentation/Views/Main/MainView.ui \
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

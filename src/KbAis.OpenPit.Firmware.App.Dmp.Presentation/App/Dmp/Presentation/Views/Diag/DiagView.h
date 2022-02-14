@@ -4,7 +4,7 @@
 // qt
 #include <QWidget>
 
-#include "NavigationEmmiter.h"
+#include "App/Dmp/Presentation/Utils/NavController.h"
 #include "RxQt.h"
 
 namespace Ui {
@@ -17,16 +17,16 @@ class DiagView : public QWidget{
     Q_OBJECT
 
 public:
-    DiagView(NavEmmiter& navigationEmmiter);
+    DiagView(NavController& navigationEmmiter);
 
     ~DiagView();
 
 private:
-    NavEmmiter& m_navEmmiter;
+    NavController& m_navEmmiter;
 
     Ui::DiagView* ui;
 
-    rxcpp::composite_subscription m_subscriptions;
+    rxcpp::composite_subscription m_subsBag;
 
 };
 

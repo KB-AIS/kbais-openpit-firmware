@@ -5,9 +5,9 @@
 #include <QTimer>
 #include <QWidget>
 
+#include "App/Dmp/Presentation/Utils/NavController.h"
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "IRxGpsSensorPublisher.h"
-#include "NavigationEmmiter.h"
 #include "RxQt.h"
 
 namespace Ui { class MainView; }
@@ -19,14 +19,12 @@ public:
     MainView(
         const IRxGpsSensorPublisher& gpsPublisher
     ,   const IRxMessageSendersDiagPub& messageSenderPub
-    ,   const NavEmmiter& navigationEmmiter
+    ,   const NavController& navigationEmmiter
     );
 
     ~MainView();
 
     Q_SIGNAL void notifyTestUserEvent();
-
-    void StartObserveOn(const rxcpp::observe_on_one_worker& coordinator) const;
 
 private:
     Ui::MainView* ui;
@@ -35,13 +33,13 @@ private:
 
     const IRxMessageSendersDiagPub& m_messageSenderPub;
 
-    const NavEmmiter& m_navigationEmmiter;
+    const NavController& m_navigationEmmiter;
 
     rxcpp::composite_subscription m_subscriptions;
 
     QTimer m_tmUpdateDisplayTime;
 
-    void OnUpdateDisplayTime();
+    void OnUpdateDisplayDate();
 
 };
 
