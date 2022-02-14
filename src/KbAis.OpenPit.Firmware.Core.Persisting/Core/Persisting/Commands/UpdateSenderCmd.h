@@ -4,12 +4,12 @@
 // qt
 #include <QSqlQuery>
 
-class UpdateSenderCmd {
+class MessageSenderUpdateCmd {
 
 public:
-    UpdateSenderCmd();
+    MessageSenderUpdateCmd();
 
-    ~UpdateSenderCmd();
+    ~MessageSenderUpdateCmd();
 
     void handle(quint64 messagesBatchId) const;
 

@@ -18,6 +18,17 @@ const QString DATE_FMT { "ddd, d MMM yyyy" };
 
 constexpr auto TIMER_UPDATE_TIME_INTERVAL { 1s };
 
+const auto INDICATOR_VALID_SS = QString(R"(
+    color: green;
+    background-color: rgba(184, 187, 38, 0);
+)");
+
+const auto INDICATOR_INVALID_SS = QString(R"(
+    color: red;
+    background-color: rgba(251, 73, 52, 0);
+)");
+
+
 MainView::MainView(
     const IRxGpsSensorPublisher& gpsPublisher
 ,   const IRxMessageSendersDiagPub& messageSenderPub
@@ -25,6 +36,8 @@ MainView::MainView(
 )
     :   QWidget()
     ,   ui { new Ui::MainView }
+    ,   m_gpsMessagePub(gpsPublisher)
+    ,   m_messageSenderPub(messageSenderPub)
     ,   m_navigationEmmiter(navigationEmmiter)
     ,   m_tmUpdateDisplayTime(this)
 {
@@ -41,39 +54,6 @@ MainView::MainView(
     rxqt::from_signal(&m_tmUpdateDisplayTime, &QTimer::timeout)
         .subscribe(m_subscriptions, [&](auto) { OnUpdateDisplayTime(); });
 
-
-    gpsPublisher.GetObservable()
-        .subscribe(m_subscriptions, [&](const GpsMessage& x) {
-            const auto invalidSs = QString(R"(
-                color: rgb(255, 0, 0);
-                background-color: rgba(255, 255, 255, 0);
-            )");
-
-            const auto validSs = QString(R"(
-                color: rgb(0, 255, 0);
-                background-color: rgba(255, 255, 255, 0);
-            )");
-
-            ui->lbl_diagGps->setStyleSheet(x.isValid ? validSs : invalidSs);
-        });
-
-    messageSenderPub.GetObservableDiagInfo()
-        .subscribe(m_subscriptions, [&](const std::vector<MessageSenderDiagInfo>& x) {
-            auto isConnected = ranges::contains(x, QString("ConnectedState"), &MessageSenderDiagInfo::state_text);
-
-            const auto invalidSs = QString(R"(
-                color: rgb(255, 0, 0);
-                background-color: rgba(255, 255, 255, 0);
-            )");
-
-            const auto validSs = QString(R"(
-                color: rgb(0, 255, 0);
-                background-color: rgba(255, 255, 255, 0);
-            )");
-
-            ui->lbl_diagSrv->setStyleSheet(isConnected ? validSs : invalidSs);
-        });
-
     m_tmUpdateDisplayTime.start(TIMER_UPDATE_TIME_INTERVAL);
 }
 
@@ -81,6 +61,26 @@ MainView::~MainView() {
     m_subscriptions.unsubscribe();
 
     delete ui;
+}
+
+void
+MainView::StartObserveOn(const rxcpp::observe_on_one_worker& coordinator) const {
+    m_gpsMessagePub.GetObservable()
+        .observe_on(coordinator)
+        .subscribe(m_subscriptions, [&](const GpsMessage& x) {
+            ui->lbl_indicatorGps
+              ->setStyleSheet(x.isValid ? INDICATOR_INVALID_SS : INDICATOR_VALID_SS);
+        });
+
+    m_messageSenderPub.GetObservableDiagInfo()
+        .observe_on(coordinator)
+        .subscribe(m_subscriptions, [&](const std::vector<MessageSenderDiagInfo>& x) {
+            auto isConnected =
+                ranges::contains(x, QString { "ConnectedState" }, &MessageSenderDiagInfo::stateText);
+
+            ui->lbl_indicatorSrv
+              ->setStyleSheet(isConnected ? INDICATOR_INVALID_SS : INDICATOR_VALID_SS);
+        });
 }
 
 void

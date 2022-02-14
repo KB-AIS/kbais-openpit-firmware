@@ -6,6 +6,7 @@
 #include <plog/Log.h>
 
 #include "Core/Networking/Communicators/Swom/SwomProtocolCommunicator.h"
+#include "Format.h"
 
 template<typename TEnum>
 QString QEnumToString(const TEnum value) {
@@ -23,13 +24,20 @@ TcpMessageSender::TcpMessageSender(const QString& message_sender_name)
 void
 TcpMessageSender::Restart(const TcpMessageSenderConfiguration& configuration) {
     if (m_protocolCommunicator != nullptr) {
-        // TODO: Should we just use destructor to stop communication?
         m_protocolCommunicator->StopCommunication();
+
+        m_subCommunicator.unsubscribe();
+        m_subCommunicator = rxcpp::composite_subscription();
     }
 
     m_protocolCommunicator = GenProtocolCommunicator(configuration.protocol);
 
-    // Connecto to new host
+    m_protocolCommunicator->GetObservableProtocolViolation()
+        .subscribe(m_subCommunicator, [&](const ProtocolViolationNotif& x) {
+            PLOGW << fmt::format("Communicator got prtocol violation: {}", x.message);
+            m_socket.disconnectFromHost();
+        });
+
     m_socket.connectToHost(configuration.host, configuration.port);
 }
 

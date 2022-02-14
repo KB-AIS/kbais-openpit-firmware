@@ -10,6 +10,7 @@
 
 #include "Core/Networking/Communicators/IProtocolCommunicator.h"
 #include "Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h"
+#include "RxQt.h"
 
 struct TcpMessageSenderState {
 
@@ -47,6 +48,8 @@ public:
 
 private:
     const QString m_messageSenderName;
+
+    rxcpp::composite_subscription m_subCommunicator;
 
     QTcpSocket m_socket;
 

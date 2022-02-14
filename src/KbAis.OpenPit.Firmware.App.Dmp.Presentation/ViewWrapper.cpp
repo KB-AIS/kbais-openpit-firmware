@@ -12,13 +12,19 @@ ViewWrapper::ViewWrapper(
 ,   DiagView& diagView
 ,   NavEmmiter& navigationEmmiter
 )
-    :   m_nav { new QStackedWidget }
+    :   m_runLoopMain { this }
+    ,   m_nav { new QStackedWidget }
     ,   m_mainView { mainView }
     ,   m_diagView { diagView }
     ,   m_navigationEmmiter { navigationEmmiter }
 {
     m_nav->setGeometry(0, 0, SCREEN_W, SCREEN_H);
-    m_nav->setStyleSheet("QWidget { background-color: rgb(250, 250, 250); color: black; }");
+    m_nav->setStyleSheet(R"(
+        QWidget {
+            background-color: rgb(40, 40, 40);
+            color: rgb(235, 219, 178);
+        }
+    )");
 
     m_mainView.setParent(m_nav);
     m_nav->insertWidget(MAIN_VIEW_IDX, &m_mainView);
@@ -40,6 +46,8 @@ ViewWrapper::ViewWrapper(
                 break;
             }
         });
+
+    m_mainView.StartObserveOn(m_runLoopMain.observe_on_run_loop());
 }
 
 ViewWrapper::~ViewWrapper() {

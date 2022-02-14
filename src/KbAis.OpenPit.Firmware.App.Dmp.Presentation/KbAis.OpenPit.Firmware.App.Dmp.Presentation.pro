@@ -19,21 +19,18 @@ include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
     Diag/DiagView.h \
-    HostView.h \
     MainView.h \
     NavigationEmmiter.h \
     ViewWrapper.h
 
 SOURCES += \
     Diag/DiagView.cpp \
-    HostView.cpp \
     MainView.cpp \
     NavigationEmmiter.cpp \
-    ViewWrapper.cpp \
+    ViewWrapper.cpp
 
 FORMS += \
     Diag/DiagView.ui \
-    HostView.ui \
     MainView.ui \
 
 DESTDIR     = $$PRJDIR/binaries
@@ -44,3 +41,5 @@ UI_DIR      = $$PWD/build/.ui
 
 target.path += /usr/lib
 INSTALLS += target
+
+DISTFILES +=

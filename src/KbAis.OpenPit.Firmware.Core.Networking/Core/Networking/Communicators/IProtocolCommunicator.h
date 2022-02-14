@@ -4,14 +4,24 @@
 // qt
 #include <QIODevice>
 
+#include "RxQt.h"
+
+struct ProtocolViolationNotif {
+    std::string message;
+};
+
 class IProtocolCommunicator {
 
-public:
+public:   
+    using NotificatorProtocolViolation_t = rxcpp::observable<ProtocolViolationNotif>;
+
     virtual ~IProtocolCommunicator() noexcept = default;
 
     virtual void InitCommunication(QIODevice& device) = 0;
 
     virtual void StopCommunication() = 0;
+
+    virtual NotificatorProtocolViolation_t GetObservableProtocolViolation() const = 0;
 
 };
 

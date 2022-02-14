@@ -16,15 +16,15 @@ const QString DML_UPDATE_SENDER { QStringLiteral(
     "   [host] = '10.214.1.208' AND [port] = 9900;"
 ) };
 
-UpdateSenderCmd::UpdateSenderCmd() {
+MessageSenderUpdateCmd::MessageSenderUpdateCmd() {
 
 }
 
-UpdateSenderCmd::~UpdateSenderCmd() {
+MessageSenderUpdateCmd::~MessageSenderUpdateCmd() {
     m_qryUpdateSenders.finish();
 }
 
-void UpdateSenderCmd::handle(quint64 messagesBatchId) const {
+void MessageSenderUpdateCmd::handle(quint64 messagesBatchId) const {
     auto connection = QSqlDatabase::database();
 
     QSqlQuery m_qryUpdateSenders { connection };

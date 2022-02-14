@@ -8,6 +8,7 @@
 #include "Diag/DiagView.h"
 #include "MainView.h"
 #include "NavigationEmmiter.h"
+#include "RxQt.h"
 #include "SerialRxGpsSensorPublisher.h"
 
 class ViewWrapper : public QObject {
@@ -23,6 +24,8 @@ public:
     void NavigateToDiag();
 
 private:
+    rxqt::run_loop m_runLoopMain;
+
     QStackedWidget* m_nav;
 
     MainView& m_mainView;

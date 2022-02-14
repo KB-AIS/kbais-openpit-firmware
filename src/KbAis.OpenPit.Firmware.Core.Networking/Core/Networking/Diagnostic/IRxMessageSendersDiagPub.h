@@ -8,11 +8,16 @@
 
 struct MessageSenderDiagInfo {
 
-    QString message_sender_name { };
+    QString messageSenderName { };
 
-    QString state_text { };
+    QString stateText { };
 
-    std::optional<QString> error_text_opt { std::nullopt };
+    std::optional<QString> errorText { std::nullopt };
+
+    friend bool operator==(const MessageSenderDiagInfo& a, const MessageSenderDiagInfo& b) {
+        return std::tie(a.messageSenderName, a.stateText, a.errorText)
+            == std::tie(b.messageSenderName, b.stateText, b.errorText);
+    }
 
 };
 

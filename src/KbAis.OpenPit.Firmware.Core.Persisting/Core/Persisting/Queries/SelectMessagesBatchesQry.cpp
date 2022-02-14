@@ -39,7 +39,7 @@ const QString QML_SELECT_LAST_SENT_MESSAGES_BATCH_ID { QStringLiteral(
 ) };
 
 QVector<MessagesBatchDto>
-SelectMessagesBatchesQry::handle(qint32 messagesBatchesCount) const {
+MessageBatchGetAllQry::handle(qint32 messagesBatchesCount) const {
     auto c = QSqlDatabase::database();
 
     quint64 lastSentMessagesBatchId;
@@ -56,7 +56,7 @@ SelectMessagesBatchesQry::handle(qint32 messagesBatchesCount) const {
 }
 
 bool
-SelectMessagesBatchesQry::getLastSentMessagesBatchId(
+MessageBatchGetAllQry::getLastSentMessagesBatchId(
     const QSqlDatabase& connection,
     quint64& messageBatchIdOut
 ) const {
@@ -89,7 +89,7 @@ SelectMessagesBatchesQry::getLastSentMessagesBatchId(
 }
 
 bool
-SelectMessagesBatchesQry::getMessagesBatches(
+MessageBatchGetAllQry::getMessagesBatches(
     const QSqlDatabase &connection,
     quint64 lastSentMessagesBatchId,
     qint32 messagesBatchesCount,

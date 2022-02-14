@@ -6,7 +6,7 @@
 
 #include "Core/Persisting/Queries/Dtos.h"
 
-class SelectMessagesBatchesQry {
+class MessageBatchGetAllQry {
 
 public:
     QVector<MessagesBatchDto> handle(qint32 count) const;

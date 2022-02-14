@@ -26,16 +26,19 @@ public:
 
     Q_SIGNAL void notifyTestUserEvent();
 
+    void StartObserveOn(const rxcpp::observe_on_one_worker& coordinator) const;
+
 private:
     Ui::MainView* ui;
+
+    const IRxGpsSensorPublisher& m_gpsMessagePub;
+
+    const IRxMessageSendersDiagPub& m_messageSenderPub;
 
     const NavEmmiter& m_navigationEmmiter;
 
     rxcpp::composite_subscription m_subscriptions;
 
-    /*!
-     * \brief Timer to update current time on screen.
-     */
     QTimer m_tmUpdateDisplayTime;
 
     void OnUpdateDisplayTime();
