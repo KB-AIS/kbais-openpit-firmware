@@ -8,6 +8,7 @@
 #include <QtCore/qlist.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qurl.h>
+#include <QtCore/quuid.h>
 #include <QtCore/qvariant.h>
 #include <QtCore/qvector.h>
 
@@ -43,6 +44,10 @@ inline void from_json(const nlohmann::json &j, QVariant& variant) {
     }
 }
 
+inline void from_json(const nlohmann::json& j, QUuid& uuid) {
+    uuid = QUuid(j.get<QString>());
+}
+
 template<typename T>
 inline void from_json(const nlohmann::json &j, QVector<T> &vector) {
     for (const auto &item : j) {
@@ -61,6 +66,10 @@ inline void to_json(nlohmann::json& j, const QVariant&);
 
 inline void to_json(nlohmann::json& j, const QString& string) {
     j = string.toStdString();
+}
+
+inline void to_json(nlohmann::json& j, const QUuid& uuid) {
+    j = uuid.toString();
 }
 
 inline void to_json(nlohmann::json& j, const QVariantList& list) {
