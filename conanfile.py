@@ -7,13 +7,13 @@ class CarrierFirmwareConan(ConanFile):
         "plog/1.1.5", \
         "rxcpp/4.1.1"
 
-    """ Support libraries """
+    """ Supporting libraries """
     requires += \
         "cli11/2.1.2", \
         "nlohmann_json/3.10.5", \
         "readerwriterqueue/1.0.5"
 
-    """ Missing C++20 libraries"""
+    """ Missing C++20 libraries """
     requires += \
         "expected-lite/0.5.0", \
         "fmt/8.1.1", \
