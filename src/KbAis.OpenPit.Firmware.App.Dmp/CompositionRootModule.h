@@ -14,6 +14,7 @@
 #include "Messaging/DmpRecurrentMessageMapper.h"
 #include "SerialRxGpsSensorPublisher.h"
 #include "System/SetupDateTimeService.h"
+#include "System/SetupEthernetService.h"
 #include "ThreadWorkerMessaging.h"
 
 inline auto CompositionRootModule() noexcept {
@@ -21,6 +22,8 @@ inline auto CompositionRootModule() noexcept {
         CreateInjectorCoreNetworking()
     ,   CreateModulePresentation()
     ,   boost::di::bind<SetupDateTimeService>()
+            .in(boost::di::singleton)
+    ,   boost::di::bind<SetupEthernetService>()
             .in(boost::di::singleton)
     ,   boost::di::bind<
             IConfigurationProvider
