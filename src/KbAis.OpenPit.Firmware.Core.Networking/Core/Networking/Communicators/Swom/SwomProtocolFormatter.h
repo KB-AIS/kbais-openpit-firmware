@@ -9,7 +9,8 @@
 // oss
 #include <nonstd/expected.hpp>
 
-#include <Core/Persisting/Queries/Dtos.h>
+#include "Core/Persisting/Queries/Dtos.h"
+#include "JsonQt.h"
 
 enum class SwomPacketType : quint8 {
     Ath = 0x01
@@ -24,13 +25,13 @@ struct SwomAckPacket {
     ,   Error = 0xFF
     };
 
-    QUuid Uuid;
-
     QUuid AckUuid;
 
     AckResultCode Result;
 
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwomAckPacket, AckUuid, Result);
 
 using DecodeAckFrameResult_t = nonstd::expected<std::vector<SwomAckPacket>, std::string>;
 

@@ -41,19 +41,17 @@ SwomProtocolFormatter::DecodeAckFrame(QByteArray& bytes) {
             return nonstd::make_unexpected("Unexpected packet type");
         }
 
-        const auto packetUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
+        QUuid::fromRfc4122(bytes.mid(offset, 16));
         offset += 16;
 
-        qFromLittleEndian<qint32>(bytes.mid(offset, 4));
+        const auto packetLength = qFromLittleEndian<qint32>(bytes.mid(offset, 4));
         offset += 4;
 
-        const auto packetAckUuid = QUuid::fromRfc4122(bytes.mid(offset, 16));
-        offset += 16;
+        const auto jObject = nlohmann::json::from_msgpack(bytes.mid(offset, packetLength));
+        offset += packetLength;
 
-        const SwomAckPacket::AckResultCode packetAckResult { static_cast<quint8>(bytes[offset]) };
-        offset += 1;
-
-        packets.push_back({ packetUuid, packetAckUuid, packetAckResult });
+        // TODO: Catch parse exception
+        packets.push_back(jObject.get<SwomAckPacket>());
     }
 
     return packets;
