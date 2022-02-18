@@ -14,6 +14,7 @@
 #include "CompositionRootModule.h"
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
+#include "SerialRxLlsSensorPublisher.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
@@ -87,6 +88,9 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
+
+    SerialRxLlsSensorPublisher pub;
+    pub.StartWorking();
 
     DatabaseConfigurator::configure();
 

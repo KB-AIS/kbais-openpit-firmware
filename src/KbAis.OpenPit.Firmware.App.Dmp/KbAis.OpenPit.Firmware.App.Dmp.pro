@@ -31,6 +31,7 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
+    SerialRxLlsSensorPublisher.h \
     System/SetupDateTimeService.h \
     System/SetupEthernetService.h
 
@@ -38,6 +39,7 @@ SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
+    SerialRxLlsSensorPublisher.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
     main.cpp \
