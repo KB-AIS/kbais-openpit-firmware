@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     SerialRxLlsSensorPublisher pub;
-    pub.StartWorking();
+    pub.StartWorkingOn();
 
     DatabaseConfigurator::configure();
 

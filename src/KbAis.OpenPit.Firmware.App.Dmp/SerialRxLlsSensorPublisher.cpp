@@ -6,39 +6,53 @@
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
-#include "Format.h"
 #include "Crc8Alogs.h"
+#include "Format.h"
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::duration LLS_READ_REQUEST_INTERVAL { 300ms };
-
-constexpr quint8 LLS_REQ_PREFIX = 0x31;
-constexpr quint8 LLS_REP_PREFIX = 0x3E;
-
-constexpr quint8 LLS_OP_CODE_SINGLEREAD     = 0x06;
-constexpr int    LLS_OP_REPL_SINGLEREAD_LEN = 9;
+constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 300ms };
 
 SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher()
-    : QObject()
+    :   QObject()
+    ,   m_subLlsDeviceMessage { LlsDeviceMessage {} }
+    ,   m_subLlsDeviceDiagInfo { LlsDeviceDiagInfo {} }
 {
 
 }
 
+SerialRxLlsSensorPublisher::~SerialRxLlsSensorPublisher() {
+    m_subsBag.unsubscribe();
+}
+
 void
-SerialRxLlsSensorPublisher::StartWorking() {
+SerialRxLlsSensorPublisher::StartWorkingOn() {
     ConfigLlsDeviceConnection();
 
-    QObject::connect(&m_spLlsDevice, &QIODevice::readyRead, this, &SerialRxLlsSensorPublisher::HandleReadyRead);
+    rxqt::from_signal(&m_spLlsDevice, &QIODevice::readyRead)
+        .subscribe(m_subsBag, [this](auto) { HandleLlsReply(); });
 
-    // TODO: Add WAIT FOR REPLY TIMEOUT, send request only when got a reply
-    QObject::connect(&m_tmLlsReadRequest, &QTimer::timeout, [&]() {
-        HandleRequestSingleRead({ 0x01, 0x02, 0x03 });
-    });
+    rxcpp::observable<>::interval(SEND_REQUEST_INTERVAL)
+        .subscribe(m_subsBag, [this](auto) {
+            if (m_decodeReplyResult.expectedLlsReplies != 0) {
+                PublishLlsDeviceMessage();
+                PublishLlsDeviceDiagInfo();
+            }
+
+            SendLlsRequestSingleRead();
+        });
 
     m_spLlsDevice.open(QIODevice::ReadWrite);
+}
 
-    m_tmLlsReadRequest.start(LLS_READ_REQUEST_INTERVAL);
+rxcpp::observable<LlsDeviceMessage>
+SerialRxLlsSensorPublisher::GetObservableLlsDeviceMessage() const {
+    return m_subLlsDeviceMessage.get_observable();
+}
+
+rxcpp::observable<LlsDeviceDiagInfo>
+SerialRxLlsSensorPublisher::GetObservableLlsDeviceDiagInfo() const {
+    return m_subLlsDeviceDiagInfo.get_observable();
 }
 
 void
@@ -52,86 +66,54 @@ SerialRxLlsSensorPublisher::ConfigLlsDeviceConnection() {
 }
 
 void
-SerialRxLlsSensorPublisher::HandleReadyRead() {
-    const auto bytes = m_spLlsDevice.peek(1024);
+SerialRxLlsSensorPublisher::HandleLlsReply() {
+    const auto bytesToDecode = m_spLlsDevice.peek(1024);
 
-    if (bytes.length() <= 3) {
-        PLOGV << "LLS publisher got not enough data to process reply";
+    int scannedTotal { 0 };
 
-        return;
+    while (scannedTotal != bytesToDecode.length()) {
+        auto [scanned, decodeResult] =
+            OmnicommLlsProtocolFomratter::DecodeNextReplySingleRead(bytesToDecode);
+
+        scannedTotal += scanned;
+
+        if (!decodeResult) {
+            auto error = decodeResult.error();
+
+            // Not enough data for further processing what for next;
+            if (error == OmnicommLlsProtocolFomratter::NotEnoughData) {
+                return;
+            }
+
+            // Other kind of error
+            break;
+        }
     }
 
-    int bytesScanned { 0 };
-
-    while (bytesScanned != bytes.length()) {
-        const auto repStartIdx = bytes.indexOf(LLS_REP_PREFIX, bytesScanned);
-
-        if (repStartIdx == -1) {
-            PLOGV << "LLS publisher could not find replay prefix";
-
-            bytesScanned = bytes.length();
-            break;
-        }
-
-        bytesScanned = repStartIdx + 1;
-
-        const auto bytesPtr = bytes.constData();
-
-        const auto llsAdr = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 1);
-        const auto llsOpc = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 2);
-
-        bytesScanned += 2;
-
-        if (llsOpc != LLS_OP_CODE_SINGLEREAD) {
-            PLOGW << "LLS publisher got unsupported reply";
-
-            break;
-        }
-
-        // Check if publisher got enough data to perfrom parsing
-        if (bytes.mid(repStartIdx).length() < LLS_OP_REPL_SINGLEREAD_LEN) {
-            return;
-        }
-
-        const auto llsCrc = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 8);
-        if (calcCrc8Maxim(bytes.mid(repStartIdx, 8)) != llsCrc) {
-            // TODO: Publish DiagInfo error: got wrong crc
-            break;
-        };
-
-        LlsMessage msg {
-            bytes.at(repStartIdx + 3)
-        ,   qFromLittleEndian<quint16>(bytesPtr + repStartIdx + 4)
-        ,   qFromLittleEndian<quint16>(bytesPtr + repStartIdx + 6)
-        };
-        bytesScanned += 6;
-
-        PLOGD << fmt::format(
-            "Got reply from LLS device: {:d}, {:d}, {:d}, {:d}, {:d}, {:d}"
-        ,   llsAdr, llsOpc, msg.Tem, msg.Lvl, msg.Frq, llsCrc
-        );
-    }
-
-    m_spLlsDevice.read(bytesScanned);
+    m_spLlsDevice.read(scannedTotal);
 }
 
 void
-SerialRxLlsSensorPublisher::HandleRequestSingleRead(
-    std::vector<quint8> addresses
-) {
-    QByteArray llsRequestSingleRead;
+SerialRxLlsSensorPublisher::SendLlsRequestSingleRead() {
+    // TODO: Get addresses from configuration
+    std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
 
-    int currentByte = 0;
+    const auto encodedBytes = OmnicommLlsProtocolFomratter::EncodeOpSingleRead(addresses);
 
-    ranges::for_each(addresses, [&](auto address) {
-        llsRequestSingleRead[currentByte] = LLS_REQ_PREFIX;
-        llsRequestSingleRead[currentByte + 1] = address;
-        llsRequestSingleRead[currentByte + 2] = LLS_OP_CODE_SINGLEREAD;
-        llsRequestSingleRead[currentByte + 3] =
-            calcCrc8Maxim(llsRequestSingleRead.mid(currentByte, currentByte + 3));
+    if (m_spLlsDevice.write(encodedBytes)) {
+        PLOGV << fmt::format("LLS publisher wrote {} byte(s)", encodedBytes.length());
+        m_decodeReplyResult.expectedLlsReplies = addresses.size();
+        return;
+    }
 
-        currentByte += 4;
-    });
+    // TODO: Publish diag info
+    PLOGW << "LLS publisher could not send request on single read";
+}
 
-    m_spLlsDevice.write(llsRequestSingleRead);
+void SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
+
+}
+
+void SerialRxLlsSensorPublisher::PublishLlsDeviceDiagInfo() {
+
 }
