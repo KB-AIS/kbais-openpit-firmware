@@ -8,6 +8,16 @@
 // oss
 #include "RxQt.h"
 
+struct LlsMessage {
+
+    char    Tem { 0 };
+
+    quint16 Lvl { 0 };
+
+    quint16 Frq { 0 };
+
+};
+
 class SerialRxLlsSensorPublisher : public QObject {
     Q_OBJECT
 
@@ -25,7 +35,7 @@ private:
 
     void HandleReadyRead();
 
-    void HandleReadRequest();
+    void HandleRequestSingleRead(std::vector<quint8> addresses);
 
 };
 

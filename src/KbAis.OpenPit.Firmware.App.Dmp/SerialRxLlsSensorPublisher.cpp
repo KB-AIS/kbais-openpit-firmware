@@ -4,6 +4,7 @@
 #include <QtEndian>
 // oss
 #include <plog/Log.h>
+#include <range/v3/all.hpp>
 
 #include "Format.h"
 #include "Crc8Alogs.h"
@@ -12,10 +13,11 @@ using namespace std::chrono_literals;
 
 constexpr std::chrono::duration LLS_READ_REQUEST_INTERVAL { 300ms };
 
-constexpr qint8 LLS_REQ_PREFIX = 0x31;
-constexpr qint8 LLS_REP_PREFIX = 0x3E;
-constexpr qint8 LLS_SR_OP =  0x06;
-constexpr qint8 LLS_SR_REP_LEN = 8;
+constexpr quint8 LLS_REQ_PREFIX = 0x31;
+constexpr quint8 LLS_REP_PREFIX = 0x3E;
+
+constexpr quint8 LLS_OP_CODE_SINGLEREAD     = 0x06;
+constexpr int    LLS_OP_REPL_SINGLEREAD_LEN = 9;
 
 SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher()
     : QObject()
@@ -30,7 +32,9 @@ SerialRxLlsSensorPublisher::StartWorking() {
     QObject::connect(&m_spLlsDevice, &QIODevice::readyRead, this, &SerialRxLlsSensorPublisher::HandleReadyRead);
 
     // TODO: Add WAIT FOR REPLY TIMEOUT, send request only when got a reply
-    QObject::connect(&m_tmLlsReadRequest, &QTimer::timeout, this, &SerialRxLlsSensorPublisher::HandleReadRequest);
+    QObject::connect(&m_tmLlsReadRequest, &QTimer::timeout, [&]() {
+        HandleRequestSingleRead({ 0x01, 0x02, 0x03 });
+    });
 
     m_spLlsDevice.open(QIODevice::ReadWrite);
 
@@ -60,40 +64,51 @@ SerialRxLlsSensorPublisher::HandleReadyRead() {
     int bytesScanned { 0 };
 
     while (bytesScanned != bytes.length()) {
-        const auto replyBeningnPosition = bytes.indexOf(LLS_REP_PREFIX, bytesScanned);
-        if (replyBeningnPosition == -1) {
+        const auto repStartIdx = bytes.indexOf(LLS_REP_PREFIX, bytesScanned);
+
+        if (repStartIdx == -1) {
             PLOGV << "LLS publisher could not find replay prefix";
 
             bytesScanned = bytes.length();
             break;
         }
 
-        bytesScanned = replyBeningnPosition + 1;
+        bytesScanned = repStartIdx + 1;
 
-        const auto llsSenderAddress = *reinterpret_cast<const quint8*>(bytes.constData() + replyBeningnPosition + 1);
-        bytesScanned++;
-        const auto llsOpCode        = *reinterpret_cast<const quint8*>(bytes.constData() + replyBeningnPosition + 2);
-        bytesScanned++;
+        const auto bytesPtr = bytes.constData();
 
-        if (llsOpCode != LLS_SR_OP) {
-            PLOGV << "LLS publisher got unsupported reply";
+        const auto llsAdr = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 1);
+        const auto llsOpc = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 2);
+
+        bytesScanned += 2;
+
+        if (llsOpc != LLS_OP_CODE_SINGLEREAD) {
+            PLOGW << "LLS publisher got unsupported reply";
+
             break;
         }
 
-        if (bytes.mid(replyBeningnPosition).length() < 9) {
+        // Check if publisher got enough data to perfrom parsing
+        if (bytes.mid(repStartIdx).length() < LLS_OP_REPL_SINGLEREAD_LEN) {
             return;
         }
 
-        // TODO: User data reader
-        const auto llsCelsiusTemp   = bytes.at(replyBeningnPosition + 3);
-        const auto llsRelativeLevel = qFromLittleEndian<quint16>(bytes.mid(replyBeningnPosition + 4, 2).constData());
-        const auto llsFrequency     = bytes.mid(replyBeningnPosition + 6).toUShort();
-        const auto llsCrc           = *reinterpret_cast<const quint8*>(bytes.constData() + replyBeningnPosition + 8);
+        const auto llsCrc = *reinterpret_cast<const quint8*>(bytesPtr + repStartIdx + 8);
+        if (calcCrc8Maxim(bytes.mid(repStartIdx, 8)) != llsCrc) {
+            // TODO: Publish DiagInfo error: got wrong crc
+            break;
+        };
+
+        LlsMessage msg {
+            bytes.at(repStartIdx + 3)
+        ,   qFromLittleEndian<quint16>(bytesPtr + repStartIdx + 4)
+        ,   qFromLittleEndian<quint16>(bytesPtr + repStartIdx + 6)
+        };
         bytesScanned += 6;
 
         PLOGD << fmt::format(
             "Got reply from LLS device: {:d}, {:d}, {:d}, {:d}, {:d}, {:d}"
-        ,   llsSenderAddress, llsOpCode, llsCelsiusTemp, llsRelativeLevel, llsFrequency, llsCrc
+        ,   llsAdr, llsOpc, msg.Tem, msg.Lvl, msg.Frq, llsCrc
         );
     }
 
@@ -101,13 +116,22 @@ SerialRxLlsSensorPublisher::HandleReadyRead() {
 }
 
 void
-SerialRxLlsSensorPublisher::HandleReadRequest() {
-    // TODO: Could have several sensors
-    QByteArray l = QByteArray();
-    l[0] = LLS_REQ_PREFIX;
-    l[1] = 0x01; // TODO: FROM CONFIG
-    l[2] = LLS_SR_OP;
-    l[3] = calcCrc8Maxim(l);
+SerialRxLlsSensorPublisher::HandleRequestSingleRead(
+    std::vector<quint8> addresses
+) {
+    QByteArray llsRequestSingleRead;
 
-    m_spLlsDevice.write(l);
+    int currentByte = 0;
+
+    ranges::for_each(addresses, [&](auto address) {
+        llsRequestSingleRead[currentByte] = LLS_REQ_PREFIX;
+        llsRequestSingleRead[currentByte + 1] = address;
+        llsRequestSingleRead[currentByte + 2] = LLS_OP_CODE_SINGLEREAD;
+        llsRequestSingleRead[currentByte + 3] =
+            calcCrc8Maxim(llsRequestSingleRead.mid(currentByte, currentByte + 3));
+
+        currentByte += 4;
+    });
+
+    m_spLlsDevice.write(llsRequestSingleRead);
 }
