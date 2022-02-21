@@ -12,8 +12,7 @@ enum class LlsMessageError {
     LlsDeviceReturnNoData
 };
 
-using LlsDeviceData_t =
-    std::vector<nonstd::expected<LlsReplyReadData, LlsMessageError>>;
+using LlsDeviceData_t = std::vector<nonstd::expected<LlsReplyReadData, LlsMessageError>>;
 
 struct LlsDeviceMessage {
      LlsDeviceData_t data;
@@ -26,15 +25,14 @@ struct LlsDeviceDiagInfo {
 class SerialRxLlsSensorPublisher : public QObject {
     Q_OBJECT
 
-    using DecodeError_t =
-        std::optional<OmnicommLlsProtocolFomratter::DecodeReplyError>;
+    using DecodeError_t = std::optional<OmnicommLlsProtocolFomratter::DecodeReplyError>;
 
 public:
     SerialRxLlsSensorPublisher();
 
     ~SerialRxLlsSensorPublisher();
 
-    void StartWorkingOn();
+    void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
 
     rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const;
 
@@ -42,9 +40,9 @@ public:
 
 private:
     struct LlsReplyReadDataResult {
-        int expectedLlsReplies { 0 };
+        int expectedRepliesAmount { 0 };
 
-        std::vector<LlsReplyReadData> llsReplies { };
+        std::vector<LlsReplyReadData> recivedReplies { };
     };
 
     QSerialPort m_spLlsDevice;
@@ -57,15 +55,15 @@ private:
 
     rxcpp::rxsub::behavior<LlsDeviceDiagInfo> m_subLlsDeviceDiagInfo;
 
-    void ConfigLlsDeviceConnection();
+    void ConfigConnection();
 
-    void SendLlsRequestSingleRead();
+    void RequestSingleRead();
 
     void PublishLlsDeviceMessage();
 
     void PublishLlsDeviceDiagInfo();
 
-    void HandleLlsReply();
+    void HandleReadyRead();
 
 };
 

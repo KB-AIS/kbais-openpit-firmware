@@ -15,8 +15,9 @@ constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 300ms };
 
 SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher()
     :   QObject()
-    ,   m_subLlsDeviceMessage { LlsDeviceMessage {} }
-    ,   m_subLlsDeviceDiagInfo { LlsDeviceDiagInfo {} }
+    ,   m_spLlsDevice(this)
+    ,   m_subLlsDeviceMessage { LlsDeviceMessage { } }
+    ,   m_subLlsDeviceDiagInfo { LlsDeviceDiagInfo { } }
 {
 
 }
@@ -26,23 +27,28 @@ SerialRxLlsSensorPublisher::~SerialRxLlsSensorPublisher() {
 }
 
 void
-SerialRxLlsSensorPublisher::StartWorkingOn() {
-    ConfigLlsDeviceConnection();
+SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& coordinator) {
+    ConfigConnection();
 
     rxqt::from_signal(&m_spLlsDevice, &QIODevice::readyRead)
-        .subscribe(m_subsBag, [this](auto) { HandleLlsReply(); });
+        .subscribe_on(coordinator)
+        .subscribe(m_subsBag, [this](auto) { HandleReadyRead(); });
 
-    rxcpp::observable<>::interval(SEND_REQUEST_INTERVAL)
+    rxcpp::observable<>::interval(SEND_REQUEST_INTERVAL, coordinator)
         .subscribe(m_subsBag, [this](auto) {
-            if (m_decodeReplyResult.expectedLlsReplies != 0) {
+            if (m_decodeReplyResult.expectedRepliesAmount != 0) {
                 PublishLlsDeviceMessage();
                 PublishLlsDeviceDiagInfo();
             }
 
-            SendLlsRequestSingleRead();
+            m_decodeReplyResult.expectedRepliesAmount = 1;
+            m_decodeReplyResult.recivedReplies.clear();
+
+            RequestSingleRead();
         });
 
-    m_spLlsDevice.open(QIODevice::ReadWrite);
+    const auto connected = m_spLlsDevice.open(QIODevice::ReadWrite);
+    PLOGV_IF(connected) << "LLS publisher connected to /dev/ttyO2";
 }
 
 rxcpp::observable<LlsDeviceMessage>
@@ -56,7 +62,7 @@ SerialRxLlsSensorPublisher::GetObservableLlsDeviceDiagInfo() const {
 }
 
 void
-SerialRxLlsSensorPublisher::ConfigLlsDeviceConnection() {
+SerialRxLlsSensorPublisher::ConfigConnection() {
     // TODO: Get from configuration
     m_spLlsDevice.setPortName("/dev/ttyO2");
     m_spLlsDevice.setBaudRate(QSerialPort::Baud19200);
@@ -66,43 +72,45 @@ SerialRxLlsSensorPublisher::ConfigLlsDeviceConnection() {
 }
 
 void
-SerialRxLlsSensorPublisher::HandleLlsReply() {
+SerialRxLlsSensorPublisher::HandleReadyRead() {
     const auto bytesToDecode = m_spLlsDevice.peek(1024);
 
     int scannedTotal { 0 };
 
     while (scannedTotal != bytesToDecode.length()) {
         auto [scanned, decodeResult] =
-            OmnicommLlsProtocolFomratter::DecodeNextReplySingleRead(bytesToDecode);
+            OmnicommLlsProtocolFomratter::DecodeFirstReply(bytesToDecode);
 
         scannedTotal += scanned;
 
         if (!decodeResult) {
             auto error = decodeResult.error();
 
-            // Not enough data for further processing what for next;
+            // Not enough data for further processing, whait for next bytes batch
             if (error == OmnicommLlsProtocolFomratter::NotEnoughData) {
                 return;
             }
 
-            // Other kind of error
+            // Other kind of errors
             break;
         }
+
+        m_decodeReplyResult.recivedReplies.push_back(*decodeResult);
     }
 
     m_spLlsDevice.read(scannedTotal);
 }
 
 void
-SerialRxLlsSensorPublisher::SendLlsRequestSingleRead() {
+SerialRxLlsSensorPublisher::RequestSingleRead() {
     // TODO: Get addresses from configuration
     std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
+    m_decodeReplyResult.expectedRepliesAmount = addresses.size();
 
     const auto encodedBytes = OmnicommLlsProtocolFomratter::EncodeOpSingleRead(addresses);
-
     if (m_spLlsDevice.write(encodedBytes)) {
         PLOGV << fmt::format("LLS publisher wrote {} byte(s)", encodedBytes.length());
-        m_decodeReplyResult.expectedLlsReplies = addresses.size();
+
         return;
     }
 
@@ -111,7 +119,9 @@ SerialRxLlsSensorPublisher::SendLlsRequestSingleRead() {
 }
 
 void SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
-
+    ranges::for_each(m_decodeReplyResult.recivedReplies, [](const LlsReplyReadData& x) {
+        PLOGV << fmt::format("Got LLS data: {:d}, {:d}, {:d}, {:d}", x.Adr, x.Tem, x.Lvl, x.Frq);
+    });
 }
 
 void SerialRxLlsSensorPublisher::PublishLlsDeviceDiagInfo() {

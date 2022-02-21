@@ -37,7 +37,7 @@ public:
     /*!
      * \return amount of scanned bytes and expeced decode result.
      */
-    static DecodeResult_t DecodeNextReplySingleRead(const QByteArray& bytes);
+    static DecodeResult_t DecodeFirstReply(const QByteArray& bytes);
 
     static QByteArray EncodeOpSingleRead(const std::vector<quint8>& addresses);
 

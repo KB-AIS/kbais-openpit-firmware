@@ -15,22 +15,25 @@ constexpr quint8 LLS_OP_CODE_SINGLEREAD     = 0x06;
 constexpr int    LLS_OP_REPL_SINGLEREAD_LEN = 9;
 
 OmnicommLlsProtocolFomratter::DecodeResult_t
-OmnicommLlsProtocolFomratter::DecodeNextReplySingleRead(const QByteArray& bytes) {
-    if (bytes.length() <= 3) {
+OmnicommLlsProtocolFomratter::DecodeFirstReply(const QByteArray& bytes) {
+    constexpr int LLS_MINIMAL_REP_LEN { 3 };
+
+    if (bytes.length() <= LLS_MINIMAL_REP_LEN) {
         return ReturnUnexpected(0, DecodeReplyError::NotEnoughData);
     }
 
-    // Keep track of scanned bytes in recived sequence.
+    // Keep track of scanned bytes in recived bytes.
     int scanned { 0 };
 
+    // Find the start of the first reply in bytes.
     const auto msgStartIdx = bytes.indexOf(LLS_REP_PREFIX, scanned);
 
     if (msgStartIdx == -1) {
+        // Mark all bytes as scanned because there is no reply data.
         return ReturnUnexpected(bytes.length(), DecodeReplyError::NoPrefix);
     }
 
     scanned = msgStartIdx + 1;
-
     const auto bytesPtr = bytes.constData();
 
     const auto llsAdr = *reinterpret_cast<const quint8*>(bytesPtr + msgStartIdx + 1);
@@ -76,7 +79,7 @@ OmnicommLlsProtocolFomratter::EncodeOpSingleRead(const std::vector<quint8>& addr
         b[i + LLS_PFX_SHIFT] = LLS_REQ_PREFIX;
         b[i + LLS_ADR_SHIFT] = adr;
         b[i + LLS_OPC_SHIFT] = LLS_OP_CODE_SINGLEREAD;
-        b[i + LLS_CRC_SHIFT] = calcCrc8Maxim(b.mid(i, i + LLS_OPC_SHIFT));
+        b[i + LLS_CRC_SHIFT] = calcCrc8Maxim(b.mid(i, 3));
         i += LLS_REQ_LEN;
     });
 

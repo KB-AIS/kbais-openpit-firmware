@@ -16,6 +16,7 @@
 #include "System/SetupDateTimeService.h"
 #include "System/SetupEthernetService.h"
 #include "ThreadWorkerMessaging.h"
+#include "ModuleBootstraperSerialDevices.h"
 
 inline auto CompositionRootModule() noexcept {
     return boost::di::make_injector(
@@ -24,6 +25,8 @@ inline auto CompositionRootModule() noexcept {
     ,   boost::di::bind<SetupDateTimeService>()
             .in(boost::di::singleton)
     ,   boost::di::bind<SetupEthernetService>()
+            .in(boost::di::singleton)
+    ,   boost::di::bind<ModuleBootstraperSerialDevices>()
             .in(boost::di::singleton)
     ,   boost::di::bind<
             IConfigurationProvider

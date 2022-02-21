@@ -31,6 +31,7 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
+    ModuleBootstraperSerialDevices.h \
     OmnicommLlsProtocolFomratter.h \
     SerialRxLlsSensorPublisher.h \
     System/SetupDateTimeService.h \
@@ -40,6 +41,7 @@ SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
+    ModuleBootstraperSerialDevices.cpp \
     OmnicommLlsProtocolFomratter.cpp \
     SerialRxLlsSensorPublisher.cpp \
     System/SetupDateTimeService.cpp \

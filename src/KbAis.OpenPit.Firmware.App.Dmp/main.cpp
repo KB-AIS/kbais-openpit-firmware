@@ -3,18 +3,17 @@
 // qt
 #include <QApplication>
 // oss
+#include <CLI/CLI.hpp>
 #include <fmt/format.h>
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
-#include <CLI/CLI.hpp>
 
 #include "BoostDiExtensions.h"
 #include "CompositionRootModule.h"
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
-#include "SerialRxLlsSensorPublisher.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
@@ -88,9 +87,6 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
-
-    SerialRxLlsSensorPublisher pub;
-    pub.StartWorkingOn();
 
     DatabaseConfigurator::configure();
 
