@@ -11,13 +11,15 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 300ms };
+constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 2s };
 
-SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher()
-    :   QObject()
+SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher(
+    IRxConfigurationChangePublisher& configurationPublisher
+)
+    :   m_configurationPublisher(configurationPublisher)
     ,   m_spLlsDevice(this)
-    ,   m_subLlsDeviceMessage { LlsDeviceMessage { } }
-    ,   m_subLlsDeviceDiagInfo { LlsDeviceDiagInfo { } }
+    ,   m_subLlsDeviceMessage(LlsDeviceMessage { })
+    ,   m_subLlsDeviceDiagInfo(LlsDeviceHelth { })
 {
 
 }
@@ -26,9 +28,28 @@ SerialRxLlsSensorPublisher::~SerialRxLlsSensorPublisher() {
     m_subsBag.unsubscribe();
 }
 
+int random_number(int N) // random value in [0, N)
+{
+    static std::random_device seed;
+    static std::mt19937 eng(seed());
+    std::uniform_int_distribution<> dist(0, N - 1);
+    return dist(eng);
+}
+
 void
 SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& coordinator) {
-    ConfigConnection();
+
+    m_configurationPublisher.getChangeObservable("networking")
+        .sample_with_time(500ms, coordinator)
+        .subscribe(m_subsBag, [this](AppConfiguration confiugration) {
+            m_spLlsDevice.close();
+
+            const auto portIdx = random_number(10) % 2;
+            ConfigConnection(portIdx);
+
+            const auto connected = m_spLlsDevice.open(QIODevice::ReadWrite);
+            PLOGV_IF(connected) << "LLS publisher connected to " << portIdx;
+        });
 
     rxqt::from_signal(&m_spLlsDevice, &QIODevice::readyRead)
         .subscribe_on(coordinator)
@@ -45,25 +66,21 @@ SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& c
 
             RequestSingleRead();
         });
-
-    const auto connected = m_spLlsDevice.open(QIODevice::ReadWrite);
-    PLOGV_IF(connected) << "LLS publisher connected to /dev/ttyO2";
 }
 
-rxcpp::observable<LlsDeviceMessage>
+const rxcpp::observable<LlsDeviceMessage>
 SerialRxLlsSensorPublisher::GetObservableLlsDeviceMessage() const {
     return m_subLlsDeviceMessage.get_observable();
 }
 
-rxcpp::observable<LlsDeviceDiagInfo>
-SerialRxLlsSensorPublisher::GetObservableLlsDeviceDiagInfo() const {
+rxcpp::observable<LlsDeviceHelth>
+SerialRxLlsSensorPublisher::GetObservableHelthCheck() const {
     return m_subLlsDeviceDiagInfo.get_observable();
 }
 
 void
-SerialRxLlsSensorPublisher::ConfigConnection() {
-    // TODO: Get from configuration
-    m_spLlsDevice.setPortName("/dev/ttyO2");
+SerialRxLlsSensorPublisher::ConfigConnection(int idx) {
+    m_spLlsDevice.setPortName(idx == 1 ? "/dev/ttyO2" : "/dev/ttySC2");
     m_spLlsDevice.setBaudRate(QSerialPort::Baud19200);
     m_spLlsDevice.setDataBits(QSerialPort::Data8);
     m_spLlsDevice.setStopBits(QSerialPort::OneStop);
@@ -121,22 +138,7 @@ void SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
     // TODO: Get addresses from configuration
     std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
 
-    ranges::contains(m_decodeReplyResult.recivedReplies, 0, &LlsReplyReadData::Adr);
-
-
-    m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage {
-        addresses
-        |   ranges::view::transform([&](quint8 adr) {
-                auto itr = ranges::find_if(m_decodeReplyResult.recivedReplies, [&](const auto& x) {
-                    return x.Adr == adr;
-                });
-
-                return itr != ranges::end(m_decodeReplyResult.recivedReplies)
-                    ? nonstd::expected<LlsReplyReadData, LlsMessageError>(*itr)
-                    : nonstd::make_unexpected(LlsMessageError::LlsDeviceReturnNoData);
-            })
-        |   ranges::to<LlsDeviceData_t>()
-    });
+    PLOGD << "LLS publisher got: " << m_decodeReplyResult.recivedReplies.size();
 }
 
 void SerialRxLlsSensorPublisher::PublishLlsDeviceDiagInfo() {

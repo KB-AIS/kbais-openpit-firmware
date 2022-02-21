@@ -5,38 +5,52 @@
 #include <QObject>
 #include <QSerialPort>
 
+#include "IRxConfigurationChangePublisher.h"
 #include "OmnicommLlsProtocolFomratter.h"
 #include "RxQt.h"
 
-enum class LlsMessageError {
-    LlsDeviceReturnNoData
-};
+using LlsDeviceAddress_t = quint8;
 
-using LlsDeviceData_t = std::vector<nonstd::expected<LlsReplyReadData, LlsMessageError>>;
+using LlsDeviceCombinedData_t = std::map<LlsDeviceAddress_t, std::optional<LlsReplyReadData>>;
 
 struct LlsDeviceMessage {
-     LlsDeviceData_t data;
+     LlsDeviceCombinedData_t data;
 };
 
-struct LlsDeviceDiagInfo {
+struct LlsDeviceHelth {
 
 };
 
-class SerialRxLlsSensorPublisher : public QObject {
+class IRxLlsDeviceMessagePublisher {
+
+public:
+    virtual const rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const = 0;
+
+};
+
+class IRxLlsDeviceHealthObserver {
+
+};
+
+class SerialRxLlsSensorPublisher
+    :   public QObject
+    ,   public IRxLlsDeviceMessagePublisher
+    ,   public IRxLlsDeviceHealthObserver
+{
     Q_OBJECT
 
     using DecodeError_t = std::optional<OmnicommLlsProtocolFomratter::DecodeReplyError>;
 
 public:
-    SerialRxLlsSensorPublisher();
+    SerialRxLlsSensorPublisher(IRxConfigurationChangePublisher& configurationPublisher);
 
     ~SerialRxLlsSensorPublisher();
 
     void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
 
-    rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const;
+    const rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const override;
 
-    rxcpp::observable<LlsDeviceDiagInfo> GetObservableLlsDeviceDiagInfo() const;
+    rxcpp::observable<LlsDeviceHelth> GetObservableHelthCheck() const;
 
 private:
     struct LlsReplyReadDataResult {
@@ -44,6 +58,8 @@ private:
 
         std::vector<LlsReplyReadData> recivedReplies { };
     };
+
+    IRxConfigurationChangePublisher& m_configurationPublisher;
 
     QSerialPort m_spLlsDevice;
 
@@ -53,9 +69,9 @@ private:
 
     rxcpp::rxsub::behavior<LlsDeviceMessage> m_subLlsDeviceMessage;
 
-    rxcpp::rxsub::behavior<LlsDeviceDiagInfo> m_subLlsDeviceDiagInfo;
+    rxcpp::rxsub::behavior<LlsDeviceHelth> m_subLlsDeviceDiagInfo;
 
-    void ConfigConnection();
+    void ConfigConnection(int idx);
 
     void RequestSingleRead();
 

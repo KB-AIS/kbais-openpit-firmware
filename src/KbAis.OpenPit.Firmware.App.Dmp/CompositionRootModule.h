@@ -16,18 +16,17 @@
 #include "System/SetupDateTimeService.h"
 #include "System/SetupEthernetService.h"
 #include "ThreadWorkerMessaging.h"
-#include "ModuleBootstraperSerialDevices.h"
+#include "ModuleFactorySerialDevices.h"
 
 inline auto CompositionRootModule() noexcept {
     return boost::di::make_injector(
         CreateInjectorCoreNetworking()
+    ,   CreateInjectorSerialDevices()
     ,   CreateModulePresentation()
     ,   boost::di::bind<SetupDateTimeService>()
             .in(boost::di::singleton)
-    ,   boost::di::bind<SetupEthernetService>()
-            .in(boost::di::singleton)
-    ,   boost::di::bind<ModuleBootstraperSerialDevices>()
-            .in(boost::di::singleton)
+//    ,   boost::di::bind<SetupEthernetService>()
+//            .in(boost::di::singleton)
     ,   boost::di::bind<
             IConfigurationProvider
         ,   IRxConfigurationChangePublisher
@@ -39,17 +38,17 @@ inline auto CompositionRootModule() noexcept {
     ,   boost::di::bind<IRxGpsSensorPublisher>()
             .to<SerialRxGpsSensorPublisher>()
             .in(boost::di::singleton)
-    ,   boost::di::bind<IRxImmediateMessageMapper*[]>
-            .to<DmpImmediateMessageMapper>()
-    ,   boost::di::bind<IRxRecurrentMessageMapper*[]>
-            .to<DmpRecurrentMessageMapper>()
-    ,   boost::di::bind<ThreadWorkerMessaging>()
-            .in(boost::di::singleton)
-    ,   boost::di::bind<IMessagesCachingService>()
-            .to<BlockingMessagesCachingService>()
-            .in(boost::di::singleton)
-    ,   boost::di::bind<CachingBootstrapper>()
-            .in(boost::di::singleton)
+//    ,   boost::di::bind<IRxImmediateMessageMapper*[]>
+//            .to<DmpImmediateMessageMapper>()
+//    ,   boost::di::bind<IRxRecurrentMessageMapper*[]>
+//            .to<DmpRecurrentMessageMapper>()
+//    ,   boost::di::bind<ThreadWorkerMessaging>()
+//            .in(boost::di::singleton)
+//    ,   boost::di::bind<IMessagesCachingService>()
+//            .to<BlockingMessagesCachingService>()
+//            .in(boost::di::singleton)
+//    ,   boost::di::bind<CachingBootstrapper>()
+//            .in(boost::di::singleton)
     );
 };
 
