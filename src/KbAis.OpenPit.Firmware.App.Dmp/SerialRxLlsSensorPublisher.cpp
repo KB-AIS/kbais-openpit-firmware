@@ -41,7 +41,6 @@ SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& c
                 PublishLlsDeviceDiagInfo();
             }
 
-            m_decodeReplyResult.expectedRepliesAmount = 1;
             m_decodeReplyResult.recivedReplies.clear();
 
             RequestSingleRead();
@@ -119,8 +118,24 @@ SerialRxLlsSensorPublisher::RequestSingleRead() {
 }
 
 void SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
-    ranges::for_each(m_decodeReplyResult.recivedReplies, [](const LlsReplyReadData& x) {
-        PLOGV << fmt::format("Got LLS data: {:d}, {:d}, {:d}, {:d}", x.Adr, x.Tem, x.Lvl, x.Frq);
+    // TODO: Get addresses from configuration
+    std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
+
+    ranges::contains(m_decodeReplyResult.recivedReplies, 0, &LlsReplyReadData::Adr);
+
+
+    m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage {
+        addresses
+        |   ranges::view::transform([&](quint8 adr) {
+                auto itr = ranges::find_if(m_decodeReplyResult.recivedReplies, [&](const auto& x) {
+                    return x.Adr == adr;
+                });
+
+                return itr != ranges::end(m_decodeReplyResult.recivedReplies)
+                    ? nonstd::expected<LlsReplyReadData, LlsMessageError>(*itr)
+                    : nonstd::make_unexpected(LlsMessageError::LlsDeviceReturnNoData);
+            })
+        |   ranges::to<LlsDeviceData_t>()
     });
 }
 
