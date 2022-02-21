@@ -3,12 +3,13 @@
 // qt
 #include <QApplication>
 // oss
+#include <CLI/CLI.hpp>
 #include <fmt/format.h>
 #include <plog/Appenders/ConsoleAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
-#include <CLI/CLI.hpp>
+#include <range/v3/all.hpp>
 
 #include "BoostDiExtensions.h"
 #include "CompositionRootModule.h"
@@ -96,6 +97,19 @@ int main(int argc, char* argv[]) {
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 
     eagerSingletons(injector);
+
+    const auto foo = boost::di::create<std::shared_ptr<SerialRxLlsSensorPublisher>>(injector);
+    foo->GetObservableLlsDeviceMessage()
+        .subscribe_on(rxcpp::observe_on_new_thread())
+        .subscribe([](LlsDeviceMessage x) {
+            ranges::for_each(x.data, [](nonstd::expected<LlsReplyReadData, LlsMessageError>& lls) {
+                if (lls.has_value()) {
+                    PLOGV << fmt::format("Got LLS data: {:d}, {:d}, {:d}, {:d}", lls->Adr, lls->Tem, lls->Lvl, lls->Frq);
+                } else {
+                    PLOGV << "LLS has no data";
+                }
+            });
+        });
 
     PLOGI << "Startup DMP application";
     return app.exec();
