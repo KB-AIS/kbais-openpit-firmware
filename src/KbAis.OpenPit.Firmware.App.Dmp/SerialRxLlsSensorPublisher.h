@@ -13,14 +13,19 @@ using LlsDeviceAddress_t = quint8;
 
 using LlsDeviceCombinedData_t = std::map<LlsDeviceAddress_t, std::optional<LlsReplyReadData>>;
 
-enum class LlsDeviceError {
+enum LlsDeviceError {
     NoData
+,   FailedToSendRequest
 ,   PartialData
-,   NoConnection
+,   InvalidData
 };
 
 struct LlsDeviceMessage {
     LlsDeviceCombinedData_t data;
+};
+
+struct LlsDeviceHealth {
+    bool isConnected;
 
     std::optional<LlsDeviceError> error;
 };
@@ -53,6 +58,8 @@ public:
 
     const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const override;
 
+    const rxcpp::observable<LlsDeviceHealth> GetObservableHealthStatus() const;
+
 private:
     IRxConfigurationChangePublisher& m_configurationPublisher;
 
@@ -64,11 +71,15 @@ private:
 
     rxcpp::rxsub::behavior<LlsDeviceMessage> m_subLlsDeviceMessage;
 
+    rxcpp::rxsub::behavior<LlsDeviceHealth> m_subLlsDeviceHealth;
+
     void ConfigConnection();
 
     void RequestSingleRead();
 
     void PublishLlsDeviceMessage();
+
+    void PublishLlsDeviceHealth(std::optional<LlsDeviceError> error = std::nullopt);
 
     void HandleReadyRead();
 

@@ -113,6 +113,34 @@ int main(int argc, char* argv[]) {
 
     auto injector = CompositionRootModule();
 
+    auto pub = boost::di::create<std::shared_ptr<SerialRxLlsSensorPublisher>>(injector);
+
+    auto worker = rxcpp::observe_on_new_thread();
+    pub->GetObservableMessage()
+        .observe_on(worker)
+        .subscribe([](LlsDeviceMessage m) {
+            ranges::for_each(
+                m.data
+            |   ranges::views::values
+            ,   [](std::optional<LlsReplyReadData> x) {
+                    if (x.has_value()) {
+                        PLOGD << fmt::format("Got message: {:d}, {:d}, {:d}, {:d}", x->Adr, x->Tem, x->Lvl, x->Frq);
+                    } else {
+                        PLOGD << "Got no message";
+                    }
+                }
+            );
+        });
+
+    pub->GetObservableHealthStatus()
+        .observe_on(worker)
+        .subscribe([](LlsDeviceHealth h) {
+            PLOGD << fmt::format("Lls device conn status {}, with error", h.isConnected);
+            if (h.error.has_value()) {
+                PLOGD << fmt::format("Lls device error {}", *h.error);
+            }
+        });
+
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 

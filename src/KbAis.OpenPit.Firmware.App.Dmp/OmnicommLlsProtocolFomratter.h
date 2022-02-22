@@ -10,9 +10,9 @@
 
 // Using short names to save data for binary serialization
 struct LlsReplyReadData {
-    char    Adr { 0 };
+    quint8  Adr { 0 };
 
-    char    Tem { 0 };
+    quint8  Tem { 0 };
 
     quint16 Lvl { 0 };
 
