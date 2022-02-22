@@ -5,45 +5,63 @@
 #include <QObject>
 #include <QSerialPort>
 
+#include "IRxConfigurationChangePublisher.h"
 #include "OmnicommLlsProtocolFomratter.h"
 #include "RxQt.h"
 
-enum class LlsMessageError {
-    LlsDeviceReturnNoData
-};
+using LlsDeviceAddress_t = quint8;
 
-using LlsDeviceData_t = std::vector<nonstd::expected<LlsReplyReadData, LlsMessageError>>;
+using LlsDeviceCombinedData_t = std::map<LlsDeviceAddress_t, std::optional<LlsReplyReadData>>;
+
+enum LlsDeviceError {
+    NoData
+,   FailedToSendRequest
+,   PartialData
+,   InvalidData
+};
 
 struct LlsDeviceMessage {
-     LlsDeviceData_t data;
+    LlsDeviceCombinedData_t data;
 };
 
-struct LlsDeviceDiagInfo {
+struct LlsDeviceHealth {
+    bool isConnected;
 
+    std::optional<LlsDeviceError> error;
 };
 
-class SerialRxLlsSensorPublisher : public QObject {
-    Q_OBJECT
-
-    using DecodeError_t = std::optional<OmnicommLlsProtocolFomratter::DecodeReplyError>;
+class IRxLlsDeviceMessagePublisher {
 
 public:
-    SerialRxLlsSensorPublisher();
+    virtual const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const = 0;
+
+};
+
+class SerialRxLlsSensorPublisher
+    :   public QObject
+    ,   public IRxLlsDeviceMessagePublisher
+{
+    Q_OBJECT
+
+    struct LlsReplyReadDataResult {
+        int expectedReplies { 0 };
+
+        std::vector<LlsReplyReadData> replies { };
+    };
+
+public:
+    SerialRxLlsSensorPublisher(IRxConfigurationChangePublisher& configurationPublisher);
 
     ~SerialRxLlsSensorPublisher();
 
     void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
 
-    rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const;
+    const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const override;
 
-    rxcpp::observable<LlsDeviceDiagInfo> GetObservableLlsDeviceDiagInfo() const;
+    const rxcpp::observable<LlsDeviceHealth> GetObservableHealthStatus() const;
 
 private:
-    struct LlsReplyReadDataResult {
-        int expectedRepliesAmount { 0 };
-
-        std::vector<LlsReplyReadData> recivedReplies { };
-    };
+    IRxConfigurationChangePublisher& m_configurationPublisher;
 
     QSerialPort m_spLlsDevice;
 
@@ -53,7 +71,7 @@ private:
 
     rxcpp::rxsub::behavior<LlsDeviceMessage> m_subLlsDeviceMessage;
 
-    rxcpp::rxsub::behavior<LlsDeviceDiagInfo> m_subLlsDeviceDiagInfo;
+    rxcpp::rxsub::behavior<LlsDeviceHealth> m_subLlsDeviceHealth;
 
     void ConfigConnection();
 
@@ -61,7 +79,7 @@ private:
 
     void PublishLlsDeviceMessage();
 
-    void PublishLlsDeviceDiagInfo();
+    void PublishLlsDeviceHealth(std::optional<LlsDeviceError> error = std::nullopt);
 
     void HandleReadyRead();
 

@@ -11,13 +11,18 @@
 
 using namespace std::chrono_literals;
 
-constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 300ms };
+constexpr std::chrono::duration SEND_REQUEST_INTERVAL { 2s };
 
-SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher()
-    :   QObject()
+// TODO: Get from configuration
+const std::vector<quint8> ADDRESSES { 0x01, 0x02, 0x03 };
+
+SerialRxLlsSensorPublisher::SerialRxLlsSensorPublisher(
+    IRxConfigurationChangePublisher& configurationPublisher
+)
+    :   m_configurationPublisher(configurationPublisher)
     ,   m_spLlsDevice(this)
-    ,   m_subLlsDeviceMessage { LlsDeviceMessage { } }
-    ,   m_subLlsDeviceDiagInfo { LlsDeviceDiagInfo { } }
+    ,   m_subLlsDeviceMessage(LlsDeviceMessage { })
+    ,   m_subLlsDeviceHealth(LlsDeviceHealth { })
 {
 
 }
@@ -36,33 +41,29 @@ SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& c
 
     rxcpp::observable<>::interval(SEND_REQUEST_INTERVAL, coordinator)
         .subscribe(m_subsBag, [this](auto) {
-            if (m_decodeReplyResult.expectedRepliesAmount != 0) {
+            if (m_decodeReplyResult.expectedReplies != 0) {
                 PublishLlsDeviceMessage();
-                PublishLlsDeviceDiagInfo();
             }
-
-            m_decodeReplyResult.recivedReplies.clear();
-
             RequestSingleRead();
         });
 
     const auto connected = m_spLlsDevice.open(QIODevice::ReadWrite);
     PLOGV_IF(connected) << "LLS publisher connected to /dev/ttyO2";
+    PublishLlsDeviceMessage();
 }
 
-rxcpp::observable<LlsDeviceMessage>
-SerialRxLlsSensorPublisher::GetObservableLlsDeviceMessage() const {
+const rxcpp::observable<LlsDeviceMessage>
+SerialRxLlsSensorPublisher::GetObservableMessage() const {
     return m_subLlsDeviceMessage.get_observable();
 }
 
-rxcpp::observable<LlsDeviceDiagInfo>
-SerialRxLlsSensorPublisher::GetObservableLlsDeviceDiagInfo() const {
-    return m_subLlsDeviceDiagInfo.get_observable();
+const rxcpp::observable<LlsDeviceHealth>
+SerialRxLlsSensorPublisher::GetObservableHealthStatus() const {
+    return m_subLlsDeviceHealth.get_observable();
 }
 
 void
 SerialRxLlsSensorPublisher::ConfigConnection() {
-    // TODO: Get from configuration
     m_spLlsDevice.setPortName("/dev/ttyO2");
     m_spLlsDevice.setBaudRate(QSerialPort::Baud19200);
     m_spLlsDevice.setDataBits(QSerialPort::Data8);
@@ -73,72 +74,83 @@ SerialRxLlsSensorPublisher::ConfigConnection() {
 void
 SerialRxLlsSensorPublisher::HandleReadyRead() {
     const auto bytesToDecode = m_spLlsDevice.peek(1024);
+    auto consumed = 0;
 
-    int scannedTotal { 0 };
+    while (consumed != bytesToDecode.length()) {
+        auto [examined, result] = OmnicommLlsProtocolFomratter::DecodeFirstReply(bytesToDecode);
 
-    while (scannedTotal != bytesToDecode.length()) {
-        auto [scanned, decodeResult] =
-            OmnicommLlsProtocolFomratter::DecodeFirstReply(bytesToDecode);
+        consumed += examined;
 
-        scannedTotal += scanned;
-
-        if (!decodeResult) {
-            auto error = decodeResult.error();
-
-            // Not enough data for further processing, whait for next bytes batch
-            if (error == OmnicommLlsProtocolFomratter::NotEnoughData) {
-                return;
-            }
-
-            // Other kind of errors
-            break;
+        // On success cache reply and move to next.
+        if (result) {
+            m_decodeReplyResult.replies.push_back(*result);
+            continue;
         }
 
-        m_decodeReplyResult.recivedReplies.push_back(*decodeResult);
+        // In case if there is not enough data for further processing, wait
+        // for the next bytes batch.
+        if (result.error() == OmnicommLlsProtocolFomratter::NotEnoughData) return;
+
+        PublishLlsDeviceHealth(LlsDeviceError::InvalidData);
     }
 
-    m_spLlsDevice.read(scannedTotal);
+    m_spLlsDevice.read(consumed);
 }
 
 void
 SerialRxLlsSensorPublisher::RequestSingleRead() {
-    // TODO: Get addresses from configuration
-    std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
-    m_decodeReplyResult.expectedRepliesAmount = addresses.size();
+    m_decodeReplyResult.expectedReplies = ADDRESSES.size();
+    m_decodeReplyResult.replies.clear();
 
-    const auto encodedBytes = OmnicommLlsProtocolFomratter::EncodeOpSingleRead(addresses);
-    if (m_spLlsDevice.write(encodedBytes)) {
-        PLOGV << fmt::format("LLS publisher wrote {} byte(s)", encodedBytes.length());
+    const auto encoded = OmnicommLlsProtocolFomratter::EncodeOpSingleRead(ADDRESSES);
 
+    if (m_spLlsDevice.write(encoded)) {
+        PLOGV << fmt::format("LLS publisher requested for {} replies", ADDRESSES.size());
         return;
     }
 
-    // TODO: Publish diag info
     PLOGW << "LLS publisher could not send request on single read";
+    PublishLlsDeviceHealth(LlsDeviceError::FailedToSendRequest);
 }
 
-void SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
-    // TODO: Get addresses from configuration
-    std::vector<quint8> addresses { 0x01, 0x02, 0x03 };
+void
+SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
+    const auto numberOfReplies { m_decodeReplyResult.replies.size() };
 
-    ranges::contains(m_decodeReplyResult.recivedReplies, 0, &LlsReplyReadData::Adr);
+    PLOGD << fmt::format("LLS publisher got {} replies", numberOfReplies);
 
 
-    m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage {
-        addresses
-        |   ranges::view::transform([&](quint8 adr) {
-                auto itr = ranges::find_if(m_decodeReplyResult.recivedReplies, [&](const auto& x) {
-                    return x.Adr == adr;
-                });
+    auto data = ADDRESSES
+    |   ranges::views::transform([](quint8 x) { return std::make_pair(x, std::nullopt); })
+    |   ranges::to<LlsDeviceCombinedData_t>();
 
-                return itr != ranges::end(m_decodeReplyResult.recivedReplies)
-                    ? nonstd::expected<LlsReplyReadData, LlsMessageError>(*itr)
-                    : nonstd::make_unexpected(LlsMessageError::LlsDeviceReturnNoData);
-            })
-        |   ranges::to<LlsDeviceData_t>()
-    });
+    if (numberOfReplies == 0) {
+        PublishLlsDeviceHealth(LlsDeviceError::NoData);
+        return m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage { data });
+    }
+
+    auto numberOfUniqeReplies = ranges::distance(
+        m_decodeReplyResult.replies
+    |   ranges::views::unique([](const LlsReplyReadData& a, const LlsReplyReadData& b) {
+            return a.Adr == b.Adr;
+        })
+    );
+
+    if (numberOfUniqeReplies < ADDRESSES.size()) {
+        PublishLlsDeviceHealth(LlsDeviceError::PartialData);
+    }
+
+    ranges::for_each(
+        m_decodeReplyResult.replies
+    ,   [&d = data](const LlsReplyReadData& x) { d[x.Adr] = x; }
+    );
+
+    m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage { data });
 }
 
-void SerialRxLlsSensorPublisher::PublishLlsDeviceDiagInfo() {
+void
+SerialRxLlsSensorPublisher::PublishLlsDeviceHealth(std::optional<LlsDeviceError> error) {
+    auto isConnected = m_spLlsDevice.isOpen();
 
+    m_subLlsDeviceHealth.get_subscriber().on_next(LlsDeviceHealth { isConnected, error });
 }

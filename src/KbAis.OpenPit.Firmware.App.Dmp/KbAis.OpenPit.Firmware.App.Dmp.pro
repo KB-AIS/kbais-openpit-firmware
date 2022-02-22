@@ -32,6 +32,7 @@ HEADERS += \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
     ModuleBootstraperSerialDevices.h \
+    ModuleFactorySerialDevices.h \
     OmnicommLlsProtocolFomratter.h \
     SerialRxLlsSensorPublisher.h \
     System/SetupDateTimeService.h \

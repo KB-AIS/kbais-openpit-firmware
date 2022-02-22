@@ -52,6 +52,26 @@ struct ConfigurationBootstraper {
                 }
             )"_json
         );
+
+        configurationManager.registerConfiguration(
+            "lls_device"
+        ,   R"(
+                {
+                  "interface":1,
+                  "interval_poll":0,
+                  "sensors":[
+                    { "address":1, "enabled":true, "name":"1" },
+                    { "address":1, "enabled":true, "name":"2" },
+                    { "address":1, "enabled":true, "name":"3" },
+                    { "address":1, "enabled":true, "name":"4" },
+                    { "address":1, "enabled":true, "name":"5" },
+                    { "address":1, "enabled":true, "name":"6" },
+                    { "address":1, "enabled":true, "name":"7" },
+                    { "address":1, "enabled":true, "name":"8" }
+                  ]
+                }
+            )"_json
+        );
     }
 };
 
@@ -93,23 +113,38 @@ int main(int argc, char* argv[]) {
 
     auto injector = CompositionRootModule();
 
+    auto pub = boost::di::create<std::shared_ptr<SerialRxLlsSensorPublisher>>(injector);
+
+    auto worker = rxcpp::observe_on_new_thread();
+    pub->GetObservableMessage()
+        .observe_on(worker)
+        .subscribe([](LlsDeviceMessage m) {
+            ranges::for_each(
+                m.data
+            |   ranges::views::values
+            ,   [](std::optional<LlsReplyReadData> x) {
+                    if (x.has_value()) {
+                        PLOGD << fmt::format("Got message: {:d}, {:d}, {:d}, {:d}", x->Adr, x->Tem, x->Lvl, x->Frq);
+                    } else {
+                        PLOGD << "Got no message";
+                    }
+                }
+            );
+        });
+
+    pub->GetObservableHealthStatus()
+        .observe_on(worker)
+        .subscribe([](LlsDeviceHealth h) {
+            PLOGD << fmt::format("Lls device conn status {}, with error", h.isConnected);
+            if (h.error.has_value()) {
+                PLOGD << fmt::format("Lls device error {}", *h.error);
+            }
+        });
+
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 
     eagerSingletons(injector);
-
-    const auto foo = boost::di::create<std::shared_ptr<SerialRxLlsSensorPublisher>>(injector);
-    foo->GetObservableLlsDeviceMessage()
-        .subscribe_on(rxcpp::observe_on_new_thread())
-        .subscribe([](LlsDeviceMessage x) {
-            ranges::for_each(x.data, [](nonstd::expected<LlsReplyReadData, LlsMessageError>& lls) {
-                if (lls.has_value()) {
-                    PLOGV << fmt::format("Got LLS data: {:d}, {:d}, {:d}, {:d}", lls->Adr, lls->Tem, lls->Lvl, lls->Frq);
-                } else {
-                    PLOGV << "LLS has no data";
-                }
-            });
-        });
 
     PLOGI << "Startup DMP application";
     return app.exec();
