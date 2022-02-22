@@ -13,33 +13,36 @@ using LlsDeviceAddress_t = quint8;
 
 using LlsDeviceCombinedData_t = std::map<LlsDeviceAddress_t, std::optional<LlsReplyReadData>>;
 
-struct LlsDeviceMessage {
-     LlsDeviceCombinedData_t data;
+enum class LlsDeviceError {
+    NoData
+,   PartialData
+,   NoConnection
 };
 
-struct LlsDeviceHelth {
+struct LlsDeviceMessage {
+    LlsDeviceCombinedData_t data;
 
+    std::optional<LlsDeviceError> error;
 };
 
 class IRxLlsDeviceMessagePublisher {
 
 public:
-    virtual const rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const = 0;
-
-};
-
-class IRxLlsDeviceHealthObserver {
+    virtual const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const = 0;
 
 };
 
 class SerialRxLlsSensorPublisher
     :   public QObject
     ,   public IRxLlsDeviceMessagePublisher
-    ,   public IRxLlsDeviceHealthObserver
 {
     Q_OBJECT
 
-    using DecodeError_t = std::optional<OmnicommLlsProtocolFomratter::DecodeReplyError>;
+    struct LlsReplyReadDataResult {
+        int expectedReplies { 0 };
+
+        std::vector<LlsReplyReadData> replies { };
+    };
 
 public:
     SerialRxLlsSensorPublisher(IRxConfigurationChangePublisher& configurationPublisher);
@@ -48,17 +51,9 @@ public:
 
     void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
 
-    const rxcpp::observable<LlsDeviceMessage> GetObservableLlsDeviceMessage() const override;
-
-    rxcpp::observable<LlsDeviceHelth> GetObservableHelthCheck() const;
+    const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const override;
 
 private:
-    struct LlsReplyReadDataResult {
-        int expectedRepliesAmount { 0 };
-
-        std::vector<LlsReplyReadData> recivedReplies { };
-    };
-
     IRxConfigurationChangePublisher& m_configurationPublisher;
 
     QSerialPort m_spLlsDevice;
@@ -69,15 +64,11 @@ private:
 
     rxcpp::rxsub::behavior<LlsDeviceMessage> m_subLlsDeviceMessage;
 
-    rxcpp::rxsub::behavior<LlsDeviceHelth> m_subLlsDeviceDiagInfo;
-
-    void ConfigConnection(int idx);
+    void ConfigConnection();
 
     void RequestSingleRead();
 
     void PublishLlsDeviceMessage();
-
-    void PublishLlsDeviceDiagInfo();
 
     void HandleReadyRead();
 
