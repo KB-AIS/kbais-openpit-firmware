@@ -12,7 +12,7 @@
 #include "Core/Persisting/CachingBootstrapper.h"
 #include "Messaging/DmpImmediateMessageMapper.h"
 #include "Messaging/DmpRecurrentMessageMapper.h"
-#include "ModuleFactorySerialDevices.h"
+#include "Modules/Sensors/Serials/ModuleFactorySerialDevices.h"
 #include "SerialRxGpsSensorPublisher.h"
 #include "System/SetupDateTimeService.h"
 #include "System/SetupEthernetService.h"

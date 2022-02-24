@@ -6,8 +6,7 @@
 #include <QSerialPort>
 
 #include "IRxConfigurationChangePublisher.h"
-#include "OmnicommLlsProtocolFomratter.h"
-#include "RxQt.h"
+#include "Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.h"
 
 using LlsDeviceAddress_t = quint8;
 

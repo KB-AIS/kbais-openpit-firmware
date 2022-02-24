@@ -1,7 +1,8 @@
 #ifndef MODULEBOOTSTRAPERSERIALDEVICES_H
 #define MODULEBOOTSTRAPERSERIALDEVICES_H
 
-#include "SerialRxLlsSensorPublisher.h"
+#include "Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h"
+#include "RxQt.h"
 
 class ModuleBootstraperSerialDevices {
 

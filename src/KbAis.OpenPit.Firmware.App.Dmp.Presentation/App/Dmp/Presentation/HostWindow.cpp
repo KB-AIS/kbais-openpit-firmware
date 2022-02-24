@@ -41,6 +41,8 @@ HostWindow::HostWindow(
 
     SetupScreenStack();
     SetupAppBar();
+
+    m_mainView.provide_coordinator(m_rxRunLoop.observe_on_run_loop());
 }
 
 HostWindow::~HostWindow() {

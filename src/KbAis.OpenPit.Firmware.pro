@@ -10,6 +10,7 @@ SUBDIRS += \
     KbAis.OpenPit.Firmware.Core.Persisting \
     KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \
     KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
     KbAis.OpenPit.Firmware.Utils.Extensions \
     KbAis.OpenPit.Firmware.Utils.TrdParty.BoostDi \
     KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt \
