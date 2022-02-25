@@ -29,32 +29,37 @@ RxFuelMessagePublisher::start_publish_on(const rxcpp::observe_on_one_worker& coo
         .sample_with_time(500ms, coordination)
         .subscribe(
             m_subscription
-        ,   [this](const AppConfiguration scale_config) {
-                // Parce calibration table
-                // TODO: Get calibration table for all sensors
-                m_calibration_table = scale_config.j_object.at("/Scales/0/Sens/0/Tar"_json_pointer)
-                |   ranges::view::transform([](const json& x) {
-                        return std::make_tuple(
-                            x.at("ADC").get<qint32>()
-                        ,   x.at("Litrs").get<qint32>()
-                        );
-                    }
-                )
-                |   ranges::to<LlsCalibrationTable_t>();
-            }
+        ,   [this](const AppConfiguration x) { handle_new_scale_config(x); }
         );
 
     m_lls_sensor_publisher.GetObservableMessage()
         .observe_on(coordination)
         .subscribe(
             m_subscription
-        ,   [this](const LlsDeviceMessage message) { handle_fuel_calibration(message); }
+        ,   [this](const LlsDeviceMessage x) { handle_fuel_calibration(x); }
         );
 }
 
 rxcpp::observable<FuelMessage>
 RxFuelMessagePublisher::get_obeservable_fuel_message() const {
     return m_subject_fuel_message.get_observable();
+}
+
+void
+RxFuelMessagePublisher::handle_new_scale_config(const AppConfiguration &scale_config) {
+    // Parce calibration table
+    // TODO: Get calibration table for all sensors
+    m_calibration_table = scale_config.j_object.at("/Scales/0/Sens/0/Tar"_json_pointer)
+    |   ranges::view::transform([](const json& x) {
+            return std::make_tuple(
+                x.at("ADC").get<qint32>()
+            ,   x.at("Litrs").get<qint32>()
+            );
+        }
+    )
+    |   ranges::to<LlsCalibrationTable_t>();
+
+    m_max_fuel_level = scale_config.j_object.at("/Scales/0/MaxScale"_json_pointer).get<double>();
 }
 
 void
@@ -86,12 +91,7 @@ RxFuelMessagePublisher::handle_fuel_calibration(const LlsDeviceMessage& message)
     PLOGD << fmt::format("Got fuel value after calibration: {:f}", fuel, 4);
 
     // TODO: Get max from settings
-    subscriber.on_next(FuelMessage { fuel, 2000, true });
-}
-
-void
-RxFuelMessagePublisher::handle_new_scale_configuration(const AppConfiguration &scale_config) {
-
+    subscriber.on_next(FuelMessage { fuel, m_max_fuel_level, true });
 }
 
 double

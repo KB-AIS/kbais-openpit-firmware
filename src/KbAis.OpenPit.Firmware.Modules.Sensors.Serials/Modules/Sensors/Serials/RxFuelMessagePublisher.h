@@ -27,9 +27,11 @@ class RxFuelMessagePublisher {
 
     LlsCalibrationTable_t m_calibration_table { };
 
-    void handle_fuel_calibration(const LlsDeviceMessage& message) const;
+    double m_max_fuel_level { 0.0 };
 
-    void handle_new_scale_configuration(const AppConfiguration& scale_config);
+    void handle_new_scale_config(const AppConfiguration& scale_config);
+
+    void handle_fuel_calibration(const LlsDeviceMessage& message) const;
 
     double get_fuel_level_by_calibration_table(double lls_value) const;
 

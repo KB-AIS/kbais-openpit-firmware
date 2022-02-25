@@ -26,7 +26,8 @@ struct ConfigurationBootstraper {
                   "gateway": "10.214.1.1",
                   "ip": "10.214.1.205",
                   "manual_enable": true,
-                  "mask": "255.255.0.0"
+                  "mask": "255.255.0.0",
+                  "version":"1.0"
                 }
             )"_json
         );

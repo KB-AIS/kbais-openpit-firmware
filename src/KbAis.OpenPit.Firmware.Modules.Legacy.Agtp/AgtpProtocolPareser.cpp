@@ -5,8 +5,6 @@
 // qt
 #include <QDataStream>
 #include <QIODevice>
-// oss
-#include <plog/Log.h>
 
 // cfw::utils
 #include "Crc16Alogs.h"
@@ -19,12 +17,10 @@ constexpr quint8 AGTP_PCK_ACK_CODE_OK = 0x7F;
 
 constexpr qint32 AGTP_FRM_BASE_LEN = 12;
 
-QVector<AgtpRequest>
+nonstd::expected<std::vector<AgtpRequest>, bool>
 AgtpProtocolParser::parseRequest(QByteArray&& bytes) {
-    QVector<AgtpRequest> requests;
-
     if (bytes.at(0) != AGTP_FRM_BEG) {
-        return requests;
+        return nonstd::make_unexpected(false);
     }
 
     const auto frmPtr = bytes.data();
@@ -32,11 +28,11 @@ AgtpProtocolParser::parseRequest(QByteArray&& bytes) {
     const auto frmLen = *reinterpret_cast<uint32_t*>(frmPtr + 1);
 
     if (static_cast<uint32_t>(bytes.size()) < frmLen) {
-        return requests;
+        return nonstd::make_unexpected(false);
     }
 
     if (bytes.at(5) != AGTP_PROTOCOL_V2) {
-        return requests;
+        return nonstd::make_unexpected(false);
     }
 
     auto bytesLeftUnscanned = frmLen - AGTP_FRM_BASE_LEN;
@@ -49,6 +45,8 @@ AgtpProtocolParser::parseRequest(QByteArray&& bytes) {
     constexpr int PCK_LEN_SHIFT { 1 };
     constexpr int PCK_UID_SHIFT { 5 };
     constexpr int PCK_PLD_SHIFT { 7 };
+
+    std::vector<AgtpRequest> requests { };
 
     while (bytesLeftUnscanned > 0) {
         const auto cmdType = *cmdsPtr;

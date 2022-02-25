@@ -61,7 +61,16 @@ MainView::provide_coordinator(const rxcpp::observe_on_one_worker& coordinator) {
         .observe_on(coordinator)
         .subscribe(m_subscriptions, [this](FuelMessage message) {
             qc_gauge_needle_fuel->setCurrentValue(message.cur_fuel_level);
-            qc_gauge_lable_fuel->setText(QString::number(message.cur_fuel_level));
+
+            if (message.max_fuel_level > 0) {
+                qc_gauge_needle_fuel->setValueRange(0, message.max_fuel_level);
+            }
+
+            const auto gauge_lable_fuel_text = message.is_value_valid
+                ? QString("%1 л.").arg(message.cur_fuel_level)
+                : QString("-- л.");
+
+            qc_gauge_lable_fuel->setText(gauge_lable_fuel_text);
         });
 }
 
@@ -74,10 +83,10 @@ MainView::OnUpdateDisplayDate() {
 
 void
 MainView::setup_fuel_gauge() {
-    auto arcA = qc_gauge_fuel.addArc(80);
-    arcA->setColor(Qt::yellow);
-    arcA->setDegreeRange(0, 180);
-    arcA->setValueRange(0, 180);
+    auto arc = qc_gauge_fuel.addArc(80);
+    arc->setColor(Qt::yellow);
+    arc->setDegreeRange(0, 180);
+    arc->setValueRange(0, 180);
 
     auto ticA = qc_gauge_fuel.addDegrees(90);
     ticA->setColor(Qt::yellow);
@@ -105,10 +114,9 @@ MainView::setup_fuel_gauge() {
     qc_gauge_needle_fuel->setColor(Qt::darkYellow);
     qc_gauge_needle_fuel->setDegreeRange(0, 180);
     qc_gauge_needle_fuel->setNeedle(QcNeedleItem::DiamonNeedle);
-    qc_gauge_needle_fuel->setValueRange(0, 2200); // TODO: Set from settings
 
     qc_gauge_lable_fuel->setText("--");
-    qc_gauge_needle_fuel->setCurrentValue(1100);
+    qc_gauge_needle_fuel->setCurrentValue(0);
 
     ui->hl_gauge_fuel->addWidget(&qc_gauge_fuel);
 }
