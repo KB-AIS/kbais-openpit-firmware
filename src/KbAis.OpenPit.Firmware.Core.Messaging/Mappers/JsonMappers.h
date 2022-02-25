@@ -12,8 +12,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GpsMessage
 ,   latitude
 ,   longitude
 ,   speed
-,   gpsQauality
-,   satellites
 );
 
 #endif // JSONMAPPERS_H

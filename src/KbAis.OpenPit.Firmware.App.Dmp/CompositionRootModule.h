@@ -39,17 +39,17 @@ inline auto CompositionRootModule() noexcept {
     ,   boost::di::bind<IRxGpsSensorPublisher>()
             .to<SerialRxGpsSensorPublisher>()
             .in(boost::di::singleton)
-//    ,   boost::di::bind<IRxImmediateMessageMapper*[]>
-//            .to<DmpImmediateMessageMapper>()
-//    ,   boost::di::bind<IRxRecurrentMessageMapper*[]>
-//            .to<DmpRecurrentMessageMapper>()
-//    ,   boost::di::bind<ThreadWorkerMessaging>()
-//            .in(boost::di::singleton)
-//    ,   boost::di::bind<IMessagesCachingService>()
-//            .to<BlockingMessagesCachingService>()
-//            .in(boost::di::singleton)
-//    ,   boost::di::bind<CachingBootstrapper>()
-//            .in(boost::di::singleton)
+    ,   boost::di::bind<IRxImmediateMessageMapper*[]>
+            .to<DmpImmediateMessageMapper>()
+    ,   boost::di::bind<IRxRecurrentMessageMapper*[]>
+            .to<DmpRecurrentMessageMapper>()
+    ,   boost::di::bind<ThreadWorkerMessaging>()
+            .in(boost::di::singleton)
+    ,   boost::di::bind<IMessagesCachingService>()
+            .to<BlockingMessagesCachingService>()
+            .in(boost::di::singleton)
+    ,   boost::di::bind<CachingBootstrapper>()
+            .in(boost::di::singleton)
     );
 };
 

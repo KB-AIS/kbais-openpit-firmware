@@ -10,14 +10,14 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
 
     QString modules {
         "SUPPORT_MODULES="
-//        "common-1.0"
-//        ",srvset-1.0"
+        "common-1.0"
+        ",srvset-1.0"
 //        ",display-1.0"
 //        ",serial_interfaces-1.0"
-//        ",ethernet-1.0"
+        ",ethernet-1.0"
 //        ",can_interfaces-1.0"
 //        ",write-1.0"
-//        ",state-1.0"
+        ",state-1.0"
 //        ",parksensor-1.0"
         ",scale-1.0"
 //        ",fuel-1.0"
