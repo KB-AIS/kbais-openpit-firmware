@@ -4,16 +4,19 @@ TARGET = OpenPitAppDmpPresentation
 
 TEMPLATE = lib
 
-QT += core gui widgets \
+QT += core gui widgets serialport \
 
 CONFIG += staticlib depend_includepath conan_basic_setup \
 
 QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Widgets \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 
@@ -45,5 +48,3 @@ UI_DIR      = $$PWD/build/.ui
 
 target.path += /usr/lib
 INSTALLS += target
-
-DISTFILES +=

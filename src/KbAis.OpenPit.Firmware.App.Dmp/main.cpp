@@ -26,7 +26,8 @@ struct ConfigurationBootstraper {
                   "gateway": "10.214.1.1",
                   "ip": "10.214.1.205",
                   "manual_enable": true,
-                  "mask": "255.255.0.0"
+                  "mask": "255.255.0.0",
+                  "version":"1.0"
                 }
             )"_json
         );
@@ -72,6 +73,23 @@ struct ConfigurationBootstraper {
                 }
             )"_json
         );
+
+        configurationManager.registerConfiguration(
+            "scale"
+        ,   R"(
+                {"Scales":[
+                  {"Divisor":1,"MaxScale":1000,"Percent":20,"Sens":[
+                    {"Koeff":1,"Parametrs":0,"Removal":0,"Tar":[
+                      {"ADC":0,"Litrs":0},{"ADC":243,"Litrs":150},
+                      {"ADC":587,"Litrs":300},{"ADC":1485,"Litrs":700},
+                      {"ADC":2272,"Litrs":1050},{"ADC":3274,"Litrs":1500},
+                      {"ADC":3968,"Litrs":1800}],"TypeCounter":0,"TypeSens":1,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0}]}],"version":"1.0"
+                }
+            )"_json
+        );
     }
 };
 
@@ -112,34 +130,6 @@ int main(int argc, char* argv[]) {
     DatabaseConfigurator::configure();
 
     auto injector = CompositionRootModule();
-
-    auto pub = boost::di::create<std::shared_ptr<SerialRxLlsSensorPublisher>>(injector);
-
-    auto worker = rxcpp::observe_on_new_thread();
-    pub->GetObservableMessage()
-        .observe_on(worker)
-        .subscribe([](LlsDeviceMessage m) {
-            ranges::for_each(
-                m.data
-            |   ranges::views::values
-            ,   [](std::optional<LlsReplyReadData> x) {
-                    if (x.has_value()) {
-                        PLOGD << fmt::format("Got message: {:d}, {:d}, {:d}, {:d}", x->Adr, x->Tem, x->Lvl, x->Frq);
-                    } else {
-                        PLOGD << "Got no message";
-                    }
-                }
-            );
-        });
-
-    pub->GetObservableHealthStatus()
-        .observe_on(worker)
-        .subscribe([](LlsDeviceHealth h) {
-            PLOGD << fmt::format("Lls device conn status {}, with error", h.isConnected);
-            if (h.error.has_value()) {
-                PLOGD << fmt::format("Lls device error {}", *h.error);
-            }
-        });
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);

@@ -6,8 +6,7 @@
 #include <QSerialPort>
 
 #include "IRxConfigurationChangePublisher.h"
-#include "OmnicommLlsProtocolFomratter.h"
-#include "RxQt.h"
+#include "Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.h"
 
 using LlsDeviceAddress_t = quint8;
 
@@ -54,7 +53,7 @@ public:
 
     ~SerialRxLlsSensorPublisher();
 
-    void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
+    void start_publish_on(const rxcpp::observe_on_one_worker& coordinator);
 
     const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const override;
 

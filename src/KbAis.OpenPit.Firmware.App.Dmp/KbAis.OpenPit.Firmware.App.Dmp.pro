@@ -19,10 +19,12 @@ INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Persisting \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Legacy.Agtp \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.BoostDi \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.JsonQt \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Widgets \
 
 include($$PRJDIR/../conanbuildinfo.pri)
 
@@ -31,10 +33,6 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
-    ModuleBootstraperSerialDevices.h \
-    ModuleFactorySerialDevices.h \
-    OmnicommLlsProtocolFomratter.h \
-    SerialRxLlsSensorPublisher.h \
     System/SetupDateTimeService.h \
     System/SetupEthernetService.h
 
@@ -42,9 +40,6 @@ SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
-    ModuleBootstraperSerialDevices.cpp \
-    OmnicommLlsProtocolFomratter.cpp \
-    SerialRxLlsSensorPublisher.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
     main.cpp \
@@ -58,10 +53,12 @@ LIBS += -L$$PRJDIR/binaries \
     -lOpenPitCorePersisting \
     -lOpenPitModulesLegacyAgtp \
     -lOpenPitModulesSensorsGps \
+    -lOpenPitModulesSensorsSerials \
     -lOpenPitUtilsExtensions \
     -lOpenPitUtilsTrdPartyBoostDi \
     -lOpenPitUtilsTrdPartyJsonQt \
     -lOpenPitUtilsTrdPartyRxQt \
+    -lOpenPitAppDmpUtilsWidgets \
 
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj

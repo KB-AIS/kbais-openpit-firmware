@@ -22,24 +22,29 @@ AgtpUsbRequestsReciever::AgtpUsbRequestsReciever(const IAgtpRequestsMediator& me
     constexpr int PEEK_BYTES = 512 * 1024;
 
     rxqt::from_signal(m_spUsbDevice, &QIODevice::readyRead)
-        .map([&](auto) {
-            PLOGV << "recived data to read";
-
-            const auto requests =
-                AgtpProtocolParser::parseRequest((*m_spUsbDevice).read(PEEK_BYTES));
-
-            PLOGD << fmt::format("deserialized {} request(s)", requests.size());
-
-            return AgtpProtocolParser::createResponse(
-                requests
-            |   ranges::views::transform([&](auto x) { return m_mediator.handle(x); })
-            |   ranges::to<std::vector<AgtpResponse>>()
-            );
-        })
         .subscribe(
             m_subscriptions
-        ,   [&](const QByteArray& x) {
-                const auto bytesWrittenCount = m_spUsbDevice->write(x);
+        ,   [&](auto) {
+                PLOGV << "recived data to read";
+
+                const auto parse_result =
+                    AgtpProtocolParser::parseRequest((*m_spUsbDevice).peek(PEEK_BYTES));
+
+                if (!parse_result) return;
+
+                m_spUsbDevice->read(PEEK_BYTES);
+
+                PLOGD << fmt::format("deserialized {} request(s)", parse_result->size());
+
+                const auto& requests = parse_result.value();
+
+                auto responses = AgtpProtocolParser::createResponse(
+                    requests
+                |   ranges::views::transform([&](const AgtpRequest& x) { return m_mediator.handle(x); })
+                |   ranges::to<std::vector<AgtpResponse>>()
+                );
+
+                const auto bytesWrittenCount = m_spUsbDevice->write(responses);
                 PLOGD << fmt::format("answered with frame of {} bytes", bytesWrittenCount);
             }
         ,   [](std::exception_ptr ep){

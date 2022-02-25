@@ -7,17 +7,18 @@
 // Utils.TrdParty.RxQt
 #include "RxQt.h"
 
+#include "AgtpRequestMediator.h"
+#include "AgtpThreadWorker.h"
+#include "AgtpUsbCommandsReciever.h"
+#include "DeviceStateCollector.h"
 #include "Handlers/ConfigEthernetRequestHandler.h"
 #include "Handlers/ConfigNetworkingRequestHandler.h"
+#include "Handlers/ConfigScaleRequestHandler.h"
 #include "Handlers/FetchDeviceInfoRequestHandler.h"
 #include "Handlers/FetchDeviceModulesRequestHandler.h"
 #include "Handlers/FetchDeviceSpecRequestHandler.h"
 #include "Handlers/FetchDeviceStateRequsetHandler.h"
 #include "Handlers/IAgtpRequestHandler.h"
-#include "AgtpRequestMediator.h"
-#include "AgtpThreadWorker.h"
-#include "AgtpUsbCommandsReciever.h"
-#include "DeviceStateCollector.h"
 
 inline auto createAgtpServiceModule() noexcept {
     return boost::di::make_injector(
@@ -38,6 +39,7 @@ inline auto createAgtpServiceModule() noexcept {
             .to<
                 ConfigEthernetRequestHandler
             ,   ConfigNetworkingRequestHandler
+            ,   ConfigScaleRequestHandler
             ,   FetchDeviceInfoRequestHandler
             ,   FetchDeviceModulesRequestHandler
             ,   FetchDeviceSpecRequestHandler
