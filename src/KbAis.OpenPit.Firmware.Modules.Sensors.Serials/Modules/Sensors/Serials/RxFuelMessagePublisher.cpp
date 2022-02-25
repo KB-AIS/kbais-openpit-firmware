@@ -89,6 +89,11 @@ RxFuelMessagePublisher::handle_fuel_calibration(const LlsDeviceMessage& message)
     subscriber.on_next(FuelMessage { fuel, 2000, true });
 }
 
+void
+RxFuelMessagePublisher::handle_new_scale_configuration(const AppConfiguration &scale_config) {
+
+}
+
 double
 RxFuelMessagePublisher::get_fuel_level_by_calibration_table(double lls_level) const {
     int s_idx = 0, e_idx = calibration_table.size() - 2;

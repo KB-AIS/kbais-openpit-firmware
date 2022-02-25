@@ -29,6 +29,8 @@ class RxFuelMessagePublisher {
 
     void handle_fuel_calibration(const LlsDeviceMessage& message) const;
 
+    void handle_new_scale_configuration(const AppConfiguration& scale_config);
+
     double get_fuel_level_by_calibration_table(double lls_value) const;
 
 public:

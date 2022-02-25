@@ -222,9 +222,9 @@ QPushButton {
    <property name="geometry">
     <rect>
      <x>490</x>
-     <y>160</y>
-     <width>521</width>
-     <height>531</height>
+     <y>220</y>
+     <width>320</width>
+     <height>320</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="hl_gauge_fuel"/>

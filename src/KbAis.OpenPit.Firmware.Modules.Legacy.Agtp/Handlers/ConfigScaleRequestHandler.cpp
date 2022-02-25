@@ -2,7 +2,7 @@
 
 #include "Handlers/Utils.h"
 
-const QString REQUEST_NAME { QStringLiteral("ETHERNET_SETTINGS") };
+const QString REQUEST_NAME { QStringLiteral("SCALE_PARAMS") };
 
 ConfigScaleRequestHandler::ConfigScaleRequestHandler(
     ConfigurationManager& configuration_manager
