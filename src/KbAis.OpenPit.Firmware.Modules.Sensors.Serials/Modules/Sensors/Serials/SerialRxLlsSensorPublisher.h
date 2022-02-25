@@ -53,7 +53,7 @@ public:
 
     ~SerialRxLlsSensorPublisher();
 
-    void StartPublishOn(const rxcpp::observe_on_one_worker& coordinator);
+    void start_publish_on(const rxcpp::observe_on_one_worker& coordinator);
 
     const rxcpp::observable<LlsDeviceMessage> GetObservableMessage() const override;
 

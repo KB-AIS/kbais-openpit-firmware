@@ -33,7 +33,7 @@ SerialRxLlsSensorPublisher::~SerialRxLlsSensorPublisher() {
 }
 
 void
-SerialRxLlsSensorPublisher::StartPublishOn(const rxcpp::observe_on_one_worker& coordinator) {
+SerialRxLlsSensorPublisher::start_publish_on(const rxcpp::observe_on_one_worker& coordinator) {
     ConfigConnection();
 
     rxqt::from_signal(&m_spLlsDevice, &QIODevice::readyRead)
@@ -119,7 +119,6 @@ SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
     const auto numberOfReplies { m_decodeReplyResult.replies.size() };
 
     PLOGD << fmt::format("LLS publisher got {} replies", numberOfReplies);
-
 
     auto data = ADDRESSES
     |   ranges::views::transform([](quint8 x) { return std::make_pair(x, std::nullopt); })

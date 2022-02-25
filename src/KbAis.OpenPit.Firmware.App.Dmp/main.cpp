@@ -15,7 +15,6 @@
 #include "CompositionRootModule.h"
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
-#include "Modules/Sensors/Serials/RxFuelMessagePublisher.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& configurationManager) {
@@ -113,9 +112,6 @@ int main(int argc, char* argv[]) {
     DatabaseConfigurator::configure();
 
     auto injector = CompositionRootModule();
-
-    auto pub = boost::di::create<std::shared_ptr<RxFuelMessagePublisher>>(injector);
-    pub->start_publish_on();
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);

@@ -4,15 +4,17 @@
 // TODO: Use module boundary contract
 #include "Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h"
 
+using LlsCalibrationTable_t = std::vector<std::tuple<qint32, qint32>>;
+
+struct FuelMessage {
+    double fuel_level { 0 };
+
+    bool is_value_valid { false };
+};
+
 struct ItemSensor {
     std::vector<qint32> litrs;
     std::vector<qint32> adc;
-};
-
-struct FuelMessage {
-    quint32 fuel_level { 0 };
-
-    bool is_value_valid { false };
 };
 
 class RxFuelMessagePublisher {
@@ -23,14 +25,14 @@ class RxFuelMessagePublisher {
 
     rxcpp::rxsub::behavior<FuelMessage> m_subject_fuel_message;
 
-    void handle_calibration(const LlsDeviceMessage& message);
+    void handle_fuel_calibration(const LlsDeviceMessage& message) const;
 
-    static quint32 perform_some_magic(quint16 lls_value);
+    static double get_fuel_level_by_calibration_table(double lls_value);
 
 public:
     RxFuelMessagePublisher(const SerialRxLlsSensorPublisher& lls_sensor_publisher);
 
-    void start_publish_on();
+    void start_publish_on(const rxcpp::observe_on_one_worker& coordination) const;
 
     rxcpp::observable<FuelMessage> get_obeservable_fuel_message() const;
 
