@@ -10,13 +10,13 @@ class ModuleBootstraperSerialDevices {
 public:
     ModuleBootstraperSerialDevices(
         SerialRxLlsSensorPublisher& llsSensorPublisher
-    ,   const RxFuelMessagePublisher& fuel_message_publisher
+    ,   RxFuelMessagePublisher& fuel_message_publisher
     );
 
 private:
     SerialRxLlsSensorPublisher& m_lls_message_publisher;
 
-    const RxFuelMessagePublisher& m_fuel_message_publisher;
+    RxFuelMessagePublisher& m_fuel_message_publisher;
 
     QThread m_thrWorker;
 

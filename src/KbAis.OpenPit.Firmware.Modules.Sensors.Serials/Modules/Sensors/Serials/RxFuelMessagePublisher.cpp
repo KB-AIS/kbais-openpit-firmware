@@ -6,20 +6,44 @@
 
 #include "Format.h"
 
+using namespace std::chrono_literals;
+using namespace nlohmann;
+
 constexpr int LIT = 0, ADC = 1;
 static LlsCalibrationTable_t calibration_table { { 0, 0 }, { 100, 800 }, { 2000, 2600 } };
 
 RxFuelMessagePublisher::RxFuelMessagePublisher(
-    const SerialRxLlsSensorPublisher& lls_sensor_publisher
+    IRxConfigurationChangePublisher& config_publisher
+,   SerialRxLlsSensorPublisher& lls_sensor_publisher
 )
-    :   m_lls_sensor_publisher(lls_sensor_publisher)
+    :   m_config_publisher(config_publisher)
+    ,   m_lls_sensor_publisher(lls_sensor_publisher)
     ,   m_subject_fuel_message(FuelMessage { })
 {
 
 }
 
 void
-RxFuelMessagePublisher::start_publish_on(const rxcpp::observe_on_one_worker& coordination) const {
+RxFuelMessagePublisher::start_publish_on(const rxcpp::observe_on_one_worker& coordination) {
+    m_config_publisher.getChangeObservable("scale")
+        .sample_with_time(500ms, coordination)
+        .subscribe(
+            m_subscription
+        ,   [this](const AppConfiguration scale_config) {
+                // Parce calibration table
+                // TODO: Get calibration table for all sensors
+                m_calibration_table = scale_config.j_object.at("/Scales/0/Sens/0/Tar"_json_pointer)
+                |   ranges::view::transform([](const json& x) {
+                        return std::make_tuple(
+                            x.at("ADC").get<qint32>()
+                        ,   x.at("Litrs").get<qint32>()
+                        );
+                    }
+                )
+                |   ranges::to<LlsCalibrationTable_t>();
+            }
+        );
+
     m_lls_sensor_publisher.GetObservableMessage()
         .observe_on(coordination)
         .subscribe(
@@ -37,6 +61,10 @@ void
 RxFuelMessagePublisher::handle_fuel_calibration(const LlsDeviceMessage& message) const {
     const auto subscriber = m_subject_fuel_message.get_subscriber();
 
+    if (m_calibration_table.empty()) {
+        return subscriber.on_next(FuelMessage { });
+    }
+
     // TODO: Refactor, hardcoded solution only for first sensor
     if (message.data.empty()) {
         return subscriber.on_next(FuelMessage { });
@@ -53,15 +81,16 @@ RxFuelMessagePublisher::handle_fuel_calibration(const LlsDeviceMessage& message)
 
     const auto& lls_data = find_itr->second.value();
 
-    auto fuel = get_fuel_level_by_calibration_table(static_cast<double>(lls_data.Lvl));
+    auto fuel = get_fuel_level_by_calibration_table(lls_data.Lvl);
 
     PLOGD << fmt::format("Got fuel value after calibration: {:f}", fuel, 4);
 
-    subscriber.on_next(FuelMessage { fuel, true });
+    // TODO: Get max from settings
+    subscriber.on_next(FuelMessage { fuel, 2000, true });
 }
 
 double
-RxFuelMessagePublisher::get_fuel_level_by_calibration_table(double lls_level) {
+RxFuelMessagePublisher::get_fuel_level_by_calibration_table(double lls_level) const {
     int s_idx = 0, e_idx = calibration_table.size() - 2;
 
     while (s_idx < e_idx) {

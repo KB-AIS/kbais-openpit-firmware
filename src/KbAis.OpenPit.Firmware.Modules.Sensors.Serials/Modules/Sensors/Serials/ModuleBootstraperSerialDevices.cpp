@@ -4,7 +4,7 @@
 
 ModuleBootstraperSerialDevices::ModuleBootstraperSerialDevices(
     SerialRxLlsSensorPublisher& lls_message_publisher
-,   const RxFuelMessagePublisher& fuel_message_publisher
+,   RxFuelMessagePublisher& fuel_message_publisher
 )
     :   m_lls_message_publisher(lls_message_publisher)
     ,   m_fuel_message_publisher(fuel_message_publisher)

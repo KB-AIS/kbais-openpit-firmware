@@ -72,6 +72,23 @@ struct ConfigurationBootstraper {
                 }
             )"_json
         );
+
+        configurationManager.registerConfiguration(
+            "scale"
+        ,   R"(
+                {"Scales":[
+                  {"Divisor":1,"MaxScale":1000,"Percent":20,"Sens":[
+                    {"Koeff":1,"Parametrs":0,"Removal":0,"Tar":[
+                      {"ADC":0,"Litrs":0},{"ADC":243,"Litrs":150},
+                      {"ADC":587,"Litrs":300},{"ADC":1485,"Litrs":700},
+                      {"ADC":2272,"Litrs":1050},{"ADC":3274,"Litrs":1500},
+                      {"ADC":3968,"Litrs":1800}],"TypeCounter":0,"TypeSens":1,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
+                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0}]}],"version":"1.0"
+                }
+            )"_json
+        );
     }
 };
 

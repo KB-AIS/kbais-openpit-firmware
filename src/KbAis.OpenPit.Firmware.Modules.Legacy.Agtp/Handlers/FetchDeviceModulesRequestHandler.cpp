@@ -19,7 +19,7 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
 //        ",write-1.0"
         ",state-1.0"
 //        ",parksensor-1.0"
-//        ",scale-1.0"
+        ",scale-1.0"
 //        ",fuel-1.0"
 //        ",upgrade-1.0"
 //        ",scd-1.0"

@@ -60,8 +60,8 @@ MainView::provide_coordinator(const rxcpp::observe_on_one_worker& coordinator) {
         .get_obeservable_fuel_message()
         .observe_on(coordinator)
         .subscribe(m_subscriptions, [this](FuelMessage message) {
-            qc_gauge_needle_fuel->setCurrentValue(message.fuel_level);
-            qc_gauge_lable_fuel->setText(QString::number(message.fuel_level));
+            qc_gauge_needle_fuel->setCurrentValue(message.cur_fuel_level);
+            qc_gauge_lable_fuel->setText(QString::number(message.cur_fuel_level));
         });
 }
 

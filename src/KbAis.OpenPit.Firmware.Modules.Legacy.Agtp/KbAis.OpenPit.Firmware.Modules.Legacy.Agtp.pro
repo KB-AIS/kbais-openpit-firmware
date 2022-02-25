@@ -22,6 +22,7 @@ HEADERS += \
     AgtpRequestMediator.h \
     Handlers/ConfigEthernetRequestHandler.h \
     Handlers/ConfigNetworkingRequestHandler.h \
+    Handlers/ConfigScaleRequestHandler.h \
     Handlers/FetchDeviceInfoRequestHandler.h \
     Handlers/FetchDeviceModulesRequestHandler.h \
     Handlers/FetchDeviceSpecRequestHandler.h \
@@ -40,6 +41,7 @@ SOURCES += \
     AgtpRequestMediator.cpp \
     Handlers/ConfigEthernetRequestHandler.cpp \
     Handlers/ConfigNetworkingRequestHandler.cpp \
+    Handlers/ConfigScaleRequestHandler.cpp \
     Handlers/FetchDeviceInfoRequestHandler.cpp \
     Handlers/FetchDeviceModulesRequestHandler.cpp \
     Handlers/FetchDeviceSpecRequestHandler.cpp \
