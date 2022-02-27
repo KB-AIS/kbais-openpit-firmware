@@ -33,6 +33,7 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
+    RxStateWatcherFueling.h \
     System/SetupDateTimeService.h \
     System/SetupEthernetService.h
 
@@ -40,6 +41,7 @@ SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
+    RxStateWatcherFueling.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
     main.cpp \
