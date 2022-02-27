@@ -24,8 +24,7 @@ DmpRecurrentMessageMapper::DmpRecurrentMessageMapper(
 
 rxcpp::observable<Message>
 DmpRecurrentMessageMapper::getObservable() const {
-    rxcpp::observable<Message> observable =
-        rxcpp::observable<>::empty<Message>();
+    rxcpp::observable<Message> observable = rxcpp::observable<>::empty<Message>();
 
     rxcpp::observable<Message> gps_message_observable = m_gps_message_pub
         .GetObservable()

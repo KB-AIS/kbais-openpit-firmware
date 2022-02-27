@@ -7,12 +7,9 @@
 #include "Modules/Sensors/Serials/RxFuelMessagePublisher.h"
 
 class DmpRecurrentMessageMapper : public IRxRecurrentMessageMapper {
-
     const IRxGpsSensorPublisher& m_gps_message_pub;
 
     const RxFuelMessagePublisher& m_ful_message_pub;
-
-
 
 public:
     DmpRecurrentMessageMapper(

@@ -7,6 +7,7 @@
 #include <QtGlobal>
 
 #include "Casting.h"
+#include "GpioUtils.h"
 
 // !Q: where device name comes from?
 static const QString DEVICE_PORT_NAME { "/dev/ttyS5" };
@@ -21,6 +22,9 @@ SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher()
         &serialGpsSensor, &QSerialPort::readyRead,
         this, &SerialRxGpsSensorPublisher::OnGpsSensorReadyRead
     );
+
+    GpioUtils::export_pin(168);
+    GpioUtils::setup_dir(168, GpioUtils::PinDirection::Out);
 
     SetupGpsDevice();
     ResetGpsDevice();
@@ -49,7 +53,14 @@ SerialRxGpsSensorPublisher::SetupGpsDevice() {
 bool SerialRxGpsSensorPublisher::ResetGpsDevice() {
     serialGpsSensor.setBaudRate(QSerialPort::Baud9600);
 
-    // TOOD: Reset power on pins
+    GpioUtils::setup_val(168, 0);
+
+    // TODO: Use non-blocking way
+    struct timespec tw = { 2 }, tr;
+    nanosleep(&tw, &tr);
+
+    GpioUtils::setup_val(168, 1);
+
     auto opened = serialGpsSensor.open(QSerialPort::ReadOnly);
 
     return opened;

@@ -16,6 +16,7 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
+    GpioUtils.h \
     Nmea/NmeaParser.h \
     Nmea/NmeaSentence.h \
     GpsMessage.h \
@@ -23,6 +24,7 @@ HEADERS += \
     SerialRxGpsSensorPublisher.h \
 
 SOURCES += \
+    GpioUtils.cpp \
     Nmea/NmeaParser.cpp \
     Nmea/NmeaSentence.cpp \
     SerialRxGpsSensorPublisher.cpp \
