@@ -43,6 +43,7 @@ SerialRxGpsSensorPublisher::GetObservable() const {
 
 void
 SerialRxGpsSensorPublisher::SetupGpsDevice() {
+    serialGpsSensor.setBaudRate(QSerialPort::Baud9600);
     serialGpsSensor.setDataBits(QSerialPort::Data8);
     serialGpsSensor.setFlowControl(QSerialPort::NoFlowControl);
     serialGpsSensor.setParity(QSerialPort::NoParity);
@@ -51,13 +52,11 @@ SerialRxGpsSensorPublisher::SetupGpsDevice() {
 }
 
 bool SerialRxGpsSensorPublisher::ResetGpsDevice() {
-    serialGpsSensor.setBaudRate(QSerialPort::Baud9600);
-
     GpioUtils::setup_val(168, 0);
 
     // TODO: Use non-blocking way
-    struct timespec tw = { 2 }, tr;
-    nanosleep(&tw, &tr);
+    struct timespec req_time { 2 }, rem_time;
+    nanosleep(&req_time, &rem_time);
 
     GpioUtils::setup_val(168, 1);
 
