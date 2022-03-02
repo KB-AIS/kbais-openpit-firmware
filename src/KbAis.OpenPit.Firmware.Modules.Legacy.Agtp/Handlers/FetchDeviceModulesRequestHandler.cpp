@@ -30,6 +30,6 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
     return result;
 }
 
-QString FetchDeviceModulesRequestHandler::getRequestName() const {
+QString FetchDeviceModulesRequestHandler::get_request_name() const {
     return QStringLiteral("SUPPORT_MODULES");
 }

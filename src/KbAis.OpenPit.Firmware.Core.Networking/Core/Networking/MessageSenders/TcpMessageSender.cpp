@@ -22,7 +22,7 @@ TcpMessageSender::TcpMessageSender(const QString& message_sender_name)
 }
 
 void
-TcpMessageSender::Restart(const TcpMessageSenderConfiguration& configuration) {
+TcpMessageSender::Restart(const TcpMessageSenderConfiguration& configuration, const QString& equipment_id) {
     if (m_protocolCommunicator != nullptr) {
         m_protocolCommunicator->StopCommunication();
 
@@ -31,6 +31,7 @@ TcpMessageSender::Restart(const TcpMessageSenderConfiguration& configuration) {
     }
 
     m_protocolCommunicator = GenProtocolCommunicator(configuration.protocol);
+    m_equipment_id = equipment_id;
 
     m_protocolCommunicator->GetObservableProtocolViolation()
         .subscribe(m_subCommunicator, [&](const ProtocolViolationNotif& x) {
@@ -50,7 +51,7 @@ TcpMessageSender::SetupSocketSignals() {
     constexpr auto SocketErrorSignal = qOverload<SocketError>(&QAbstractSocket::error);
 
     QObject::connect(&m_socket, &QTcpSocket::connected, [&] {
-        m_protocolCommunicator->InitCommunication(m_socket);
+        m_protocolCommunicator->InitCommunication(m_socket, m_equipment_id);
     });
 
     QObject::connect(&m_socket, SocketStateSignal, [&](auto state) {

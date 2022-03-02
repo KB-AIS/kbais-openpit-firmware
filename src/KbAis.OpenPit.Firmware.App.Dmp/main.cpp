@@ -18,8 +18,30 @@
 #include "RxStateWatcherFueling.h"
 
 struct ConfigurationBootstraper {
-    ConfigurationBootstraper(ConfigurationManager& configurationManager) {
-        configurationManager.registerConfiguration(
+    ConfigurationBootstraper(ConfigurationManager& config_manager) {
+        config_manager.registerConfiguration(
+            "base"
+        ,   R"(
+                {
+                  "enable_manual_begin_shift": false,
+                  "lcd_day_light": 15,
+                  "offset_local_time": 0,
+                  "shift_times": [
+                    { "shift_hours_begin": 8, "shift_hours_end": 16, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
+                    { "shift_hours_begin": 17, "shift_hours_end": 2, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
+                    { "shift_hours_begin": 8, "shift_hours_end": 16, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
+                    { "shift_hours_begin": 17, "shift_hours_end": 2, "shift_minutes_begin": 0, "shift_minutes_end": 59 }
+                  ],
+                  "sound_volume_ch_1": 12,
+                  "sound_volume_ch_2": 12,
+                  "sound_volume_system": 12,
+                  "vehihle_id": "100",
+                  "version": "1.0"
+                }
+            )"_json
+        );
+
+        config_manager.registerConfiguration(
             "ethernet"
         ,   R"(
                 {
@@ -33,7 +55,7 @@ struct ConfigurationBootstraper {
             )"_json
         );
 
-        configurationManager.registerConfiguration(
+        config_manager.registerConfiguration(
             "networking"
         ,   R"(
                 {
@@ -55,7 +77,7 @@ struct ConfigurationBootstraper {
             )"_json
         );
 
-        configurationManager.registerConfiguration(
+        config_manager.registerConfiguration(
             "lls_device"
         ,   R"(
                 {
@@ -75,7 +97,7 @@ struct ConfigurationBootstraper {
             )"_json
         );
 
-        configurationManager.registerConfiguration(
+        config_manager.registerConfiguration(
             "scale"
         ,   R"(
                 {"Scales":[

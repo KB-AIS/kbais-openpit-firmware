@@ -28,6 +28,8 @@ class TcpMessageSendersManager
 
     using MessageSenders_t = std::map<MessageSenderId_t, std::unique_ptr<TcpMessageSender>>;
 
+    QString m_equipment_id;
+
 public:
     explicit TcpMessageSendersManager(IRxConfigurationChangePublisher& configurationPublisher);
 

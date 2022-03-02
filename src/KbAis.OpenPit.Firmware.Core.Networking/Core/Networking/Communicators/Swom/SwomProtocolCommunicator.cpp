@@ -15,9 +15,6 @@ constexpr std::chrono::duration SEND_INTERVAL { 10s };
 
 constexpr int MAX_MESSAGE_BATCHES_IN_FRAME { 4 };
 
-// TODO: Take from configuration
-static const QString EQUIPMENT_ID { "104" };
-
 SwomProtocolCommunicator::SwomProtocolCommunicator() {
 
 }
@@ -27,9 +24,11 @@ SwomProtocolCommunicator::~SwomProtocolCommunicator() {
 }
 
 void
-SwomProtocolCommunicator::InitCommunication(QIODevice& device) {
+SwomProtocolCommunicator::InitCommunication(QIODevice& device, const QString& equipment_id) {
     m_subscriptions.unsubscribe();
     m_subscriptions = rxcpp::composite_subscription();
+
+    m_equipment_id = equipment_id;
 
     PLOGV << fmt::format("Initiating SWOM communication session");
 
@@ -88,7 +87,7 @@ SwomProtocolCommunicator::HandleAthReq(QIODevice& device) {
     m_sndAthPacket = QUuid::createUuid();
 
     const auto encodedAthPacket =
-        SwomProtocolFormatter::EncodeAthPacket(m_sndAthPacket, EQUIPMENT_ID);
+        SwomProtocolFormatter::EncodeAthPacket(m_sndAthPacket, m_equipment_id);
 
     PLOGV << "SWOM communicator is performing authentication request ";
 

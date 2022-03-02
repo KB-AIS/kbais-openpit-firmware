@@ -38,7 +38,7 @@ ConfigEthernetRequestHandler::handle(const AgtpRequest& request) {
 }
 
 QString
-ConfigEthernetRequestHandler::getRequestName() const {
+ConfigEthernetRequestHandler::get_request_name() const {
     return REQUEST_NAME;
 }
 

@@ -18,7 +18,7 @@ FetchDeviceStateRequestHandler::FetchDeviceStateRequestHandler(
 }
 
 QString
-FetchDeviceStateRequestHandler::getRequestName() const {
+FetchDeviceStateRequestHandler::get_request_name() const {
     return CMD_NAME;
 }
 

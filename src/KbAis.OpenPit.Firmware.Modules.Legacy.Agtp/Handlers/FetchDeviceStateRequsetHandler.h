@@ -12,7 +12,7 @@ class FetchDeviceStateRequestHandler : public IAgtpRequestHandler {
 public:
     FetchDeviceStateRequestHandler(const DeviceStateCollector& deviceStateCollector);
 
-    QString getRequestName() const override;
+    QString get_request_name() const override;
 
     AgtpResponse handle(const AgtpRequest& command) override;
 

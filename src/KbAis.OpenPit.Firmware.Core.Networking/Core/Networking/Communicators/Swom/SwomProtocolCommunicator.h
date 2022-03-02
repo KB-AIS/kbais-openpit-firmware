@@ -22,12 +22,14 @@ class SwomProtocolCommunicator : public IProtocolCommunicator {
 
     struct SwomTelPacketMeta { QUuid uuid; quint64 messageBatchId; };
 
+    QString m_equipment_id;
+
 public:
     SwomProtocolCommunicator();
 
     ~SwomProtocolCommunicator();
 
-    void InitCommunication(QIODevice& device) override;
+    void InitCommunication(QIODevice& device, const QString& equipment_id) override;
 
     void StopCommunication() override;
 

@@ -17,7 +17,7 @@ public:
 
     virtual ~IProtocolCommunicator() noexcept = default;
 
-    virtual void InitCommunication(QIODevice& device) = 0;
+    virtual void InitCommunication(QIODevice& device, const QString& equipment_id) = 0;
 
     virtual void StopCommunication() = 0;
 

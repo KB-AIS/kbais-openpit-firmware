@@ -14,7 +14,7 @@ public:
 
     AgtpResponse handle(const AgtpRequest& request) override;
 
-    QString getRequestName() const override;
+    QString get_request_name() const override;
 
 private:
     ConfigurationManager& mConfigurationService;

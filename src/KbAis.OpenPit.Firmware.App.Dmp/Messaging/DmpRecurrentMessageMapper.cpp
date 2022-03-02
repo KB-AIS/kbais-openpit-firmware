@@ -29,9 +29,16 @@ DmpRecurrentMessageMapper::getObservable() const {
     rxcpp::observable<Message> gps_message_observable = m_gps_message_pub
         .GetObservable()
         .map([&](const GpsMessage& x) -> Message {
+            nlohmann::json j_object;
+            j_object["datetime"] = x.isValid ? x.datetime : QDateTime::currentDateTimeUtc();
+            j_object["isValid"] = x.isValid;
+            j_object["latitude"] = x.latitude;
+            j_object["longitude"] = x.longitude;
+            j_object["speed"] = x.speed;
+
             return {
                 MESSAGE_MONKIER_GPS
-            ,   fromStdVector(nlohmann::json::to_msgpack(x))
+            ,   fromStdVector(nlohmann::json::to_msgpack(j_object))
             ,   QDateTime::currentDateTimeUtc(),
             };
         });

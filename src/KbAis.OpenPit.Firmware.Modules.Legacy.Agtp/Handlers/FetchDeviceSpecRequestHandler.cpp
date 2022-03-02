@@ -45,6 +45,6 @@ FetchDeviceSpecRequestHandler::handle(const AgtpRequest& command) {
     return result;
 }
 
-QString FetchDeviceSpecRequestHandler::getRequestName() const {
+QString FetchDeviceSpecRequestHandler::get_request_name() const {
     return QStringLiteral("INFO");
 }

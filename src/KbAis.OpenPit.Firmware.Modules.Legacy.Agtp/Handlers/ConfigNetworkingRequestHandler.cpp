@@ -33,6 +33,6 @@ ConfigNetworkingRequestHandler::handle(const AgtpRequest& request) {
 }
 
 QString
-ConfigNetworkingRequestHandler::getRequestName() const {
+ConfigNetworkingRequestHandler::get_request_name() const {
     return REQUEST_NAME;
 }

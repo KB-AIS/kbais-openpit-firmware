@@ -39,10 +39,12 @@ class TcpMessageSender : public QObject {
 
     using ProtocolCommunicator_t = std::unique_ptr<IProtocolCommunicator>;
 
+    QString m_equipment_id;
+
 public:
     TcpMessageSender(const QString& messageSenderName);
 
-    void Restart(const TcpMessageSenderConfiguration& configuration);
+    void Restart(const TcpMessageSenderConfiguration& configuration, const QString& equipment_id);
 
     Q_SIGNAL void StateChanged(TcpMessageSenderStateChanged notification);
 

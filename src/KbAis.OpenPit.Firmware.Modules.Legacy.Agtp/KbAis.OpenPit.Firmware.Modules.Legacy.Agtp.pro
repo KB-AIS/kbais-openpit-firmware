@@ -21,6 +21,7 @@ include($$PRJDIR/../conanbuildinfo.pri)
 HEADERS += \
     AgtpRequestMediator.h \
     Handlers/ConfigEthernetRequestHandler.h \
+    Handlers/ConfigFuelRequestHandler.h \
     Handlers/ConfigNetworkingRequestHandler.h \
     Handlers/ConfigScaleRequestHandler.h \
     Handlers/FetchDeviceInfoRequestHandler.h \
@@ -40,6 +41,7 @@ HEADERS += \
 SOURCES += \
     AgtpRequestMediator.cpp \
     Handlers/ConfigEthernetRequestHandler.cpp \
+    Handlers/ConfigFuelRequestHandler.cpp \
     Handlers/ConfigNetworkingRequestHandler.cpp \
     Handlers/ConfigScaleRequestHandler.cpp \
     Handlers/FetchDeviceInfoRequestHandler.cpp \

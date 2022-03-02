@@ -13,7 +13,7 @@ public:
 
     AgtpResponse handle(const AgtpRequest &request);
 
-    QString getRequestName() const;
+    QString get_request_name() const;
 
 private:
     ConfigurationManager& mConfigurationManager;

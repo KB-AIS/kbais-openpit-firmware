@@ -11,7 +11,7 @@ public:
 
     AgtpResponse handle(const AgtpRequest& command) override;
 
-    QString getRequestName() const override;
+    QString get_request_name() const override;
 };
 
 #endif // FETCHDEVICEMODULESREQUESTHANDLER_H

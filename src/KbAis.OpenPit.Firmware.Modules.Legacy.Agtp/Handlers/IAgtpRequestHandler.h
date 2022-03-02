@@ -32,7 +32,7 @@ public:
 
     virtual AgtpResponse handle(const AgtpRequest& request) = 0;
 
-    virtual QString getRequestName() const = 0;
+    virtual QString get_request_name() const = 0;
 
 };
 

@@ -33,11 +33,19 @@ void
 TcpMessageSendersManager::StartWorkOn(const rxcpp::observe_on_one_worker& coordination) {
     PLOGD << "starting work";
 
-    m_configurationPublisher.getChangeObservable("networking")
+    m_configurationPublisher.getChangeObservable("base")
+        .combine_latest(m_configurationPublisher.getChangeObservable("networking"))
         .sample_with_time(500ms, coordination)
         .subscribe(
             m_subsConfigurationChanged
-        ,   [&](const AppConfiguration& x) { OnConfigurationChanged(x); }
+        ,   [&](const std::tuple<AppConfiguration, AppConfiguration> x) {
+                constexpr int CONFIG_BASE = 0, CONFIG_NETW = 1;
+
+                m_equipment_id = std::get<CONFIG_BASE>(x).j_object
+                    .at("/vehihle_id"_json_pointer).get<QString>();
+
+                OnConfigurationChanged(std::get<CONFIG_NETW>(x));
+            }
         );
 
     m_obsMessageSednersRestartInterval =
@@ -127,7 +135,7 @@ TcpMessageSendersManager::OnMessageSendersRestartRequired() {
     ,   [&](const MessageSenderId_t& x) {
             PLOGV << fmt::format("{} message sender is being restared", x.toStdString());
 
-            m_messageSenders[x]->Restart(m_messageSenderConfigurations[x]);
+            m_messageSenders[x]->Restart(m_messageSenderConfigurations[x], m_equipment_id);
         }
     );
 }

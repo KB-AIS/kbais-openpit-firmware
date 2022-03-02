@@ -9,33 +9,45 @@
 // oss
 #include <plog/Log.h>
 
-static QString QML_SELECT_DEVICE_MESSAGE_BATCHES { QStringLiteral(
-    "SELECT\n"
-    "   [mb].[id]           AS messagesBatch_id,\n"
-    "   [mb].[collected_at] AS messagesBatch_collectedAt,\n"
-    "   [m].[id]            AS message_id,\n"
-    "   [m].[monkier]       AS message_monkier,\n"
-    "   [m].[payload]       AS message_payload,\n"
-    "   [m].[produced_at]   AS message_producedAt\n"
-    "FROM\n"
-    "   [messages_batches] AS [mb]\n"
-    "LEFT JOIN\n"
-    "   [messages] AS [m] ON [mb].[id] = [m].[messages_batch_id]\n"
-    "WHERE\n"
-    "   [mb].[id] > :last_sent_messages_batch_id\n"
-    "ORDER BY\n"
-    "   [mb].[id] ASC\n"
-    "LIMIT\n"
-    "   :messages_batches_count;"
+static const QString QML_SELECT_MESSAGES { QStringLiteral(
+    R"(
+        WITH
+            [messages_batches_sub] AS (
+                SELECT
+                    [mb].id,
+                    [mb].collected_at
+                FROM
+                    [messages_batches] AS [mb]
+                WHERE
+                    [mb].[id] > :last_sent_messages_batch_id
+                LIMIT
+                    :messages_batches_count
+            )
+        SELECT
+            [mb].[id]           AS messagesBatch_id,
+            [mb].[collected_at] AS messagesBatch_collectedAt,
+            [m].[id]            AS message_id,
+            [m].[monkier]       AS message_monkier,
+            [m].[payload]       AS message_payload,
+            [m].[produced_at]   AS message_producedAt
+        FROM
+            [messages_batches_sub] AS [mb]
+        LEFT JOIN
+            [messages] AS [m] ON [mb].[id] = [m].[messages_batch_id]
+        ORDER BY
+            [mb].[id] ASC;
+    )"
 ) };
 
-const QString QML_SELECT_LAST_SENT_MESSAGES_BATCH_ID { QStringLiteral(
-    "SELECT\n"
-    "   [s].[last_sent_messages_batch_id] AS sender_lastSentMessagesBatchId\n"
-    "FROM\n"
-    "   [senders] AS [s]\n"
-    "WHERE\n"
-    "   [s].[host] = '10.214.1.208' AND [s].[port] = 9900;"
+static const QString QML_SELECT_LAST_SENT_MESSAGES_BATCH_ID { QStringLiteral(
+    R"(
+        SELECT
+            [s].[last_sent_messages_batch_id] AS sender_lastSentMessagesBatchId
+        FROM
+            [senders] AS [s]
+        WHERE
+            [s].[host] = '10.214.1.208' AND [s].[port] = 9900;
+    )"
 ) };
 
 QVector<MessagesBatchDto>
@@ -97,7 +109,7 @@ MessageBatchGetAllQry::getMessagesBatches(
 ) const {
     QSqlQuery query { connection };
 
-    query.prepare(QML_SELECT_DEVICE_MESSAGE_BATCHES);
+    query.prepare(QML_SELECT_MESSAGES);
     query.bindValue(":last_sent_messages_batch_id", lastSentMessagesBatchId);
     query.bindValue(":messages_batches_count", messagesBatchesCount);
 

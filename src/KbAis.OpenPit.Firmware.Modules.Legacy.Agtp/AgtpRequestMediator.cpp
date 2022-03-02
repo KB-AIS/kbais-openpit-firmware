@@ -13,7 +13,7 @@ AgtpRequestsMediator::AgtpRequestsMediator(
     std::set<AgtpCommandHandler_t> handlers
 ) {
     const auto v = ranges::view::transform([](const auto& x) {
-        return x->getRequestName();
+        return x->get_request_name();
     });
     m_RequestHandlers = ranges::views::zip(handlers | v, handlers)
         | ranges::to<AgtpCommandHandlers_t>();

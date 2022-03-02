@@ -1,10 +1,10 @@
-#include "ConfigScaleRequestHandler.h"
+#include "ConfigFuelRequestHandler.h"
 
 #include "Handlers/Utils.h"
 
 const QString REQUEST_NAME { QStringLiteral("SCALE_PARAMS") };
 
-ConfigScaleRequestHandler::ConfigScaleRequestHandler(
+ConfigFuelRequestHandler::ConfigFuelRequestHandler(
     ConfigurationManager& configuration_manager
 )
     :   m_configuration_manager(configuration_manager)
@@ -13,14 +13,14 @@ ConfigScaleRequestHandler::ConfigScaleRequestHandler(
 }
 
 AgtpResponse
-ConfigScaleRequestHandler::handle(const AgtpRequest& request) {
+ConfigFuelRequestHandler::handle(const AgtpRequest& request) {
     const auto config_opt = extract_configuration(request.payload);
 
     if (config_opt) {
-        m_configuration_manager.updateConfiguration("scale", *config_opt);
+        m_configuration_manager.updateConfiguration("fuel", *config_opt);
     }
 
-    const auto config = m_configuration_manager.getConfiguration("scale").j_object;
+    const auto config = m_configuration_manager.getConfiguration("fuel").j_object;
 
     return {
         request.uid
@@ -33,6 +33,6 @@ ConfigScaleRequestHandler::handle(const AgtpRequest& request) {
 }
 
 QString
-ConfigScaleRequestHandler::get_request_name() const {
+ConfigFuelRequestHandler::get_request_name() const {
     return REQUEST_NAME;
 }
