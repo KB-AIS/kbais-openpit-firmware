@@ -9,9 +9,6 @@
 using namespace std::chrono_literals;
 using namespace nlohmann;
 
-constexpr int LIT = 0, ADC = 1;
-static LlsCalibrationTable_t calibration_table { { 0, 0 }, { 100, 800 }, { 2000, 2600 } };
-
 RxFuelMessagePublisher::RxFuelMessagePublisher(
     IRxConfigurationChangePublisher& config_publisher
 ,   SerialRxLlsSensorPublisher& lls_sensor_publisher
@@ -90,26 +87,27 @@ RxFuelMessagePublisher::handle_fuel_calibration(const LlsDeviceMessage& message)
 
     PLOGD << fmt::format("Got fuel value after calibration: {:f}", fuel, 4);
 
-    // TODO: Get max from settings
     subscriber.on_next(FuelMessage { fuel, m_max_fuel_level, true });
 }
 
 double
 RxFuelMessagePublisher::get_fuel_level_by_calibration_table(double lls_level) const {
-    int s_idx = 0, e_idx = calibration_table.size() - 2;
+    constexpr int LIT = 0, ADC = 1;
+
+    int s_idx = 0, e_idx = m_calibration_table.size() - 2;
 
     while (s_idx < e_idx) {
         int bound_idx = (s_idx + e_idx + 1) >> 1;
 
-        if (lls_level < std::get<ADC>(calibration_table[bound_idx])) {
+        if (lls_level < std::get<ADC>(m_calibration_table[bound_idx])) {
             e_idx = bound_idx - 1;
         } else {
             s_idx = bound_idx;
         }
     }
 
-    auto [lit_lb, adc_lb] = calibration_table[s_idx];
-    auto [lit_ub, adc_ub] = calibration_table[s_idx + 1];
+    auto [lit_lb, adc_lb] = m_calibration_table[s_idx];
+    auto [lit_ub, adc_ub] = m_calibration_table[s_idx + 1];
     auto fuel_level = lit_lb + ((lls_level - adc_lb) * (lit_ub - lit_lb)) / (adc_ub - adc_lb);
 
     return static_cast<quint32>(fuel_level);

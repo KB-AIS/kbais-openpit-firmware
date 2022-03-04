@@ -34,6 +34,7 @@ TcpMessageSendersManager::StartWorkOn(const rxcpp::observe_on_one_worker& coordi
     PLOGD << "starting work";
 
     m_configurationPublisher.getChangeObservable("base")
+        // TODO: Use aggregate function to make a strong-typed config
         .combine_latest(m_configurationPublisher.getChangeObservable("networking"))
         .sample_with_time(500ms, coordination)
         .subscribe(
