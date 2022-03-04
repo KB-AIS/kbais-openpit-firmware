@@ -16,7 +16,7 @@ constexpr std::chrono::duration SEND_INTERVAL { 10s };
 constexpr int MAX_MESSAGE_BATCHES_IN_FRAME { 4 };
 
 SwomProtocolCommunicator::SwomProtocolCommunicator() {
-
+    m_tmWaitAcknowledge.setSingleShot(true);
 }
 
 SwomProtocolCommunicator::~SwomProtocolCommunicator() {
@@ -38,12 +38,18 @@ SwomProtocolCommunicator::InitCommunication(QIODevice& device, const QString& eq
     rxqt::from_signal(&m_tmSendMessageBatches, &QTimer::timeout)
         .subscribe(m_subscriptions, [this, &d = device](auto) { HandleTelReq(d); });
 
+    rxqt::from_signal(&m_tmWaitAcknowledge, &QTimer::timeout)
+        .subscribe(m_subscriptions, [this](auto) {
+            PublishProtocolViolation("Waith acknowledge timed out");
+        });
+
     HandleAthReq(device);
 }
 
 void
 SwomProtocolCommunicator::StopCommunication() {
     m_tmSendMessageBatches.stop();
+    m_tmWaitAcknowledge.stop();
 
     m_subscriptions.unsubscribe();
 }
@@ -67,7 +73,7 @@ SwomProtocolCommunicator::OnReadyRead(QIODevice& device) {
         std::string reason { fmt::format(
             "SWOM communicator could not parse incomming frame: {}"
         ,   decodeResult.error()
-        )};
+        ) };
         return PublishProtocolViolation(std::move(reason));
     }
 
@@ -144,7 +150,9 @@ SwomProtocolCommunicator::HandleTelReq(QIODevice& device) {
     ,   [&packets = encodedPackets](auto&& packet) { packets.append(packet); }
     );
 
+
     const auto bytesWritten = device.write(SwomProtocolFormatter::EncodeFrame(encodedPackets));
+    m_tmWaitAcknowledge.start(5s);
 
     if (bytesWritten == -1) {
         return PublishProtocolViolation("SWOM communicator could not send collected messages");
@@ -164,6 +172,7 @@ SwomProtocolCommunicator::HandleTelRsp(const std::vector<SwomAckPacket>& ackPack
 
     m_sndTelPackets.clear();
 
+    m_tmWaitAcknowledge.stop();
     m_currentState = SwomProtocolCommunicatorState::ReadyToSend;
     HandleTelReq(device);
 }

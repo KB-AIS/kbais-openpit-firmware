@@ -6,6 +6,7 @@
 #include <CLI/CLI.hpp>
 #include <fmt/format.h>
 #include <plog/Appenders/ConsoleAppender.h>
+#include <plog/Appenders/RollingFileAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 #include <plog/Log.h>
@@ -138,8 +139,10 @@ int main(int argc, char* argv[]) {
 
     commandLine.callback([&]() {
         static ConsoleAppender<TxtFormatter> consoleAppender;
+        static RollingFileAppender<TxtFormatter> appender_rolling_files { "/media/app/cfw/log" };
 
         init(logSeverityLevel).addAppender(&consoleAppender);
+        init<1>(logSeverityLevel).addAppender(&appender_rolling_files);
     });
 
     CLI11_PARSE(commandLine, argc, argv);

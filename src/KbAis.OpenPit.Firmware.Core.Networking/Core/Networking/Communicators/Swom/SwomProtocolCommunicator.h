@@ -52,6 +52,8 @@ private:
 
     QTimer m_tmSendMessageBatches;
 
+    QTimer m_tmWaitAcknowledge;
+
     void OnReadyRead(QIODevice& device);
 
     void OnAckTimeout(QIODevice& device);

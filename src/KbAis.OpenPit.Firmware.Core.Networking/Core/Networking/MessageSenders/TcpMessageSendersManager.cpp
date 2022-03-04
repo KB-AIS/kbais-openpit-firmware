@@ -145,7 +145,7 @@ void
 TcpMessageSendersManager::OnMessageSenderStateChanged(
     TcpMessageSenderStateChanged notification
 ) {
-    PLOGV << fmt::format(
+    PLOGV_(1) << fmt::format(
         "{} message sender status changed to {}"
     ,   notification.messageSenderName.toStdString()
     ,   QtEnumToString(notification.state.socket_state).toStdString()
