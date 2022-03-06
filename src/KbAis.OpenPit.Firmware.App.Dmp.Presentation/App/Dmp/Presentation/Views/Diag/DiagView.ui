@@ -17,20 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">* {
-        background-color: #282828;
-        color: #fbf1c7;
-}
-
-#lbl_topBar {
-        background-color: #1d2021;
-}
-
-QPushButton {
-        border-color: #1d2021;
-        border-width: 4px;
-        border-style: solid;
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QPushButton" name="btn_navigateBack">
    <property name="geometry">

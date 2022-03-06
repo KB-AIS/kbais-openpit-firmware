@@ -17,22 +17,33 @@ namespace Ui { class MainView; }
 class MainView : public QWidget {
     Q_OBJECT
 
-    const RxFuelMessagePublisher& m_pub_fuel_message;
+    const IRxGpsSensorPublisher&  m_pub_gps_msg;
 
-    QcGaugeWidget qc_gauge_fuel;
+    const RxFuelMessagePublisher& m_pub_ful_msg;
 
-    QcLabelItem* qc_gauge_lable_fuel;
+    const NavController& m_nav_controller;
 
-    QcNeedleItem* qc_gauge_needle_fuel;
+    QcGaugeWidget* qc_gauge_fuel;
+    QcLabelItem*   qc_gauge_fuel_label;
+    QcNeedleItem*  qc_gauge_fuel_needle;
 
-    void setup_fuel_gauge();
+    QcGaugeWidget* qc_gauge_speed;
+    QcLabelItem*   qc_gauge_speed_label;
+    QcNeedleItem*  qc_gauge_speed_needle;
+
+    void setup_gauge_ful();
+
+    void setup_gauge_spd();
+
+    void upd_gauge_ful(const FuelMessage& msg);
+
+    void upd_gague_spd(const GpsMessage& msg);
 
 public:
     MainView(
-        const IRxGpsSensorPublisher& gpsPublisher
-    ,   const IRxMessageSendersDiagPub& messageSenderPub
-    ,   const RxFuelMessagePublisher& pub_fuel_message
-    ,   const NavController& navigationEmmiter
+        const IRxGpsSensorPublisher& pub_gps_msg
+    ,   const RxFuelMessagePublisher& pub_ful_msg
+    ,   const NavController& nav_controller
     );
 
     ~MainView();
@@ -43,12 +54,6 @@ public:
 
 private:
     Ui::MainView* ui;
-
-    const IRxGpsSensorPublisher& m_gpsMessagePub;
-
-    const IRxMessageSendersDiagPub& m_messageSenderPub;
-
-    const NavController& m_nav_controller;
 
     rxcpp::composite_subscription m_subscriptions;
 

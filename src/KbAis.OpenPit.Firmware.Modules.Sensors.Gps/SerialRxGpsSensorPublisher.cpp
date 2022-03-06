@@ -99,12 +99,14 @@ SerialRxGpsSensorPublisher::NeedPublishGpsMessage() const {
 
 GpsMessage
 SerialRxGpsSensorPublisher::MapGpsMessage() const {
+    constexpr double SPD_KNOTS_TO_KHM_RATIO { 1.852 };
+
     return GpsMessage {
         lastRmcSentence->datetime,
         lastRmcSentence->isValid,
         lastRmcSentence->latitude,
         lastRmcSentence->longitude,
-        lastRmcSentence->speed,
+        lastRmcSentence->speed * SPD_KNOTS_TO_KHM_RATIO,
         lastGgaSentence->gpsQauality,
         lastGgaSentence->satellites
     };

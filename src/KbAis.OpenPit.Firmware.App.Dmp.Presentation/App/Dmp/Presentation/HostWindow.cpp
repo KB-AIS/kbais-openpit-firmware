@@ -11,13 +11,11 @@ constexpr qint32 MAIN_VIEW_IDX { 0 }, DIAG_VIEW_IDX { 1 }, STOP_VIEW_IDX { 2 }, 
 const QString TIME_EVEN_FMT { "hh:mm" }, TIME_FMT { "hh mm" };
 
 const auto STYLE_INDICATOR_VALID = QString(R"(
-    color: #b8bb26;
-    background-color: #00000000;
+    color: #0bff01;
 )");
 
 const auto STYLE_INDICATOR_INVALID = QString(R"(
-    color: #fb4934;
-    background-color: #00000000;
+    color: #fe0000;
 )");
 
 constexpr auto DISPLAYTIME_UPDATE_INTERVAL { 1s };

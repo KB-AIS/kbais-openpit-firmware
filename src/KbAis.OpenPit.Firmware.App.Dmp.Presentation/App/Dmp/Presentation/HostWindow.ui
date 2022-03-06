@@ -15,18 +15,26 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-        background-color: #282828;
-        color: #fbf1c7;
+	color: #feff00;
 }
 
 #lbl_topBar {
-        background-color: #1d2021;
+	background-color: #011efe;
+}
+
+#sw_nav {
+	background: #000000;
+}
+
+QLabel {
+	background-color: #00000000;
 }
 
 QPushButton {
-        border-color: #1d2021;
-        border-width: 4px;
-        border-style: solid;
+	background: #000000;
+	border-color: #feff00;
+    border-width: 4px;
+    border-style: solid;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -38,9 +46,6 @@ QPushButton {
       <width>1024</width>
       <height>40</height>
      </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
@@ -63,9 +68,6 @@ QPushButton {
       <italic>false</italic>
       <bold>false</bold>
      </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
     </property>
     <property name="text">
      <string>NAV</string>
@@ -92,13 +94,6 @@ QPushButton {
       <bold>false</bold>
      </font>
     </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgba(255, 255, 255, 0);
-</string>
-    </property>
     <property name="text">
      <string>00:00</string>
     </property>
@@ -124,12 +119,6 @@ QPushButton {
       <bold>false</bold>
      </font>
     </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
     <property name="text">
      <string>SRV</string>
     </property>
@@ -154,13 +143,6 @@ QPushButton {
       <italic>false</italic>
       <bold>false</bold>
      </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgba(255, 255, 255, 0);
-</string>
     </property>
     <property name="text">
      <string>...</string>
