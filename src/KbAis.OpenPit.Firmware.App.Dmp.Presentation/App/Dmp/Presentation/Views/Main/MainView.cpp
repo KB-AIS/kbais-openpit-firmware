@@ -26,22 +26,22 @@ MainView::MainView(
     ,   m_pub_gps_msg(pub_gps_msg)
     ,   m_pub_ful_msg(pub_ful_msg)
     ,   m_nav_controller(nav_controller)
-    ,   qc_gauge_fuel(new QcGaugeWidget(this))
-    ,   qc_gauge_speed(new QcGaugeWidget(this))
+    ,   m_qcg_ful(new QcGaugeWidget(this))
+    ,   m_qcg_spd(new QcGaugeWidget(this))
     ,   m_tmUpdateDisplayTime(this)
 {
     ui->setupUi(this);
 
     setup_gauge_ful();
-    ui->hl_gauge_fuel->addWidget(qc_gauge_fuel);
+    ui->hl_gauge_fuel->addWidget(m_qcg_ful);
 
     setup_gauge_spd();
-    ui->hl_gauge_speed->addWidget(qc_gauge_speed);
+    ui->hl_gauge_speed->addWidget(m_qcg_spd);
 
     m_subscriptions = rxcpp::composite_subscription();
 
     rxqt::from_signal(ui->btn_navToMain, &QPushButton::released)
-        .subscribe(m_subscriptions, [&](auto) { emit notifyTestUserEvent(); });
+        .subscribe(m_subscriptions, [&](auto) { emit notify_test_user_event(); });
 
     rxqt::from_signal(ui->btn_navToDiag, &QPushButton::released)
         .subscribe(m_subscriptions, [&](auto) { m_nav_controller.Navigate(1); });
@@ -62,10 +62,10 @@ void
 MainView::provide_coordinator(const rxcpp::observe_on_one_worker& coordinator) {
     m_pub_ful_msg.get_obeservable_fuel_message()
         .observe_on(coordinator)
-        .subscribe(m_subscriptions, [this](FuelMessage msg) { upd_gauge_ful(msg); });
+        .subscribe(m_subscriptions, [this](FuelMessage msg) { update_gauge_ful(msg); });
     m_pub_gps_msg.GetObservable()
         .observe_on(coordinator)
-        .subscribe(m_subscriptions, [this](GpsMessage msg) { upd_gague_spd(msg); });
+        .subscribe(m_subscriptions, [this](GpsMessage msg) { update_gague_spd(msg); });
 }
 
 void
@@ -84,7 +84,7 @@ MainView::setup_gauge_ful() {
     constexpr qint32 GAUGE_DEGREE_S = 140, GAUGE_DEGREE_E = 270;
 
     auto setup_arc = [&]() {
-        auto x = qc_gauge_fuel->addArc(100);
+        auto x = m_qcg_ful->addArc(100);
         x->setColor(color_neon_yellow);
         x->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
         x->setValueRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
@@ -92,101 +92,114 @@ MainView::setup_gauge_ful() {
 
     setup_arc();
 
-    auto ticA = qc_gauge_fuel->addDegrees(90);
+    auto ticA = m_qcg_ful->addDegrees(90);
     ticA->setColor(Qt::yellow);
     ticA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
     ticA->setStep(5);
     ticA->setSubDegree(true);
     ticA->setValueRange(0, 100);
 
-    auto valA = qc_gauge_fuel->addValues(94);
+    auto valA = m_qcg_ful->addValues(94);
     valA->setColor(Qt::yellow);
     valA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
     valA->setStep(25);
     valA->setValueRange(0, 100);
 
-    auto cbdA = qc_gauge_fuel->addColorBand(70);
+    auto cbdA = m_qcg_ful->addColorBand(70);
     cbdA->setColors({ { color_neon_red, 100 }, { color_neon_green, 50 }, { color_neon_yellow, 20 } });
     cbdA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
     cbdA->setValueRange(0, 100);
 
-    //qc_gauge_fuel->setStyleSheet("border-color: #feff00; border-width: 1px; border-style: solid;");
+    m_qcg_ful_needle = m_qcg_ful->addNeedle(95);
+    m_qcg_ful_needle->setColor(color_neon_yellow);
+    m_qcg_ful_needle->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+    m_qcg_ful_needle->setCurrentValue(0);
 
-    qc_gauge_fuel_label = qc_gauge_fuel->addLabel(20);
-    qc_gauge_fuel_label->setColor(Qt::darkYellow);
-    qc_gauge_fuel_label->setFont("Roboto");
-
-    qc_gauge_fuel_needle = qc_gauge_fuel->addNeedle(95);
-    qc_gauge_fuel_needle->setColor(color_neon_yellow);
-    qc_gauge_fuel_needle->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
-
-    qc_gauge_fuel_label->setText("--");
-    qc_gauge_fuel_needle->setCurrentValue(0);
+    m_qcg_ful->setStyleSheet("border-color: #feff00; border-width: 1px; border-style: solid;");
 }
 
 void
 MainView::setup_gauge_spd() {
     constexpr qint32 GAUGE_DEGREE_S = -60, GAUGE_DEGREE_E = 240;
 
+    constexpr qint32 GAUGE_SPD_MIN = 0, GAUGE_SPD_MAX = 80;
+
     auto setup_arc = [&]() {
-        auto x = qc_gauge_speed->addArc(100);
+        auto x = m_qcg_spd->addArc(95);
         x->setColor(color_neon_yellow);
         x->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
-        x->setValueRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
     };
-
     setup_arc();
 
-    //qc_gauge_speed->setStyleSheet("border-color: #feff00; border-width: 1px; border-style: solid;");
+    auto setup_degrees = [&]() {
+        auto x = m_qcg_spd->addDegrees(88);
+        x->setColor(color_neon_yellow);
+        x->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+        x->setStep(10);
+        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
 
-    auto ticA = qc_gauge_speed->addDegrees(90);
-    ticA->setColor(Qt::yellow);
-    ticA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
-    ticA->setStep(10);
-    ticA->setSubDegree(true);
-    ticA->setValueRange(0, 100);
+        auto y = m_qcg_spd->addDegrees(88);
+        y->setColor(color_neon_yellow);
+        y->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+        y->setStep(2.5);
+        y->setSubDegree(true);
+        y->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+    };
+    setup_degrees();
 
-    auto valA = qc_gauge_speed->addValues(85);
-    valA->setColor(Qt::yellow);
-    valA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
-    valA->setStep(25);
-    valA->setValueRange(0, 100);
+    auto setup_values = [&]() {
+        auto x = m_qcg_spd->addValues(65);
+        x->setColor(color_neon_yellow);
+        x->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+        x->setFont("DS-Digital");
+        x->setStep(10);
+        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+    };
+    setup_values();
 
-    auto cbdA = qc_gauge_speed->addColorBand(95);
-    cbdA->setColors({ { color_neon_green, 100 }, { color_neon_yellow, 50 }, { color_neon_red, 20 } });
-    cbdA->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
-    cbdA->setValueRange(0, 100);
+    auto setup_color_band = [&]() {
+        auto x = m_qcg_spd->addColorBand(90);
+        x->setColors({ { color_neon_red, 80 }, { color_neon_green, 55 }, });
+        x->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+    };
+    setup_color_band();
 
-    qc_gauge_speed_label = qc_gauge_speed->addLabel(20);
-    qc_gauge_speed_label->setColor(Qt::darkYellow);
-    qc_gauge_speed_label->setFont("Roboto");
+    auto setup_needle = [&]() {
+        m_qcg_spd_needle = m_qcg_spd->addNeedle(100);
+        m_qcg_spd_needle->setColor(color_neon_yellow);
+        m_qcg_spd_needle->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+        m_qcg_spd_needle->setNeedle(QcNeedleItem::TriangleNeedle);
+    };
+    setup_needle();
 
-    qc_gauge_speed_needle = qc_gauge_speed->addNeedle(100);
-    qc_gauge_speed_needle->setColor(color_neon_yellow);
-    qc_gauge_speed_needle->setDegreeRange(GAUGE_DEGREE_S, GAUGE_DEGREE_E);
+    auto setup_label = [&]() {
+        m_qcg_spd_label = m_qcg_spd->addLabel(90);
+        m_qcg_spd_label->setColor(color_neon_yellow);
+        m_qcg_spd_label->setFont("DS-Digital");
+    };
+    setup_label();
 
-    qc_gauge_speed_label->setText("--");
-    qc_gauge_speed_needle->setCurrentValue(0);
+    m_qcg_spd->setStyleSheet("border-color: #feff00; border-width: 1px; border-style: solid;");
 }
 
 void
-MainView::upd_gauge_ful(const FuelMessage& msg) {
-    qc_gauge_fuel_needle->setCurrentValue(msg.cur_fuel_level);
+MainView::update_gauge_ful(const FuelMessage& msg) {
+    m_qcg_ful_needle->setCurrentValue(msg.cur_fuel_level);
 
     if (msg.max_fuel_level > 0) {
-        qc_gauge_fuel_needle->setValueRange(0, msg.max_fuel_level);
+        m_qcg_ful_needle->setValueRange(0, msg.max_fuel_level);
     }
 
-    const auto gauge_lable_fuel_text = msg.is_value_valid
+    const auto ful_text = msg.is_value_valid
         ? QString("%1 Л.").arg(msg.cur_fuel_level)
         : QString("-- л.");
-
-    qc_gauge_fuel_label->setText(gauge_lable_fuel_text);
 }
 
 void
-MainView::upd_gague_spd(const GpsMessage& msg) {
-    auto spd_text = QString("%1 КМ/Ч.").arg(QString::number(msg.speed, 'g', 0));
+MainView::update_gague_spd(const GpsMessage& msg) {
+    m_qcg_spd_needle->setCurrentValue(msg.speed);
 
-    qc_gauge_speed_label->setText(spd_text);
+    const auto spd_text = QString("%1 КМ/Ч.").arg(std::round(msg.speed));
+    m_qcg_spd_label->setText(spd_text);
 }

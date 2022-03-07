@@ -27,6 +27,8 @@ HEADERS += \
     App/Dmp/Presentation/Utils/NavController.h \
     App/Dmp/Presentation/Views/Diag/DiagView.h \
     App/Dmp/Presentation/Views/Main/MainView.h \
+    App/Dmp/Presentation/Views/Main/SetupGaugeFuel.h \
+    App/Dmp/Presentation/Views/Main/SetupGaugeSpeed.h
 
 SOURCES += \
     App/Dmp/Presentation/BootstrapperPresentation.cpp \
@@ -34,6 +36,8 @@ SOURCES += \
     App/Dmp/Presentation/Utils/NavController.cpp \
     App/Dmp/Presentation/Views/Diag/DiagView.cpp \
     App/Dmp/Presentation/Views/Main/MainView.cpp \
+    App/Dmp/Presentation/Views/Main/SetupGaugeFuel.cpp \
+    App/Dmp/Presentation/Views/Main/SetupGaugeSpeed.cpp
 
 FORMS += \
     App/Dmp/Presentation/HostWindow.ui \

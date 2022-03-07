@@ -23,7 +23,7 @@ DmpImmediateMessageMapper::getObservable() const {
     rxcpp::observable<Message> observable = rxcpp::observable<>::empty<Message>();
 
     rxcpp::observable<Message> user_message_observable =
-        rxqt::from_signal(&m_main_view, &MainView::notifyTestUserEvent)
+        rxqt::from_signal(&m_main_view, &MainView::notify_test_user_event)
             .map([&](auto) -> Message {
                 return Message {
                     MESSAGE_MONKIER_USR

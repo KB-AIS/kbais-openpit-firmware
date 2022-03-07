@@ -17,27 +17,28 @@ namespace Ui { class MainView; }
 class MainView : public QWidget {
     Q_OBJECT
 
+    Ui::MainView* ui;
+
     const IRxGpsSensorPublisher&  m_pub_gps_msg;
 
     const RxFuelMessagePublisher& m_pub_ful_msg;
 
     const NavController& m_nav_controller;
 
-    QcGaugeWidget* qc_gauge_fuel;
-    QcLabelItem*   qc_gauge_fuel_label;
-    QcNeedleItem*  qc_gauge_fuel_needle;
+    QcGaugeWidget* m_qcg_ful;
+    QcNeedleItem*  m_qcg_ful_needle;
 
-    QcGaugeWidget* qc_gauge_speed;
-    QcLabelItem*   qc_gauge_speed_label;
-    QcNeedleItem*  qc_gauge_speed_needle;
+    QcGaugeWidget* m_qcg_spd;
+    QcNeedleItem*  m_qcg_spd_needle;
+    QcLabelItem*   m_qcg_spd_label;
 
     void setup_gauge_ful();
 
     void setup_gauge_spd();
 
-    void upd_gauge_ful(const FuelMessage& msg);
+    void update_gauge_ful(const FuelMessage& msg);
 
-    void upd_gague_spd(const GpsMessage& msg);
+    void update_gague_spd(const GpsMessage& msg);
 
 public:
     MainView(
@@ -50,11 +51,9 @@ public:
 
     void provide_coordinator(const rxcpp::observe_on_one_worker& coordinator);
 
-    Q_SIGNAL void notifyTestUserEvent();
+    Q_SIGNAL void notify_test_user_event();
 
 private:
-    Ui::MainView* ui;
-
     rxcpp::composite_subscription m_subscriptions;
 
     QTimer m_tmUpdateDisplayTime;
