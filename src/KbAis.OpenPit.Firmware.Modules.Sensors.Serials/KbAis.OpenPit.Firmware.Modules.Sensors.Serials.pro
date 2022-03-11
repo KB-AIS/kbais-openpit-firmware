@@ -25,13 +25,15 @@ HEADERS += \
     Modules/Sensors/Serials/ModuleFactorySerialDevices.h \
     Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.h \
     Modules/Sensors/Serials/RxFuelMessagePublisher.h \
-    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h \
+    Modules/Sensors/Serials/SerialRxLcsSensorPublisher.h \
+    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h
 
 SOURCES += \
     Modules/Sensors/Serials/ModuleBootstraperSerialDevices.cpp \
     Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.cpp \
     Modules/Sensors/Serials/RxFuelMessagePublisher.cpp \
-    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.cpp \
+    Modules/Sensors/Serials/SerialRxLcsSensorPublisher.cpp \
+    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

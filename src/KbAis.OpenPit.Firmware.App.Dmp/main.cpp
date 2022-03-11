@@ -17,6 +17,8 @@
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 #include "RxStateWatcherFueling.h"
+#include "TsetGsmModem.h"
+#include "SerialRxRcrSensorPublisher.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& config_manager) {
@@ -153,17 +155,20 @@ int main(int argc, char* argv[]) {
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
-    DatabaseConfigurator::configure();
+    SerialRxRcrSensorPublisher t;
+    t.start_work_on();
 
-    auto injector = CompositionRootModule();
+//    DatabaseConfigurator::configure();
 
-    auto foo { boost::di::create<std::shared_ptr<RxStateWatcherFueling>>(injector) };
-    foo->start_working_on();
+//    auto injector = CompositionRootModule();
 
-    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
-    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
+//    auto foo { boost::di::create<std::shared_ptr<RxStateWatcherFueling>>(injector) };
+//    foo->start_working_on();
 
-    eagerSingletons(injector);
+//    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
+//    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
+
+//    eagerSingletons(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

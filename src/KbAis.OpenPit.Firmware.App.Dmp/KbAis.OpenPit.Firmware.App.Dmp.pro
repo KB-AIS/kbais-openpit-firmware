@@ -35,7 +35,8 @@ HEADERS += \
     Messaging/DmpRecurrentMessageMapper.h \
     RxStateWatcherFueling.h \
     System/SetupDateTimeService.h \
-    System/SetupEthernetService.h
+    System/SetupEthernetService.h \
+    SerialRxRcrSensorPublisher.h
 
 SOURCES += \
     ConfiguratorCommandLine.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
     main.cpp \
+    SerialRxRcrSensorPublisher.cpp
 
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \
