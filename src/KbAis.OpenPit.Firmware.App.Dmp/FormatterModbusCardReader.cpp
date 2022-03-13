@@ -2,6 +2,7 @@
 
 // qt
 #include <QDataStream>
+#include <QtEndian>
 
 #include "Crc16Alogs.h"
 
@@ -31,7 +32,28 @@ FormatterModbusCardReader::encode_req_read_card_number(quint8 device_address) {
 
 FormatterModbusCardReader::DecodeResult_t
 FormatterModbusCardReader::decode_rsp(const QByteArray& bytes) {
-    constexpr quint8 MIN_EXPECTED_RSP_LEN { 5 };
+    using namespace nonstd;
 
+    constexpr quint8 MIN_EXPECTED_RESPONSE_LENGTH { 5 };
 
+    auto offset { 0 };
+
+    if (bytes.size() < MIN_EXPECTED_RESPONSE_LENGTH) {
+        return make_unexpected(FormatterModbusCardReader::DecodeRspError::NotEnoughBytes);
+    }
+
+    const quint8 device_address = bytes.at(offset++);
+    const quint8 fuctional_code = bytes.at(offset++);
+    const quint8 payload_size   = bytes.at(offset++);
+
+    // TODO: Check payload size
+
+    const auto crc = qFromLittleEndian<quint16>(bytes.mid(offset + payload_size, 2));
+    if (crc != calc_crc16_modbus(bytes.left(offset + payload_size))) {
+        return make_unexpected(FormatterModbusCardReader::DecodeRspError::MismatchChecksum);
+    }
+
+    auto card_number = qFromLittleEndian<quint32>(bytes.mid(4, 3));
+
+    return card_number;
 }

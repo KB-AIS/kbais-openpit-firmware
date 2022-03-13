@@ -31,12 +31,12 @@ SerialRxRcrSensorPublisher::start_work_on() {
     rxqt::from_signal(&m_tm_send_req_read_card_number, &QTimer::timeout)
         .subscribe([this](auto) { send_req_read_card_number(); });
 
-    conf_device_connection();
+    config_device_connection();
     start_work_internal();
 }
 
 void
-SerialRxRcrSensorPublisher::conf_device_connection() {
+SerialRxRcrSensorPublisher::config_device_connection() {
     m_sp_device.setPortName("/dev/ttyO2");
     m_sp_device.setBaudRate(QSerialPort::Baud19200);
     m_sp_device.setDataBits(QSerialPort::Data8);
@@ -73,12 +73,15 @@ SerialRxRcrSensorPublisher::send_req_read_card_number() {
 
 void
 SerialRxRcrSensorPublisher::handle_ready_read() {
-    auto peeked = m_sp_device.peek(32);
-    if (peeked.length() >= 9) {
-        PLOGD << peeked.toHex(':');
-    }
+    auto bytes_peeked = m_sp_device.peek(16);
 
-    if (peeked.length() >= 9) {
-        m_sp_device.readAll();
+    const auto decode_result = FormatterModbusCardReader::decode_rsp(bytes_peeked);
+
+    if (decode_result) {
+        PLOGD << "Got card number: " << *decode_result;
+        // TODO: Fix
+        m_sp_device.read(bytes_peeked.size());
+
+        return;
     }
 }
