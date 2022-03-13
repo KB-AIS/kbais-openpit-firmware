@@ -31,6 +31,7 @@ include($$PRJDIR/../conanbuildinfo.pri)
 HEADERS += \
     CompositionRootModule.h \
     ConfiguratorCommandLine.h \
+    FormatterModbusCardReader.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
     RxStateWatcherFueling.h \
@@ -40,6 +41,7 @@ HEADERS += \
 
 SOURCES += \
     ConfiguratorCommandLine.cpp \
+    FormatterModbusCardReader.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
     RxStateWatcherFueling.cpp \

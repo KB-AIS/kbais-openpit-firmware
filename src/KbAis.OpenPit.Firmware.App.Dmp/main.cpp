@@ -17,7 +17,6 @@
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 #include "RxStateWatcherFueling.h"
-#include "TsetGsmModem.h"
 #include "SerialRxRcrSensorPublisher.h"
 
 struct ConfigurationBootstraper {

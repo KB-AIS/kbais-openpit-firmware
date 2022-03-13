@@ -12,13 +12,15 @@
  */
 class SerialRxRcrSensorPublisher : public QObject {
 
-    QSerialPort* m_device;
+    QSerialPort m_sp_device;
 
-    QTimer* m_timer;
+    QTimer m_tm_send_req_read_card_number;
 
-    void configure_device_connection();
+    void conf_device_connection();
 
-    void request_data();
+    void start_work_internal();
+
+    void send_req_read_card_number();
 
     void handle_ready_read();
 
