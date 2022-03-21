@@ -6,35 +6,43 @@
 // oss
 #include <nonstd/expected.hpp>
 
-struct ModbusResponseMeta {
+constexpr quint32 card_number_empty_read { 0 };
 
-    quint8 device_address  { 0x00 };
+struct ResponseCardNumber {
 
-    quint8 functional_code { 0x00 };
+    quint8 device_address { 0x00 };
 
-    quint8 payload_size    { 0x00 };
+    quint32 card_number { card_number_empty_read };
+
+    inline auto tie() const { return std::tie(this->device_address, this->card_number); }
+
+    inline bool operator==(const ResponseCardNumber& rhs) {
+        return this->tie() == rhs.tie();
+    }
+
+    inline bool operator!=(const ResponseCardNumber& rhs) {
+        return !(this->tie() == rhs.tie());
+    }
 
 };
 
 class FormatterModbusCardReader {
 
 public:
-    enum class DecodeRspError {
+    enum class DecodeResponseError {
         NotEnoughBytes
     ,   MismatchChecksum
     };
 
     using BytesExam_t = qint64;
 
-    using CardNumber_t = quint32;
-
-    using DecodeResult_t = std::pair<BytesExam_t, nonstd::expected<CardNumber_t, DecodeRspError>>;
+    using DecodeResult_t = std::pair<BytesExam_t, nonstd::expected<ResponseCardNumber, DecodeResponseError>>;
 
     FormatterModbusCardReader() = delete;
 
-    static QByteArray encode_req_read_card_number(quint8 device_address);
+    static QByteArray encode_request_card_number(quint8 device_address);
 
-    static DecodeResult_t decode_rsp(const QByteArray& bytes);
+    static DecodeResult_t decode_response(const QByteArray& bytes);
 
 };
 

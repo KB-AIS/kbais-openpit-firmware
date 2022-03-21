@@ -11,8 +11,18 @@ enum class ModbusFunctionalCode : quint8 {
 ,   PresetMultipleRegisters = 0x10
 };
 
+struct ModbusResponseMeta {
+
+    quint8 device_address  { 0x00 };
+
+    quint8 functional_code { 0x00 };
+
+    quint8 payload_size    { 0x00 };
+
+};
+
 QByteArray
-FormatterModbusCardReader::encode_req_read_card_number(quint8 device_address) {
+FormatterModbusCardReader::encode_request_card_number(quint8 device_address) {
     constexpr quint16 STA_REG_CARD_NUMBER { 0x00 }, NUM_REG_CARD_NUMBER { 0x02 };
 
     QByteArray bytes;
@@ -31,7 +41,7 @@ FormatterModbusCardReader::encode_req_read_card_number(quint8 device_address) {
 }
 
 FormatterModbusCardReader::DecodeResult_t
-FormatterModbusCardReader::decode_rsp(const QByteArray& bytes) {
+FormatterModbusCardReader::decode_response(const QByteArray& bytes) {
     using namespace nonstd;
 
     constexpr quint8 MIN_EXPECTED_RESPONSE_LENGTH { 5 };
@@ -40,32 +50,37 @@ FormatterModbusCardReader::decode_rsp(const QByteArray& bytes) {
     const auto consumed = bytes.size();
 
     if (consumed < MIN_EXPECTED_RESPONSE_LENGTH) {
-        return std::make_pair(0, make_unexpected(FormatterModbusCardReader::DecodeRspError::NotEnoughBytes));
+        return std::make_pair(0, make_unexpected(DecodeResponseError::NotEnoughBytes));
     }
 
     auto offset { 0 };
 
-    const auto response_meta = ModbusResponseMeta {
-        .device_address  = bytes.at(offset++),
-        .functional_code = bytes.at(offset++),
-        .payload_size    = bytes.at(offset++),
+    const ModbusResponseMeta response_meta {
+        .device_address  = bytes.at(offset++)
+    ,   .functional_code = bytes.at(offset++)
+    ,   .payload_size    = bytes.at(offset++)
     };
 
     const auto bytes_to_crc { offset + response_meta.payload_size };
 
-    const auto bytes_in_rsp { bytes_to_crc + CRC_FIELD_LENGTH };
+    const auto bytes_in_response { bytes_to_crc + CRC_FIELD_LENGTH };
 
-    if (consumed < bytes_in_rsp) {
-        return std::make_pair(0, make_unexpected(FormatterModbusCardReader::DecodeRspError::NotEnoughBytes));
+    if (consumed < bytes_in_response) {
+        return std::make_pair(0, make_unexpected(DecodeResponseError::NotEnoughBytes));
     }
 
     const auto crc { qFromLittleEndian<quint16>(bytes.mid(bytes_to_crc, CRC_FIELD_LENGTH)) };
 
     if (crc != calc_crc16_modbus(bytes.left(bytes_to_crc))) {
-        return std::make_pair(offset, make_unexpected(FormatterModbusCardReader::DecodeRspError::MismatchChecksum));
+        // Отмечаем только байты из заголовка как проверенные
+        return std::make_pair(offset, make_unexpected(DecodeResponseError::MismatchChecksum));
     }
 
-    // WA: Hard-coded number parsing, maybe should support more cards types...
-    auto cdn = qFromLittleEndian<quint32>(bytes.mid(4, 3));
-    return std::make_pair(bytes_in_rsp, cdn);
+    const ResponseCardNumber rsp {
+        .device_address = response_meta.device_address
+        // WA: Hard-coded number parsing, maybe should support more cards types...
+    ,   .card_number = qFromLittleEndian<quint32>(bytes.mid(4, 3))
+    };
+
+    return std::make_pair(bytes_in_response, std::move(rsp));
 }

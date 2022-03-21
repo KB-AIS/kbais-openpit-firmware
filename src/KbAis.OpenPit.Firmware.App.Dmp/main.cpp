@@ -154,8 +154,13 @@ int main(int argc, char* argv[]) {
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
-    SerialRxRcrSensorPublisher t;
+    RxServiceCardReader t;
     t.start_work_on();
+
+    t.get_observable()
+        .subscribe([](auto x) {
+            PLOGD << "HEY!!! -- " << x.card_number;
+        });
 
 //    DatabaseConfigurator::configure();
 

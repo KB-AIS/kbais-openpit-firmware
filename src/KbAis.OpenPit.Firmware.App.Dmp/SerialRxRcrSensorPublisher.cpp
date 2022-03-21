@@ -9,63 +9,90 @@
 
 #include "Crc16Alogs.h"
 #include "Format.h"
-#include "FormatterModbusCardReader.h"
 
-using namespace std::chrono_literals;
+using namespace std::chrono;
 
 constexpr std::chrono::duration SEND_REQ_READ_CARD_NUMBER_INTERVAL { 500ms };
 
-SerialRxRcrSensorPublisher::SerialRxRcrSensorPublisher()
+RxServiceCardReader::RxServiceCardReader()
     :   QObject()
-    ,   m_sp_device(this)
-    ,   m_tm_send_req_read_card_number(this)
+    ,   m_serialport_cardreader(this)
+    ,   m_timer_request_card_number(this)
+    ,   m_publisher({ /* 'Пустое' сообщение */ })
 {
 
 }
 
 void
-SerialRxRcrSensorPublisher::start_work_on() {
-    rxqt::from_signal(&m_sp_device, &QIODevice::readyRead)
+RxServiceCardReader::start_work_on() {
+    rxqt::from_signal(&m_serialport_cardreader, &QIODevice::readyRead)
         .subscribe([this](auto) { handle_ready_read(); });
 
-    rxqt::from_signal(&m_tm_send_req_read_card_number, &QTimer::timeout)
-        .subscribe([this](auto) { send_req_read_card_number(); });
+    // TODO: use rxcpp::interval
+    rxqt::from_signal(&m_timer_request_card_number, &QTimer::timeout).subscribe([this](auto) {
+        publish_card_number();
+
+        send_request_card_number();
+    });
 
     config_device_connection();
     start_work_internal();
 }
 
-rxcpp::observable<CardReadMessage>
-SerialRxRcrSensorPublisher::get_observable() const {
-
+rxcpp::observable<CardReaderMessage>
+RxServiceCardReader::get_observable() const {
+    return m_publisher.get_observable();
 }
 
 void
-SerialRxRcrSensorPublisher::config_device_connection() {
-    m_sp_device.setPortName("/dev/ttyO2");
-    m_sp_device.setBaudRate(QSerialPort::Baud19200);
-    m_sp_device.setDataBits(QSerialPort::Data8);
-    m_sp_device.setStopBits(QSerialPort::OneStop);
-    m_sp_device.setFlowControl(QSerialPort::NoFlowControl);
+RxServiceCardReader::config_device_connection() {
+    m_serialport_cardreader.setPortName("/dev/ttyO2");
+    m_serialport_cardreader.setBaudRate(QSerialPort::Baud19200);
+    m_serialport_cardreader.setDataBits(QSerialPort::Data8);
+    m_serialport_cardreader.setStopBits(QSerialPort::OneStop);
+    m_serialport_cardreader.setFlowControl(QSerialPort::NoFlowControl);
 }
 
 void
-SerialRxRcrSensorPublisher::start_work_internal() {
-    if (!m_sp_device.open(QIODevice::ReadWrite)) {
+RxServiceCardReader::start_work_internal() {
+    if (!m_serialport_cardreader.open(QIODevice::ReadWrite)) {
         PLOGW << "Could not open connection to device";
 
         return;
     }
 
-    m_tm_send_req_read_card_number.start(SEND_REQ_READ_CARD_NUMBER_INTERVAL);
+    m_timer_request_card_number.start(SEND_REQ_READ_CARD_NUMBER_INTERVAL);
 }
 
 void
-SerialRxRcrSensorPublisher::send_req_read_card_number() {
+RxServiceCardReader::publish_card_number() {
+    if (!m_request_meta.response.has_value()) return;
+
+    const auto now_time = steady_clock::now();
+
+    const auto need_to_publish =
+        m_publish_meta.first_uniqe_response != m_request_meta.response.value()
+    ||  duration_cast<milliseconds>(now_time - m_publish_meta.first_uniqe_read_time) > 5s;
+
+    if (!need_to_publish) return;
+
+    m_publish_meta.first_uniqe_response = m_request_meta.response.value();
+    m_publish_meta.first_uniqe_read_time = now_time;
+
+    m_publisher.get_subscriber().on_next(CardReaderMessage {
+        .card_reader_net_adr = m_request_meta.response->device_address
+    ,   .card_number = m_request_meta.response->card_number
+    });
+}
+
+void
+RxServiceCardReader::send_request_card_number() {
+    m_request_meta = { }; // Сброс предыдущих meta-данных
+
     PLOGV << fmt::format("Requesting to read card number from device {:x}", 0xF0);
 
-    const auto bytes = FormatterModbusCardReader::encode_req_read_card_number(0xF0);
-    const auto bytes_written = m_sp_device.write(bytes);
+    const auto bytes = FormatterModbusCardReader::encode_request_card_number(0xF0);
+    const auto bytes_written = m_serialport_cardreader.write(bytes);
 
     if (bytes_written == -1) {
         PLOGW << fmt::format("Could not request to read card number from device {:x}", 0xF0);
@@ -77,16 +104,23 @@ SerialRxRcrSensorPublisher::send_req_read_card_number() {
 }
 
 void
-SerialRxRcrSensorPublisher::handle_ready_read() {
+RxServiceCardReader::handle_ready_read() {
     constexpr qint64 PEEK_SIZE { 16 };
 
-    auto bytes_peeked = m_sp_device.peek(PEEK_SIZE);
+    m_request_meta.got_any_data = true;
 
-    const auto [examined, decode_result] = FormatterModbusCardReader::decode_rsp(bytes_peeked);
+    auto bytes_peeked = m_serialport_cardreader.peek(PEEK_SIZE);
+
+    const auto [examined, decode_result] = FormatterModbusCardReader::decode_response(bytes_peeked);
+
+    m_request_meta.has_decode_rsp_err =
+        decode_result.has_exception<FormatterModbusCardReader::DecodeResponseError>();
 
     if (decode_result) {
-        PLOGD << "Got card number: " << *decode_result;
+        PLOGD << "Got card number: " << decode_result->card_number;
+
+        m_request_meta.response = std::move(decode_result.value());
     }
 
-    m_sp_device.read(examined);
+    m_serialport_cardreader.read(examined);
 }
