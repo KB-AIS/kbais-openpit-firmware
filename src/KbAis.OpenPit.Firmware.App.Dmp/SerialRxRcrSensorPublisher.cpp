@@ -35,6 +35,11 @@ SerialRxRcrSensorPublisher::start_work_on() {
     start_work_internal();
 }
 
+rxcpp::observable<CardReadMessage>
+SerialRxRcrSensorPublisher::get_observable() const {
+
+}
+
 void
 SerialRxRcrSensorPublisher::config_device_connection() {
     m_sp_device.setPortName("/dev/ttyO2");
@@ -73,15 +78,15 @@ SerialRxRcrSensorPublisher::send_req_read_card_number() {
 
 void
 SerialRxRcrSensorPublisher::handle_ready_read() {
-    auto bytes_peeked = m_sp_device.peek(16);
+    constexpr qint64 PEEK_SIZE { 16 };
 
-    const auto decode_result = FormatterModbusCardReader::decode_rsp(bytes_peeked);
+    auto bytes_peeked = m_sp_device.peek(PEEK_SIZE);
+
+    const auto [examined, decode_result] = FormatterModbusCardReader::decode_rsp(bytes_peeked);
 
     if (decode_result) {
         PLOGD << "Got card number: " << *decode_result;
-        // TODO: Fix
-        m_sp_device.read(bytes_peeked.size());
-
-        return;
     }
+
+    m_sp_device.read(examined);
 }

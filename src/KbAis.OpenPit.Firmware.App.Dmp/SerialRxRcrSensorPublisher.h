@@ -1,6 +1,8 @@
 #ifndef SERIALRXRCRSENSORPUBLISHER_H
 #define SERIALRXRCRSENSORPUBLISHER_H
 
+// std
+#include <chrono>
 // qt
 #include <QSerialPort>
 
@@ -15,6 +17,9 @@ public:
 
 struct CardReadMessage {
 
+    /*!
+     * \brief A recived card number.
+     */
     quint32 cdn;
 
 };
@@ -26,11 +31,21 @@ public:
 
 };
 
+struct RcrSensorPublisherSettings {
+
+    QString interface;
+
+    quint8  network_address;
+
+    std::chrono::duration<double> repeated_read_filter_interval;
+
+};
+
 /*!
  * Service for reading data from TK-CardReader Plus via serial interface and
  * publishing parsed messages.
  */
-class SerialRxRcrSensorPublisher : public QObject {
+class SerialRxRcrSensorPublisher : public QObject, public IRxMessagePublisherCardReader {
 
     QSerialPort m_sp_device;
 
@@ -49,6 +64,7 @@ public:
 
     void start_work_on();
 
+    rxcpp::observable<CardReadMessage> get_observable() const override;
 };
 
 #endif // SERIALRXRCRSENSORPUBLISHER_H

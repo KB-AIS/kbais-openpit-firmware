@@ -6,6 +6,16 @@
 // oss
 #include <nonstd/expected.hpp>
 
+struct ModbusResponseMeta {
+
+    quint8 device_address  { 0x00 };
+
+    quint8 functional_code { 0x00 };
+
+    quint8 payload_size    { 0x00 };
+
+};
+
 class FormatterModbusCardReader {
 
 public:
@@ -14,9 +24,11 @@ public:
     ,   MismatchChecksum
     };
 
+    using BytesExam_t = qint64;
+
     using CardNumber_t = quint32;
 
-    using DecodeResult_t = nonstd::expected<CardNumber_t, DecodeRspError>;
+    using DecodeResult_t = std::pair<BytesExam_t, nonstd::expected<CardNumber_t, DecodeRspError>>;
 
     FormatterModbusCardReader() = delete;
 
