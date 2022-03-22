@@ -21,7 +21,7 @@
 inline auto CompositionRootModule() noexcept {
     return boost::di::make_injector(
         CreateInjectorCoreNetworking()
-    //,   CreateInjectorSerialDevices()
+    ,   CreateInjectorSerialDevices()
     ,   CreateModulePresentation()
     ,   boost::di::bind<SetupDateTimeService>()
             .in(boost::di::singleton)

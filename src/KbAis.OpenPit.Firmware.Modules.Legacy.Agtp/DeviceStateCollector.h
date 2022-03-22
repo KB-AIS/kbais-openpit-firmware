@@ -4,27 +4,34 @@
 // qt
 #include <QObject>
 
-// Modules.Sensors.Gps
 #include "IRxGpsSensorPublisher.h"
-// Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "Modules/Sensors/Serials/TkCardReader/SerialRxRcrSensorPublisher.h"
 
 class DeviceStateCollector : public QObject {
     Q_OBJECT
 
+    const IRxGpsSensorPublisher& m_service_gps;
+
+    const RxServiceCardReader& m_service_tcr;
+
+
+    rxcpp::composite_subscription m_subscriptions;
+
+    GpsMessage m_cached_gps_msg;
+
+    CardReaderMessage m_cached_tcr_msg;
+
 public:
-    DeviceStateCollector(const IRxGpsSensorPublisher& gpsSensorPublisher);
+    DeviceStateCollector(
+        const IRxGpsSensorPublisher& service_gps
+    ,   const RxServiceCardReader& service_card_reader
+    );
 
     void start(const rxqt::run_loop& loop);
 
     GpsMessage getGpsMessage() const;
 
-private:
-    const IRxGpsSensorPublisher& mGpsSensorPublisher;
-
-    rxcpp::composite_subscription mSubs;
-
-    GpsMessage mCachedGpsMessage;
+    CardReaderMessage get_tcr_msg() const;
 
 };
 

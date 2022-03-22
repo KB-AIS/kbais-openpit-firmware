@@ -24,19 +24,24 @@ RxServiceCardReader::RxServiceCardReader()
 }
 
 void
-RxServiceCardReader::start_work_on() {
+RxServiceCardReader::start_work_on(const rxcpp::observe_on_one_worker& coordination) {
     rxqt::from_signal(&m_serialport_cardreader, &QIODevice::readyRead)
         .subscribe([this](auto) { handle_ready_read(); });
 
-    // TODO: use rxcpp::interval
-    rxqt::from_signal(&m_timer_request_card_number, &QTimer::timeout).subscribe([this](auto) {
-        publish_card_number();
+    rxcpp::observable<>::interval(SEND_REQ_READ_CARD_NUMBER_INTERVAL, coordination)
+        .subscribe([this](auto) {
+            publish_card_number();
 
-        send_request_card_number();
-    });
+            send_request_card_number();
+        });
 
     config_device_connection();
-    start_work_internal();
+
+    if (!m_serialport_cardreader.open(QIODevice::ReadWrite)) {
+        PLOGW << "Could not open connection to device";
+
+        return;
+    }
 }
 
 rxcpp::observable<CardReaderMessage>
@@ -51,17 +56,6 @@ RxServiceCardReader::config_device_connection() {
     m_serialport_cardreader.setDataBits(QSerialPort::Data8);
     m_serialport_cardreader.setStopBits(QSerialPort::OneStop);
     m_serialport_cardreader.setFlowControl(QSerialPort::NoFlowControl);
-}
-
-void
-RxServiceCardReader::start_work_internal() {
-    if (!m_serialport_cardreader.open(QIODevice::ReadWrite)) {
-        PLOGW << "Could not open connection to device";
-
-        return;
-    }
-
-    m_timer_request_card_number.start(SEND_REQ_READ_CARD_NUMBER_INTERVAL);
 }
 
 void

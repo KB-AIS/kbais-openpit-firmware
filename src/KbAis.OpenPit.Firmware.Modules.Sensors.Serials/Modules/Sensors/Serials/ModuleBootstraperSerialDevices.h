@@ -3,17 +3,13 @@
 
 #include "Modules/Sensors/Serials/RxFuelMessagePublisher.h"
 #include "Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h"
+#include "Modules/Sensors/Serials/TkCardReader/SerialRxRcrSensorPublisher.h"
 #include "RxQt.h"
 
 class ModuleBootstraperSerialDevices {
 
-public:
-    ModuleBootstraperSerialDevices(
-        SerialRxLlsSensorPublisher& llsSensorPublisher
-    ,   RxFuelMessagePublisher& fuel_message_publisher
-    );
+    RxServiceCardReader& m_service_card_reader;
 
-private:
     SerialRxLlsSensorPublisher& m_lls_message_publisher;
 
     RxFuelMessagePublisher& m_fuel_message_publisher;
@@ -21,6 +17,13 @@ private:
     QThread m_thrWorker;
 
     std::unique_ptr<rxqt::run_loop> m_runLoop;
+
+public:
+    ModuleBootstraperSerialDevices(
+        RxServiceCardReader& service_card_reader
+    ,   SerialRxLlsSensorPublisher& llsSensorPublisher
+    ,   RxFuelMessagePublisher& fuel_message_publisher
+    );
 
 };
 

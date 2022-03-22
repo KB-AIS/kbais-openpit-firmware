@@ -17,7 +17,6 @@
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
 #include "RxStateWatcherFueling.h"
-#include "SerialRxRcrSensorPublisher.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& config_manager) {
@@ -153,14 +152,6 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
-
-//    RxServiceCardReader t;
-//    t.start_work_on();
-
-//    t.get_observable()
-//        .subscribe([](auto x) {
-//            PLOGD << "HEY!!! -- " << x.card_number;
-//        });
 
     DatabaseConfigurator::configure();
 

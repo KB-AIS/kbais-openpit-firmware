@@ -6,7 +6,7 @@
 // qt
 #include <QSerialPort>
 
-#include "FormatterModbusCardReader.h"
+#include "Modules/Sensors/Serials/TkCardReader/FormatterModbusCardReader.h"
 #include "RxQt.h"
 
 enum class CardReaderState {
@@ -65,8 +65,8 @@ struct CardReaderPubslihMeta {
 };
 
 /*!
- * Service for reading data from TK-CardReader Plus via serial interface and
- * publishing parsed messages.
+ * \brief Сервис получения данных с устройства TK-CardReader Plus через серийный интерфейс и их
+ * публикации в виде сообщений.
  */
 class RxServiceCardReader : public QObject, public IRxPublisherCardReader {
 
@@ -84,8 +84,6 @@ class RxServiceCardReader : public QObject, public IRxPublisherCardReader {
 
     void config_device_connection();
 
-    void start_work_internal();
-
     void send_request_card_number();
 
     void publish_card_number();
@@ -95,7 +93,7 @@ class RxServiceCardReader : public QObject, public IRxPublisherCardReader {
 public:
     RxServiceCardReader();
 
-    void start_work_on();
+    void start_work_on(const rxcpp::observe_on_one_worker& coordination);
 
     rxcpp::observable<CardReaderMessage> get_observable() const override;
 };

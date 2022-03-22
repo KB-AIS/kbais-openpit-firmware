@@ -49,7 +49,7 @@ SerialRxLlsSensorPublisher::start_publish_on(const rxcpp::observe_on_one_worker&
         });
 
     const auto connected = m_spLlsDevice.open(QIODevice::ReadWrite);
-    PLOGV_IF(connected) << "LLS publisher connected to /dev/ttyO2";
+    PLOGV_IF(connected) << "LLS publisher connected to /dev/ttyO1";
     PublishLlsDeviceMessage();
 }
 
@@ -65,7 +65,7 @@ SerialRxLlsSensorPublisher::GetObservableHealthStatus() const {
 
 void
 SerialRxLlsSensorPublisher::ConfigConnection() {
-    m_spLlsDevice.setPortName("/dev/ttyO2");
+    m_spLlsDevice.setPortName("/dev/ttyO1");
     m_spLlsDevice.setBaudRate(QSerialPort::Baud19200);
     m_spLlsDevice.setDataBits(QSerialPort::Data8);
     m_spLlsDevice.setStopBits(QSerialPort::OneStop);

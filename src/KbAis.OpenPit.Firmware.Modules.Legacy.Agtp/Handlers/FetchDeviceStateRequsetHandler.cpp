@@ -28,16 +28,18 @@ FetchDeviceStateRequestHandler::handle(const AgtpRequest& command) {
 
     const auto gpsMessage = mDeviceStateCollector.getGpsMessage();
 
+    const auto msg_tcr = mDeviceStateCollector.get_tcr_msg();
+
     const auto payload = json {
-        {
-            "gps",
-            json {
-                { "sat", gpsMessage.satellites },
-                { "valid", gpsMessage.isValid },
-                { "lat", gpsMessage.latitude },
-                { "lon", gpsMessage.longitude },
-            }
-        }
+        { "gps", {
+            { "sat", gpsMessage.satellites },
+            { "valid", gpsMessage.isValid },
+            { "lat", gpsMessage.latitude },
+            { "lon", gpsMessage.longitude },
+        }},
+        { "tcr", {
+            { "cdn", msg_tcr.card_number },
+        }},
     };
 
     return {

@@ -31,24 +31,20 @@ include($$PRJDIR/../conanbuildinfo.pri)
 HEADERS += \
     CompositionRootModule.h \
     ConfiguratorCommandLine.h \
-    FormatterModbusCardReader.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
     RxStateWatcherFueling.h \
     System/SetupDateTimeService.h \
-    System/SetupEthernetService.h \
-    SerialRxRcrSensorPublisher.h
+    System/SetupEthernetService.h
 
 SOURCES += \
     ConfiguratorCommandLine.cpp \
-    FormatterModbusCardReader.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
     RxStateWatcherFueling.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
-    main.cpp \
-    SerialRxRcrSensorPublisher.cpp
+    main.cpp
 
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \
