@@ -24,6 +24,7 @@ HEADERS += \
     Handlers/ConfigFuelRequestHandler.h \
     Handlers/ConfigNetworkingRequestHandler.h \
     Handlers/ConfigScaleRequestHandler.h \
+    Handlers/ConfigSerialsRequestHandler.h \
     Handlers/FetchDeviceInfoRequestHandler.h \
     Handlers/FetchDeviceModulesRequestHandler.h \
     Handlers/FetchDeviceSpecRequestHandler.h \
@@ -44,6 +45,7 @@ SOURCES += \
     Handlers/ConfigFuelRequestHandler.cpp \
     Handlers/ConfigNetworkingRequestHandler.cpp \
     Handlers/ConfigScaleRequestHandler.cpp \
+    Handlers/ConfigSerialsRequestHandler.cpp \
     Handlers/FetchDeviceInfoRequestHandler.cpp \
     Handlers/FetchDeviceModulesRequestHandler.cpp \
     Handlers/FetchDeviceSpecRequestHandler.cpp \

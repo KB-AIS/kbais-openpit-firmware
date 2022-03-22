@@ -154,25 +154,25 @@ int main(int argc, char* argv[]) {
     PLOGI << "Setup DMP application";
     QApplication app(argc, argv);
 
-    RxServiceCardReader t;
-    t.start_work_on();
+//    RxServiceCardReader t;
+//    t.start_work_on();
 
-    t.get_observable()
-        .subscribe([](auto x) {
-            PLOGD << "HEY!!! -- " << x.card_number;
-        });
+//    t.get_observable()
+//        .subscribe([](auto x) {
+//            PLOGD << "HEY!!! -- " << x.card_number;
+//        });
 
-//    DatabaseConfigurator::configure();
+    DatabaseConfigurator::configure();
 
-//    auto injector = CompositionRootModule();
+    auto injector = CompositionRootModule();
 
 //    auto foo { boost::di::create<std::shared_ptr<RxStateWatcherFueling>>(injector) };
 //    foo->start_working_on();
 
-//    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
-//    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
+    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
+    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 
-//    eagerSingletons(injector);
+    eagerSingletons(injector);
 
     PLOGI << "Startup DMP application";
     return app.exec();

@@ -13,7 +13,7 @@ FetchDeviceModulesRequestHandler::handle(const AgtpRequest& command) {
         "common-1.0"
         ",srvset-1.0"
 //        ",display-1.0"
-//        ",serial_interfaces-1.0"
+        ",serial_interfaces-1.0"
         ",ethernet-1.0"
 //        ",can_interfaces-1.0"
 //        ",write-1.0"
