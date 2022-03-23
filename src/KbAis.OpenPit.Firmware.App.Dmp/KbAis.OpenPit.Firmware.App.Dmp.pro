@@ -1,6 +1,6 @@
 PRJDIR = $$PWD/..
 
-TARGET = OpenPitDmp
+TARGET = opf
 
 TEMPLATE = app
 

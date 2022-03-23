@@ -157,9 +157,6 @@ int main(int argc, char* argv[]) {
 
     auto injector = CompositionRootModule();
 
-//    auto foo { boost::di::create<std::shared_ptr<RxStateWatcherFueling>>(injector) };
-//    foo->start_working_on();
-
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
 

@@ -13,6 +13,7 @@ ModuleBootstraperSerialDevices::ModuleBootstraperSerialDevices(
 {
     m_thrWorker.setObjectName("MODULES.SENSORS.SERIAL");
 
+    m_service_card_reader.moveToThread(&m_thrWorker);
     m_lls_message_publisher.moveToThread(&m_thrWorker);
 
     QObject::connect(&m_thrWorker, &QThread::started, [&]() {

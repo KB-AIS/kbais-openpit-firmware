@@ -26,8 +26,8 @@ inline auto CompositionRootModule() noexcept {
     ,   boost::di::bind<SetupDateTimeService>()
             .in(boost::di::singleton)
     //  Partialy broken, need to fix
-    /*,   boost::di::bind<SetupEthernetService>()
-            .in(boost::di::singleton)*/
+    ,   boost::di::bind<SetupEthernetService>()
+            .in(boost::di::singleton)
     ,   boost::di::bind<
             IConfigurationProvider
         ,   IRxConfigurationChangePublisher

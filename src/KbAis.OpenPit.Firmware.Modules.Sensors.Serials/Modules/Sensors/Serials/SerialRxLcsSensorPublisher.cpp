@@ -31,7 +31,7 @@ SerialRxLcsSensorPublisher::start_publish_on(const rxcpp::observe_on_one_worker&
 
 void
 SerialRxLcsSensorPublisher::handle_device_configure() {
-    m_device.setPortName("/dev/ttyO1");
+    m_device.setPortName("/dev/ttyO2");
     m_device.setBaudRate(QSerialPort::Baud19200);
     m_device.setDataBits(QSerialPort::Data8);
     m_device.setStopBits(QSerialPort::OneStop);

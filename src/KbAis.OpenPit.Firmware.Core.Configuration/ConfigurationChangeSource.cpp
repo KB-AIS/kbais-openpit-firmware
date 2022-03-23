@@ -1,10 +1,13 @@
 #include "ConfigurationChangeSource.h"
 
+// std
+#include <chrono>
 // oss
 #include <plog/Log.h>
 
-// Utils.TrdParty.RxQt
 #include "RxQt.h"
+
+using namespace std::chrono_literals;
 
 ConfigurationChangeSource::ConfigurationChangeSource(
     AppConfiguration configuration
