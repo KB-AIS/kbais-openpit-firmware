@@ -11,7 +11,7 @@
 class IRxGpsSensorPublisher : public QObject {
 
 public:
-    virtual const rxcpp::observable<GpsMessage> GetObservable() const = 0;
+    virtual const rxcpp::observable<GpsMessage> get_observable() const = 0;
 
 };
 

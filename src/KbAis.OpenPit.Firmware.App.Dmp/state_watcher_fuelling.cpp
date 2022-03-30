@@ -1,4 +1,4 @@
-#include "RxStateWatcherFueling.h"
+#include "state_watcher_fuelling.h"
 
 // oss
 #include <plog/Log.h>
@@ -23,21 +23,21 @@ constexpr double FUL_LVL_DRAINING { 20.0 };
 constexpr double FUL_LVL_DRAINGIN_DLT { 10.0 };
 
 
-RxStateWatcherFueling::RxStateWatcherFueling(RxFuelMessagePublisher& ful_msg_pub)
-    :   m_ful_msg_pub(ful_msg_pub)
-    ,   m_subject_state_message(StateMessage { StateCode::Unknown })
+StateWatcherFuelling::StateWatcherFuelling(RxFuelMessagePublisher& ful_msg_pub)
+    :   ful_msg_pub_(ful_msg_pub)
+    ,   subject_state_message_(StateMessage { StateCode::Unknown })
 {
     m_fls.resize(FUL_LVL_BUF_SIZE);
 }
 
 void
-RxStateWatcherFueling::start_working_on() {
-    m_ful_msg_pub.get_obeservable_fuel_message()
+StateWatcherFuelling::start_working_on() {
+    ful_msg_pub_.get_obeservable_fuel_message()
         .subscribe([this](const auto& x) { handle_fuel_message(x); });
 }
 
 void
-RxStateWatcherFueling::handle_fuel_message(const FuelMessage& fuel_message) {
+StateWatcherFuelling::handle_fuel_message(const FuelMessage& fuel_message) {
     m_fls[m_fl_current_idx] = fuel_message.cur_fuel_level;
     m_fl_current_idx = (m_fl_current_idx + 1) % FUL_LVL_BUF_SIZE;
 
@@ -96,11 +96,11 @@ RxStateWatcherFueling::handle_fuel_message(const FuelMessage& fuel_message) {
 }
 
 void
-RxStateWatcherFueling::publish_new_state(StateCode state_code) {
-    m_subject_state_message.get_subscriber().on_next(StateMessage { state_code });
+StateWatcherFuelling::publish_new_state(StateCode state_code) {
+    subject_state_message_.get_subscriber().on_next(StateMessage { state_code });
 }
 
 rxcpp::observable<StateMessage>
-RxStateWatcherFueling::get_observable_state_message() const {
-    return m_subject_state_message.get_observable();
+StateWatcherFuelling::get_observable_state_message() const {
+    return subject_state_message_.get_observable();
 }

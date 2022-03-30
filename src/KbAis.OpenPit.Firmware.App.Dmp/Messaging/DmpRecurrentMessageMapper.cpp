@@ -27,7 +27,7 @@ DmpRecurrentMessageMapper::getObservable() const {
     rxcpp::observable<Message> observable = rxcpp::observable<>::empty<Message>();
 
     rxcpp::observable<Message> gps_message_observable = m_gps_message_pub
-        .GetObservable()
+        .get_observable()
         .map([&](const GpsMessage& x) -> Message {
             nlohmann::json j_object;
             j_object["datetime"] = x.isValid ? x.datetime : QDateTime::currentDateTimeUtc();
