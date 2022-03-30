@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
@@ -24,6 +25,7 @@ HEADERS += \
     Handlers/ConfigFuelRequestHandler.h \
     Handlers/ConfigNetworkingRequestHandler.h \
     Handlers/ConfigScaleRequestHandler.h \
+    Handlers/ConfigSerialsRequestHandler.h \
     Handlers/FetchDeviceInfoRequestHandler.h \
     Handlers/FetchDeviceModulesRequestHandler.h \
     Handlers/FetchDeviceSpecRequestHandler.h \
@@ -44,6 +46,7 @@ SOURCES += \
     Handlers/ConfigFuelRequestHandler.cpp \
     Handlers/ConfigNetworkingRequestHandler.cpp \
     Handlers/ConfigScaleRequestHandler.cpp \
+    Handlers/ConfigSerialsRequestHandler.cpp \
     Handlers/FetchDeviceInfoRequestHandler.cpp \
     Handlers/FetchDeviceModulesRequestHandler.cpp \
     Handlers/FetchDeviceSpecRequestHandler.cpp \

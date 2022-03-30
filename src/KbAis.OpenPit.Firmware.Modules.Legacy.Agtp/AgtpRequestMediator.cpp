@@ -7,12 +7,12 @@
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
-const QRegularExpression RE_REQUEST_NAME_CAPTURE { "([\\w]+)" };
+static const QRegularExpression RE_REQUEST_NAME_CAPTURE { "([\\w]+)" };
 
 AgtpRequestsMediator::AgtpRequestsMediator(
     std::set<AgtpCommandHandler_t> handlers
 ) {
-    const auto v = ranges::view::transform([](const auto& x) {
+    const auto v = ranges::views::transform([](const auto& x) {
         return x->get_request_name();
     });
     m_RequestHandlers = ranges::views::zip(handlers | v, handlers)

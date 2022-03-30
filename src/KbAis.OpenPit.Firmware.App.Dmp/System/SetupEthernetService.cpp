@@ -5,57 +5,52 @@
 #include <QSettings>
 
 #include "JsonQt.h"
+#include "Format.h"
 
-const QString ETHERNET_CONNMAN_SETTINGS_PATH {
-    QStringLiteral("/media/app/connman/tiptruck.config")
-};
+using namespace std::chrono_literals;
+
+const QString CONNMAN_SETTINGS_PATH { QStringLiteral("/media/app/connman/tiptruck.config") };
 
 SetupEthernetService::SetupEthernetService(
     IRxConfigurationChangePublisher& configurationPublisher
 ) {
-    // TODO: Use own thread run loop for system services
     configurationPublisher.getChangeObservable("ethernet")
-        .subscribe(m_subsBag, [this](const AppConfiguration& x) { handle(x); });
+        .sample_with_time(500ms, rxcpp::observe_on_event_loop())
+        .subscribe(m_subscriptions, [this](const AppConfiguration& x) { handle(x); });
 }
 
 SetupEthernetService::~SetupEthernetService() {
-    m_subsBag.unsubscribe();
+    m_subscriptions.unsubscribe();
 }
 
-void SetupEthernetService::handle(const AppConfiguration& newConfiguration) {
-    // !Q: how to configure connamn when building yocto
-    const auto& j = newConfiguration.j_object;
+void
+SetupEthernetService::handle(const AppConfiguration& new_config) {
+    // QUESTION: how to configure connamn when building yocto
+    const auto& j = new_config.j_object;
 
-    const auto dns = j.at("dns").get<QString>();
-    const auto ip = j.at("ip").get<QString>();
-    const auto mask = j.at("mask").get<QString>();
-    const auto gateway = j.at("gateway").get<QString>();
-    const auto isManualEnabled = j.at("manual_enable").get<bool>();
+    const auto dns = j.at("dns").get<std::string>();
+    const auto ip = j.at("ip").get<std::string>();
+    const auto mask = j.at("mask").get<std::string>();
+    const auto gateway = j.at("gateway").get<std::string>();
+    const auto is_manual_enabled = j.at("manual_enable").get<bool>();
 
-    const auto removed = QFile::remove(ETHERNET_CONNMAN_SETTINGS_PATH);
+    QMutexLocker lock { &m_mtx_update_connman_profile };
 
-    QSettings settings { ETHERNET_CONNMAN_SETTINGS_PATH, QSettings::IniFormat };
+    QSettings settings { CONNMAN_SETTINGS_PATH, QSettings::IniFormat };
 
-    // Inserted is 'as is ' from original implementation (see ethernet_config.cpp).
-    // Probably, need to do refactoring later.
+    // Inserted is 'as is' from original TK-implementation (see ethernet_config.cpp).
     settings.clear();
+
     settings.beginGroup("global");
-    settings.setValue("Name", "tiptruck");
+    settings.setValue("Name", "openpit");
     settings.endGroup();
 
-    settings.beginGroup("service_tiptruck");
+    settings.beginGroup("service_openpit");
     settings.setValue("Type", "ethernet");
-    QString setting_ip;
-
-    if (!isManualEnabled) {
-       setting_ip = "dhcp";
-    } else {
-       setting_ip = ip + "/" + mask + "/" + gateway;
-       settings.setValue ("Nameservers", dns);
-    }
-
-    settings.setValue("IPv4", setting_ip);
+    settings.setValue("IPv4", is_manual_enabled ? QString::fromStdString(fmt::format("{}/{}/{}", ip, mask, gateway)) : "dhcp");
+    settings.setValue("Nameservers", is_manual_enabled ? QString::fromStdString(dns) : "" );
     settings.endGroup();
 
+    // TODO: Handle error
     settings.sync();
 }

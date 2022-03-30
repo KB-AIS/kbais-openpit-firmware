@@ -14,6 +14,7 @@
 #include "Handlers/ConfigEthernetRequestHandler.h"
 #include "Handlers/ConfigNetworkingRequestHandler.h"
 #include "Handlers/ConfigScaleRequestHandler.h"
+#include "Handlers/ConfigSerialsRequestHandler.h"
 #include "Handlers/FetchDeviceInfoRequestHandler.h"
 #include "Handlers/FetchDeviceModulesRequestHandler.h"
 #include "Handlers/FetchDeviceSpecRequestHandler.h"
@@ -40,6 +41,12 @@ inline auto createAgtpServiceModule() noexcept {
                 ConfigEthernetRequestHandler
             ,   ConfigNetworkingRequestHandler
             ,   ConfigScaleRequestHandler
+            ,   ConfigSerialsRequestHandler
+            ,   ConfigSerialsTklsRequestHandler
+            ,   ConfigSerialsTpmsRequestHandler
+            ,   ConfigSerialsLcsRequestHandler
+            ,   ConfigSerialsStscpRequestHandler
+            ,   ConfigSerialsTkcrRequestHandler
             ,   FetchDeviceInfoRequestHandler
             ,   FetchDeviceModulesRequestHandler
             ,   FetchDeviceSpecRequestHandler

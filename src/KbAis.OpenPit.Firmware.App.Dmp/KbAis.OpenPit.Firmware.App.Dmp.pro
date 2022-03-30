@@ -1,6 +1,6 @@
 PRJDIR = $$PWD/..
 
-TARGET = OpenPitDmp
+TARGET = opf
 
 TEMPLATE = app
 
@@ -44,7 +44,7 @@ SOURCES += \
     RxStateWatcherFueling.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
-    main.cpp \
+    main.cpp
 
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \
