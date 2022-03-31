@@ -36,8 +36,6 @@ void StateWatcherMotioning::handle_gps_message(const GpsMessage& gps_msg) {
 
     const auto speed_avg = ranges::accumulate(buffered_speed_values_, 0.0) / buffered_speed_size_;
 
-    PLOGV << "Got new speed: " << speed_avg;
-
     // Проверка на то, есть ли сейчас движение согласно показателем с GPS-антенны
     if (speed_avg > settings_.min_speed_to_move) {
         last_move_time = steady_clock::now();

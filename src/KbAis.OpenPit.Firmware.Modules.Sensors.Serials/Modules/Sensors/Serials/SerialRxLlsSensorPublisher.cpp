@@ -129,7 +129,7 @@ SerialRxLlsSensorPublisher::PublishLlsDeviceMessage() {
         return m_subLlsDeviceMessage.get_subscriber().on_next(LlsDeviceMessage { data });
     }
 
-    auto numberOfUniqeReplies = ranges::distance(
+    uint32_t numberOfUniqeReplies = ranges::distance(
         m_decodeReplyResult.replies
     |   ranges::views::unique([](const LlsReplyReadData& a, const LlsReplyReadData& b) {
             return a.Adr == b.Adr;
