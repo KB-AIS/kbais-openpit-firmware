@@ -22,10 +22,18 @@ public:
 
 struct StateWatcherMotioningSettings {
 
+    /*!
+     * \brief Продолжительность в течение которого оборудование должно
+     * оставаться неподвижным, чтобы зафиксировать состоянии «остановки».
+     */
     std::chrono::duration<int64_t, std::milli> stop_threshold {
         std::chrono::milliseconds(5'000ll)
     };
 
+    /*!
+     * \brief Продолжительность в течение которого оборудование должно
+     * оставаться неподвижным, чтобы зафиксировать состоянии «парковки».
+     */
     std::chrono::duration<int64_t, std::milli> park_threshold {
         std::chrono::milliseconds(30'000ll)
     };
@@ -40,23 +48,50 @@ struct StateWatcherMotioningSettings {
 
 enum class MotioningState { Move, Stop, Park };
 
+/*!
+ * \brief Сервис мониторинга изменения состояния движения оборудования.
+ *
+ * Основным параметром мониторинга является показатель скорости, получаемый с
+ * датчика GPS. Сервис детектирует изменение значения скорости за временной
+ * промежуток, и в соответствии с заданными параметрами в экземпляре
+ * \ref StateWatcherMotioningSettings публикует событие изменения состояния
+ * движения.
+ *
+ */
 class StateWatcherMotioning {
+    using SteadyClock_t = std::chrono::steady_clock::time_point;
+
+    using MotioningState_t = rxcpp::rxsub::behavior<MotioningState>;
 
     const IRxGpsSensorPublisher& gps_msg_pub_;
 
     StateWatcherMotioningSettings settings_;
 
-    MotioningState current_motioning_state_;
+    rxcpp::composite_subscription subscriptions_;
 
-    qint32              buffered_speed_size_ { 4 };
+    MotioningState_t current_motioning_state_;
 
-    qint32              buffered_speed_cur_idx_ { 0 };
+    int                 buffered_speed_size_ { 4 };
+
+    int                 buffered_speed_cur_idx_ { 0 };
 
     std::vector<double> buffered_speed_values_;
 
-    rxcpp::composite_subscription subscriptions_;
+    SteadyClock_t last_move_time;
+
+    SteadyClock_t last_stop_time;
+
+    SteadyClock_t prev_stop_time;
+
+    SteadyClock_t last_park_time;
 
     void handle_gps_message(const GpsMessage& gps_msg);
+
+    bool is_in_move_state() const;
+
+    bool is_in_stop_state() const;
+
+    bool is_in_park_state() const;
 
 public:
     StateWatcherMotioning(const IRxGpsSensorPublisher& gps_msg_pub);
