@@ -67,7 +67,7 @@ void HostWindow::SetupScreenStack() {
 void HostWindow::SetupAppBar() {
     const auto coordinator = m_rxRunLoop.observe_on_run_loop();
 
-    m_gpsDiagPub.GetObservable()
+    m_gpsDiagPub.get_observable()
         .observe_on(coordinator)
         .subscribe(m_rxSubs, [&](const GpsMessage& x) {
             ui->lbl_indicatorGps

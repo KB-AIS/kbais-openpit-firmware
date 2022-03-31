@@ -37,7 +37,7 @@ SerialRxGpsSensorPublisher::~SerialRxGpsSensorPublisher() {
 }
 
 const rxcpp::observable<GpsMessage>
-SerialRxGpsSensorPublisher::GetObservable() const {
+SerialRxGpsSensorPublisher::get_observable() const {
     return subject.get_observable();
 }
 

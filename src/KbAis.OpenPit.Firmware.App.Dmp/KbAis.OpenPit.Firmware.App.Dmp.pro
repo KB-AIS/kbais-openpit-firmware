@@ -33,18 +33,20 @@ HEADERS += \
     ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
-    RxStateWatcherFueling.h \
     System/SetupDateTimeService.h \
-    System/SetupEthernetService.h
+    System/SetupEthernetService.h \
+    state_watcher_fuelling.h \
+    state_watcher_motioning.h
 
 SOURCES += \
     ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
-    RxStateWatcherFueling.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
-    main.cpp
+    main.cpp \
+    state_watcher_fuelling.cpp \
+    state_watcher_motioning.cpp
 
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \

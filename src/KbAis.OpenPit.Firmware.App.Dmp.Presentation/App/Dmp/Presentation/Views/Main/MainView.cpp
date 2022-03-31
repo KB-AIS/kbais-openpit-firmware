@@ -63,7 +63,7 @@ MainView::provide_coordinator(const rxcpp::observe_on_one_worker& coordinator) {
     m_pub_ful_msg.get_obeservable_fuel_message()
         .observe_on(coordinator)
         .subscribe(m_subscriptions, [this](FuelMessage msg) { update_gauge_ful(msg); });
-    m_pub_gps_msg.GetObservable()
+    m_pub_gps_msg.get_observable()
         .observe_on(coordinator)
         .subscribe(m_subscriptions, [this](GpsMessage msg) { update_gague_spd(msg); });
 }

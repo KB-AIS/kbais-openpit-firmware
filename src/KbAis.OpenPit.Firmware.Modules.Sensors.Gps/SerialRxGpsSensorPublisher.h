@@ -21,7 +21,7 @@ public:
 
     ~SerialRxGpsSensorPublisher();
 
-    const rxcpp::observable<GpsMessage> GetObservable() const override;
+    const rxcpp::observable<GpsMessage> get_observable() const override;
 
 private:
     QSerialPort serialGpsSensor;

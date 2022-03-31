@@ -10,7 +10,7 @@ const QString MESSAGE_MONKIER_STA { QStringLiteral("STA") };
 
 DmpImmediateMessageMapper::DmpImmediateMessageMapper(
     const MainView& main_view
-,   const RxStateWatcherFueling& state_ful_pub
+,   const StateWatcherFuelling& state_ful_pub
 )
     :   m_main_view(main_view)
     ,   m_state_ful_pub(state_ful_pub)

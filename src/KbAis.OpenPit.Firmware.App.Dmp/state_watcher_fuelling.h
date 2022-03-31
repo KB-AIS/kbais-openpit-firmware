@@ -1,5 +1,5 @@
-#ifndef RXSTATEWATCHERFUELING_H
-#define RXSTATEWATCHERFUELING_H
+#ifndef STATE_WATCHER_FUELLING_H
+#define STATE_WATCHER_FUELLING_H
 
 // std
 #include <chrono>
@@ -25,12 +25,12 @@ struct StateMessage {
     StateCode code;
 };
 
-class RxStateWatcherFueling {
+class StateWatcherFuelling {
     using SteadyClock_t = std::chrono::steady_clock::time_point;
 
-    RxFuelMessagePublisher& m_ful_msg_pub;
+    RxFuelMessagePublisher& ful_msg_pub_;
 
-    rxcpp::rxsub::behavior<StateMessage> m_subject_state_message;
+    rxcpp::rxsub::behavior<StateMessage> subject_state_message_;
 
     std::vector<double> m_fls;
     int                 m_fl_current_idx { 0 };
@@ -51,7 +51,7 @@ class RxStateWatcherFueling {
     void publish_new_state(StateCode state_code);
 
 public:
-    RxStateWatcherFueling(RxFuelMessagePublisher& ful_msg_pub);
+    StateWatcherFuelling(RxFuelMessagePublisher& ful_msg_pub);
 
     void start_working_on();
 
@@ -59,4 +59,4 @@ public:
 
 };
 
-#endif // RXSTATEWATCHERFUELING_H
+#endif // STATE_WATCHER_FUELLING_H

@@ -6,7 +6,7 @@
 #include <cmath>
 
 SetupDateTimeService::SetupDateTimeService(const IRxGpsSensorPublisher& gpsSensorPublisher) {
-    gpsSensorPublisher.GetObservable()
+    gpsSensorPublisher.get_observable()
         .subscribe(m_subscriptions, [this](const GpsMessage& x) { handle(x); });
 }
 

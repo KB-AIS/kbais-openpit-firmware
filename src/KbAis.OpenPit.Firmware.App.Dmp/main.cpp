@@ -16,7 +16,8 @@
 #include "CompositionRootModule.h"
 #include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
-#include "RxStateWatcherFueling.h"
+#include "state_watcher_fuelling.h"
+#include "state_watcher_motioning.h"
 
 struct ConfigurationBootstraper {
     ConfigurationBootstraper(ConfigurationManager& config_manager) {
@@ -156,6 +157,9 @@ int main(int argc, char* argv[]) {
     DatabaseConfigurator::configure();
 
     auto injector = CompositionRootModule();
+
+    auto watcher = boost::di::create<std::shared_ptr<StateWatcherMotioning>>(injector);
+    watcher->start_working_on();
 
     using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
     boost::di::create<ConfigurationBootstraperSingleton_t>(injector);

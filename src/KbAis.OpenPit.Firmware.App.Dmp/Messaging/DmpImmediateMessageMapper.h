@@ -7,17 +7,17 @@
 #include "App/Dmp/Presentation/Views/Main/MainView.h"
 #include "IRxImmediateMessageMapper.h"
 #include "RxQt.h"
-#include "RxStateWatcherFueling.h"
+#include "state_watcher_fuelling.h"
 
 class DmpImmediateMessageMapper : public IRxImmediateMessageMapper {
     const MainView& m_main_view;
 
-    const RxStateWatcherFueling& m_state_ful_pub;
+    const StateWatcherFuelling& m_state_ful_pub;
 
 public:
     DmpImmediateMessageMapper(
         const MainView& main_view
-    ,   const RxStateWatcherFueling& state_ful_pub
+    ,   const StateWatcherFuelling& state_ful_pub
     );
 
     rxcpp::observable<Message> getObservable() const override;
