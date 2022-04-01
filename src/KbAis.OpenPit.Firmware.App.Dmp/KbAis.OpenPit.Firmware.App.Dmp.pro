@@ -29,23 +29,27 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    CompositionRootModule.h \
-    ConfiguratorCommandLine.h \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
     System/SetupDateTimeService.h \
     System/SetupEthernetService.h \
+    composition_root_module.h \
+    conifgurator_cli_processor.h \
+    dmp_configuration_initializer.h \
     state_watcher_fuelling.h \
+    state_watcher_loading.h \
     state_watcher_motioning.h
 
 SOURCES += \
-    ConfiguratorCommandLine.cpp \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
     System/SetupDateTimeService.cpp \
     System/SetupEthernetService.cpp \
+    conifgurator_cli_processor.cpp \
+    dmp_configuration_initializer.cpp \
     main.cpp \
     state_watcher_fuelling.cpp \
+    state_watcher_loading.cpp \
     state_watcher_motioning.cpp
 
 LIBS += -L$$PRJDIR/binaries \

@@ -65,7 +65,7 @@ SerialRxLlsSensorPublisher::GetObservableHealthStatus() const {
 
 void
 SerialRxLlsSensorPublisher::ConfigConnection() {
-    m_spLlsDevice.setPortName("/dev/ttyO2");
+    m_spLlsDevice.setPortName("/dev/ttyO4");
     m_spLlsDevice.setBaudRate(QSerialPort::Baud19200);
     m_spLlsDevice.setDataBits(QSerialPort::Data8);
     m_spLlsDevice.setStopBits(QSerialPort::OneStop);

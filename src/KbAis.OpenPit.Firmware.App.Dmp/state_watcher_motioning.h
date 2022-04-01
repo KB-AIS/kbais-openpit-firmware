@@ -98,6 +98,8 @@ public:
 
     void start_working_on();
 
+    rxcpp::observable<MotioningState> get_observable() const;
+
 };
 
 #endif // STATE_WATCHER_MOTIONING_H

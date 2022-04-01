@@ -3,169 +3,49 @@
 // qt
 #include <QApplication>
 // oss
-#include <CLI/CLI.hpp>
-#include <fmt/format.h>
-#include <plog/Appenders/ConsoleAppender.h>
-#include <plog/Appenders/RollingFileAppender.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Init.h>
 #include <plog/Log.h>
-#include <range/v3/all.hpp>
 
-#include "BoostDiExtensions.h"
-#include "CompositionRootModule.h"
-#include "ConfigurationsManager.h"
 #include "Core/Persisting/Configuration/DatabaseConfigurator.h"
+#include "boost_di_extensions.h"
+#include "composition_root_module.h"
+#include "conifgurator_cli_processor.h"
+#include "dmp_configuration_initializer.h"
 #include "state_watcher_fuelling.h"
 #include "state_watcher_motioning.h"
 
-struct ConfigurationBootstraper {
-    ConfigurationBootstraper(ConfigurationManager& config_manager) {
-        config_manager.registerConfiguration(
-            "base"
-        ,   R"(
-                {
-                  "enable_manual_begin_shift": false,
-                  "lcd_day_light": 15,
-                  "offset_local_time": 0,
-                  "shift_times": [
-                    { "shift_hours_begin": 8, "shift_hours_end": 16, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
-                    { "shift_hours_begin": 17, "shift_hours_end": 2, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
-                    { "shift_hours_begin": 8, "shift_hours_end": 16, "shift_minutes_begin": 0, "shift_minutes_end": 59 },
-                    { "shift_hours_begin": 17, "shift_hours_end": 2, "shift_minutes_begin": 0, "shift_minutes_end": 59 }
-                  ],
-                  "sound_volume_ch_1": 12,
-                  "sound_volume_ch_2": 12,
-                  "sound_volume_system": 12,
-                  "vehihle_id": "100",
-                  "version": "1.0"
-                }
-            )"_json
-        );
-
-        config_manager.registerConfiguration(
-            "ethernet"
-        ,   R"(
-                {
-                  "dns": "",
-                  "gateway": "10.214.1.1",
-                  "ip": "10.214.1.205",
-                  "manual_enable": true,
-                  "mask": "255.255.0.0",
-                  "version":"1.0"
-                }
-            )"_json
-        );
-
-        config_manager.registerConfiguration(
-            "networking"
-        ,   R"(
-                {
-                  "primary_message_server": -1,
-                  "servers": [
-                    {
-                      "enabled": true,
-                      "protocol": 0,
-                      "reserve_enabled": false,
-                      "reserve_server_name": "",
-                      "reserve_server_port": 0,
-                      "send_interval": 10,
-                      "server_name": "10.73.212.191",
-                      "server_port": 47653
-                    }
-                  ],
-                  "version": "1.0"
-                }
-            )"_json
-        );
-
-        config_manager.registerConfiguration(
-            "lls_device"
-        ,   R"(
-                {
-                  "interface":1,
-                  "interval_poll":0,
-                  "sensors":[
-                    { "address":1, "enabled":true, "name":"1" },
-                    { "address":1, "enabled":true, "name":"2" },
-                    { "address":1, "enabled":true, "name":"3" },
-                    { "address":1, "enabled":true, "name":"4" },
-                    { "address":1, "enabled":true, "name":"5" },
-                    { "address":1, "enabled":true, "name":"6" },
-                    { "address":1, "enabled":true, "name":"7" },
-                    { "address":1, "enabled":true, "name":"8" }
-                  ]
-                }
-            )"_json
-        );
-
-        config_manager.registerConfiguration(
-            "scale"
-        ,   R"(
-                {"Scales":[
-                  {"Divisor":1,"MaxScale":1000,"Percent":20,"Sens":[
-                    {"Koeff":1,"Parametrs":0,"Removal":0,"Tar":[
-                      {"ADC":0,"Litrs":0},{"ADC":243,"Litrs":150},
-                      {"ADC":587,"Litrs":300},{"ADC":1485,"Litrs":700},
-                      {"ADC":2272,"Litrs":1050},{"ADC":3274,"Litrs":1500},
-                      {"ADC":3968,"Litrs":1800}],"TypeCounter":0,"TypeSens":1,"U_ADC":0},
-                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
-                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0},
-                    {"Koeff":0,"Parametrs":0,"Removal":0,"Tar":[],"TypeCounter":0,"TypeSens":0,"U_ADC":0}]}],"version":"1.0"
-                }
-            )"_json
-        );
-    }
-};
-
-using namespace plog;
+QApplication create_application() {
+    int                app_argc { 3 };
+    std::vector<char*> app_argv { (char*)"opf", (char*)"-platform", (char*)"linuxfb", nullptr };
+    return { app_argc, app_argv.data() };
+}
 
 int main(int argc, char* argv[]) {
-    CLI::App commandLine;
-    commandLine.allow_extras();
+    CliProcessor_t cli_processor { "OpenPit Firmware", "OPF" };
 
-    std::map<std::string, Severity> plogSeverityLevels {
-        { "v", Severity::verbose }
-    ,   { "d", Severity::debug }
-    ,   { "i", Severity::info }
-    ,   { "w", Severity::warning }
-    ,   { "e", Severity::error }
-    ,   { "f", Severity::fatal }
-    };
+    configure_cli_processor(cli_processor);
 
-    auto logSeverityLevel = Severity::none;
+    CLI11_PARSE(cli_processor, argc, argv);
 
-    commandLine.add_option("-l,--level", logSeverityLevel, "Log severity level")
-        -> transform(CLI::CheckedTransformer(plogSeverityLevels, CLI::ignore_case));
+    {
+        QLocale appDefaultLocale { QLocale::Russian, QLocale::Russia };
+        QLocale::setDefault(appDefaultLocale);
+    }
 
-    commandLine.callback([&]() {
-        static ConsoleAppender<TxtFormatter> consoleAppender;
-        static RollingFileAppender<TxtFormatter> appender_rolling_files { "/media/app/cfw/log" };
+    PLOGI << "Setup application";
+    const auto application { create_application() };
 
-        init(logSeverityLevel).addAppender(&consoleAppender);
-        init<1>(logSeverityLevel).addAppender(&appender_rolling_files);
-    });
+    {
+        DatabaseConfigurator::configure();
+    }
 
-    CLI11_PARSE(commandLine, argc, argv);
+    {
+        const auto injector { composition_root_module() };
+        // Конфиги сервисов должны быть проинициализированы до самих сервисов
+        boost::di::create<std::shared_ptr<DmpConfigurationInitializer>>(injector);
+        // Инициализация всех остальных сервисов приложения
+        create_singletons(injector);
+    }
 
-    QLocale appDefaultLocale { QLocale::Russian, QLocale::Russia };
-    QLocale::setDefault(appDefaultLocale);
-
-    PLOGI << "Setup DMP application";
-    QApplication app(argc, argv);
-
-    DatabaseConfigurator::configure();
-
-    auto injector = CompositionRootModule();
-
-    auto watcher = boost::di::create<std::shared_ptr<StateWatcherMotioning>>(injector);
-    watcher->start_working_on();
-
-    using ConfigurationBootstraperSingleton_t = std::shared_ptr<ConfigurationBootstraper>;
-    boost::di::create<ConfigurationBootstraperSingleton_t>(injector);
-
-    eagerSingletons(injector);
-
-    PLOGI << "Startup DMP application";
-    return app.exec();
+    PLOGI << "Startup application";
+    return application.exec();
 }

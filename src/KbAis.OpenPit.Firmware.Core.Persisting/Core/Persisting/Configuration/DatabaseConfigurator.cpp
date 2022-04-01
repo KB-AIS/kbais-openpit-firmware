@@ -1,11 +1,11 @@
  #include "DatabaseConfigurator.h"
 
-// qt sql
+// qt
 #include <QtSql>
 
-const QString DB_DRIVER { "QSQLITE" };
+QString DB_DRIVER { "QSQLITE" };
 
-const QString DB_NAME { "/media/app/cfw/cfw.db" };
+QString DB_NAME { "/media/app/cfw/cfw.db" };
 
 void
 DatabaseConfigurator::configure() {

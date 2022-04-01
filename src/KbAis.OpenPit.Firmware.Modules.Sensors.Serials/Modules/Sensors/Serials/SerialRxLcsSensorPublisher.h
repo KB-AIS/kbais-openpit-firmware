@@ -1,6 +1,8 @@
 #ifndef SERIALRXLCSSENSORPUBLISHER_H
 #define SERIALRXLCSSENSORPUBLISHER_H
 
+// std
+#include <optional>
 // qt
 #include <QObject>
 #include <QSerialPort>

@@ -18,14 +18,13 @@
 #include "System/SetupEthernetService.h"
 #include "ThreadWorkerMessaging.h"
 
-inline auto CompositionRootModule() noexcept {
+inline auto composition_root_module() noexcept {
     return boost::di::make_injector(
         CreateInjectorCoreNetworking()
     ,   CreateInjectorSerialDevices()
     ,   CreateModulePresentation()
     ,   boost::di::bind<SetupDateTimeService>()
             .in(boost::di::singleton)
-    //  Partialy broken, need to fix
     ,   boost::di::bind<SetupEthernetService>()
             .in(boost::di::singleton)
     ,   boost::di::bind<

@@ -20,14 +20,10 @@ void StateWatcherMotioning::start_working_on() {
             subscriptions_
         ,   [this](const GpsMessage& x) { handle_gps_message(x); }
         );
+}
 
-    current_motioning_state_.get_observable()
-        .subscribe(
-            subscriptions_
-        ,   [](const MotioningState& x) {
-                PLOGD << "Got new state: " << static_cast<int>(x);
-            }
-        );
+rxcpp::observable<MotioningState> StateWatcherMotioning::get_observable() const {
+    return current_motioning_state_.get_observable();
 }
 
 void StateWatcherMotioning::handle_gps_message(const GpsMessage& gps_msg) {
@@ -42,6 +38,7 @@ void StateWatcherMotioning::handle_gps_message(const GpsMessage& gps_msg) {
     }
 
     const auto state = current_motioning_state_.get_value();
+
     if (state == MotioningState::Move && is_in_stop_state()) {
         // Был зафиксирован переходи из состояния движения в состояние остановки
         current_motioning_state_.get_subscriber().on_next(MotioningState::Stop);

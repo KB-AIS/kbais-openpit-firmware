@@ -13,7 +13,7 @@ CONFIG += staticlib depend_includepath conan_basic_setup \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    BoostDiExtensions.h \
+    boost_di_extensions.h
 
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj
