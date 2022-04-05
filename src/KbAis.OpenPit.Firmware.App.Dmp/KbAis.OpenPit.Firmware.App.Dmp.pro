@@ -31,26 +31,27 @@ include($$PRJDIR/../conanbuildinfo.pri)
 HEADERS += \
     Messaging/DmpImmediateMessageMapper.h \
     Messaging/DmpRecurrentMessageMapper.h \
-    System/SetupDateTimeService.h \
-    System/SetupEthernetService.h \
+    system/module_factory_system_services.h \
     composition_root_module.h \
     conifgurator_cli_processor.h \
     dmp_configuration_initializer.h \
     state_watcher_fuelling.h \
     state_watcher_loading.h \
-    state_watcher_motioning.h
+    state_watcher_motioning.h \
+    system/setup_datetime_service.h \
+    system/setup_ethernet_service.h
 
 SOURCES += \
     Messaging/DmpImmediateMessageMapper.cpp \
     Messaging/DmpRecurrentMessageMapper.cpp \
-    System/SetupDateTimeService.cpp \
-    System/SetupEthernetService.cpp \
     conifgurator_cli_processor.cpp \
     dmp_configuration_initializer.cpp \
     main.cpp \
     state_watcher_fuelling.cpp \
     state_watcher_loading.cpp \
-    state_watcher_motioning.cpp
+    state_watcher_motioning.cpp \
+    system/setup_datetime_service.cpp \
+    system/setup_ethernet_service.cpp
 
 LIBS += -L$$PRJDIR/binaries \
     -lOpenPitAppDmpPresentation \
