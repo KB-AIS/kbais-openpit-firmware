@@ -4,13 +4,11 @@
 // qt
 #include <QObject>
 
-// Core.Configuration
-#include "IRxConfigurationChangePublisher.h"
-
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "Core/Networking/MessageSenders/IMessageSendersManager.h"
 #include "Core/Networking/MessageSenders/TcpMessageSender.h"
 #include "Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h"
+#include "core/configuration/app_configuration_manager.h"
 
 class TcpMessageSendersManager
     :   public IMessageSendersManager
@@ -31,14 +29,14 @@ class TcpMessageSendersManager
     QString m_equipment_id;
 
 public:
-    explicit TcpMessageSendersManager(IRxConfigurationChangePublisher& configurationPublisher);
+    explicit TcpMessageSendersManager(const i_app_configuration_publisher& app_configuration_publisher);
 
     void StartWorkOn(const rxcpp::observe_on_one_worker& coordinator) override;
 
     rxcpp::observable<MessageSenderDiagInfos_t> GetObservableDiagInfo() const override;
 
 private:
-    IRxConfigurationChangePublisher& m_configurationPublisher;
+    const i_app_configuration_publisher& app_configuration_publisher_;
 
     rxcpp::composite_subscription m_subsConfigurationChanged;
 
@@ -54,7 +52,7 @@ private:
 
     MessageSenders_t m_messageSenders;
 
-    void OnConfigurationChanged(const AppConfiguration& configuration);
+    void OnConfigurationChanged(const app_configuration& configuration);
 
     void OnMessageSendersRestartRequired();
 

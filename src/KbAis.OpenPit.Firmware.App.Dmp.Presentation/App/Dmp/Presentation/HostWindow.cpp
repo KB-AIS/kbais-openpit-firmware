@@ -8,24 +8,24 @@ using namespace std::chrono_literals;
 
 constexpr qint32 MAIN_VIEW_IDX { 0 }, DIAG_VIEW_IDX { 1 }, STOP_VIEW_IDX { 2 }, CONF_VIEW_IDX { 3 };
 
-const QString TIME_EVEN_FMT { "hh:mm" }, TIME_FMT { "hh mm" };
+QString TIME_EVEN_FMT { QStringLiteral("hh:mm") }, TIME_FMT { QStringLiteral("hh mm") };
 
-const auto STYLE_INDICATOR_VALID = QString(R"(
+auto STYLE_INDICATOR_VALID = QString(R"(
     color: #0bff01;
 )");
 
-const auto STYLE_INDICATOR_INVALID = QString(R"(
+auto STYLE_INDICATOR_INVALID = QString(R"(
     color: #fe0000;
 )");
 
-constexpr auto DISPLAYTIME_UPDATE_INTERVAL { 1s };
+constexpr auto UPDATE_DISPLAY_DATETIME_INTERVAL { 1s };
 
 HostWindow::HostWindow(
-    const IRxGpsSensorPublisher& gpsDiagPub
+    const i_gps_sensor_publisher& gpsDiagPub
 ,   const IRxMessageSendersDiagPub& netDiagPub
-,   MainView& mainView
+,   i_main_view& mainView
 ,   DiagView& diagView
-,   NavController& navController
+,   nav_controller& navController
 )
 :   QMainWindow()
 ,   ui { new Ui::HostWindow }
@@ -40,7 +40,7 @@ HostWindow::HostWindow(
     SetupScreenStack();
     SetupAppBar();
 
-    m_mainView.provide_coordinator(m_rxRunLoop.observe_on_run_loop());
+    m_mainView.observe_on(m_rxRunLoop.observe_on_run_loop());
 }
 
 HostWindow::~HostWindow() {
@@ -86,7 +86,7 @@ void HostWindow::SetupAppBar() {
     rxqt::from_signal(&m_tmUpdateDisplayTime, &QTimer::timeout)
         .subscribe(m_rxSubs, [&](auto) { UpdateDisplayTime(); });
 
-    m_tmUpdateDisplayTime.start(DISPLAYTIME_UPDATE_INTERVAL);
+    m_tmUpdateDisplayTime.start(UPDATE_DISPLAY_DATETIME_INTERVAL);
 }
 
 void HostWindow::UpdateDisplayTime() {

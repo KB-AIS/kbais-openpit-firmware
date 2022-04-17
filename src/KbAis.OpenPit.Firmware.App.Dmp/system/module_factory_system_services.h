@@ -7,7 +7,7 @@
 #include "system/setup_datetime_service.h"
 #include "system/setup_ethernet_service.h"
 
-inline auto create_injector_system_services() noexcept {
+inline auto create_module_system() noexcept {
     return boost::di::make_injector(
         boost::di::bind<SetupDateTimeService>().in(boost::di::singleton)
     ,   boost::di::bind<SetupEthernetService>().in(boost::di::singleton)

@@ -5,7 +5,7 @@
 
 #include "App/Dmp/Presentation/Utils/NavController.h"
 #include "App/Dmp/Presentation/Views/Diag/DiagView.h"
-#include "App/Dmp/Presentation/Views/Main/MainView.h"
+#include "App/Dmp/Presentation/Views/Main/main_view.h"
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "IRxGpsSensorPublisher.h"
 #include "RxQt.h"
@@ -19,11 +19,11 @@ class HostWindow : public QMainWindow {
 
 public:
     HostWindow(
-        const IRxGpsSensorPublisher& gpsDiagPub
+        const i_gps_sensor_publisher& gpsDiagPub
     ,   const IRxMessageSendersDiagPub& netDiagPub
-    ,   MainView& mainView
+    ,   i_main_view& mainView
     ,   DiagView& diagView
-    ,   NavController& navController
+    ,   nav_controller& navController
     );
 
     ~HostWindow();
@@ -31,15 +31,15 @@ public:
 private:
     Ui::HostWindow* ui;
 
-    const IRxGpsSensorPublisher& m_gpsDiagPub;
+    const i_gps_sensor_publisher& m_gpsDiagPub;
 
     const IRxMessageSendersDiagPub& m_netDiagPub;
 
-    MainView& m_mainView;
+    i_main_view& m_mainView;
 
     DiagView& m_diagView;
 
-    NavController& m_navController;
+    nav_controller& m_navController;
 
     rxcpp::composite_subscription m_rxSubs;
 

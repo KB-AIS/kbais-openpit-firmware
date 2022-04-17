@@ -1,15 +1,15 @@
 #ifndef CONFIGFUELREQUESTHANDLER_H
 #define CONFIGFUELREQUESTHANDLER_H
 
-#include "ConfigurationsManager.h"
+#include "core/configuration/app_configuration_manager.h"
 #include "IAgtpRequestHandler.h"
 
 class ConfigFuelRequestHandler : public IAgtpRequestHandler {
 
-    ConfigurationManager& m_configuration_manager;
+    app_configuration_manager& m_configuration_manager;
 
 public:
-    ConfigFuelRequestHandler(ConfigurationManager& configuration_manager);
+    ConfigFuelRequestHandler(app_configuration_manager& configuration_manager);
 
     AgtpResponse handle(const AgtpRequest& request);
 

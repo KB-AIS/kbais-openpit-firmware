@@ -12,7 +12,7 @@
 // !Q: where device name comes from?
 static const QString DEVICE_PORT_NAME { "/dev/ttyS5" };
 
-SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher()
+gps_sensor_publisher::gps_sensor_publisher()
     : serialGpsSensor { this }
     , subject { GpsMessage {} }
     , lastGgaSentence { std::make_shared<GgaSentence>() }
@@ -20,7 +20,7 @@ SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher()
 {
     connect(
         &serialGpsSensor, &QSerialPort::readyRead,
-        this, &SerialRxGpsSensorPublisher::OnGpsSensorReadyRead
+        this, &gps_sensor_publisher::OnGpsSensorReadyRead
     );
 
     GpioUtils::export_pin(168);
@@ -30,19 +30,19 @@ SerialRxGpsSensorPublisher::SerialRxGpsSensorPublisher()
     ResetGpsDevice();
 }
 
-SerialRxGpsSensorPublisher::~SerialRxGpsSensorPublisher() {
+gps_sensor_publisher::~gps_sensor_publisher() {
     if (!serialGpsSensor.isOpen()) return;
 
     serialGpsSensor.close();
 }
 
 const rxcpp::observable<GpsMessage>
-SerialRxGpsSensorPublisher::get_observable() const {
+gps_sensor_publisher::get_observable() const {
     return subject.get_observable();
 }
 
 void
-SerialRxGpsSensorPublisher::SetupGpsDevice() {
+gps_sensor_publisher::SetupGpsDevice() {
     serialGpsSensor.setBaudRate(QSerialPort::Baud9600);
     serialGpsSensor.setDataBits(QSerialPort::Data8);
     serialGpsSensor.setFlowControl(QSerialPort::NoFlowControl);
@@ -51,11 +51,11 @@ SerialRxGpsSensorPublisher::SetupGpsDevice() {
     serialGpsSensor.setStopBits(QSerialPort::OneStop);
 }
 
-bool SerialRxGpsSensorPublisher::ResetGpsDevice() {
+bool gps_sensor_publisher::ResetGpsDevice() {
     GpioUtils::setup_val(168, 0);
 
     // TODO: Use non-blocking way
-    struct timespec req_time { 2 }, rem_time;
+    struct timespec req_time { 2, 0 }, rem_time;
     nanosleep(&req_time, &rem_time);
 
     GpioUtils::setup_val(168, 1);
@@ -66,7 +66,7 @@ bool SerialRxGpsSensorPublisher::ResetGpsDevice() {
 }
 
 void
-SerialRxGpsSensorPublisher::OnGpsSensorReadyRead() {
+gps_sensor_publisher::OnGpsSensorReadyRead() {
     // Remove sentences from read buffer
     nmeaSentences.clear();
     processDeviceRead(serialGpsSensor, nmeaSentences);
@@ -88,7 +88,7 @@ SerialRxGpsSensorPublisher::OnGpsSensorReadyRead() {
 }
 
 bool
-SerialRxGpsSensorPublisher::NeedPublishGpsMessage() const {
+gps_sensor_publisher::NeedPublishGpsMessage() const {
     // Check if sentences from same receive frame
     if (lastGgaSentence->time != lastRmcSentence->datetime.time()) {
         return false;
@@ -98,7 +98,7 @@ SerialRxGpsSensorPublisher::NeedPublishGpsMessage() const {
 }
 
 GpsMessage
-SerialRxGpsSensorPublisher::MapGpsMessage() const {
+gps_sensor_publisher::MapGpsMessage() const {
     constexpr double SPD_KNOTS_TO_KHM_RATIO { 1.852 };
 
     return GpsMessage {

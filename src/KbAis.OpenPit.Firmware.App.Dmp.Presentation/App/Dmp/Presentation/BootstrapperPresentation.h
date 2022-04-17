@@ -6,7 +6,7 @@
 class BootstrapperPresentation {
 
 public:
-    BootstrapperPresentation(HostWindow& hostWindow);
+    BootstrapperPresentation(HostWindow& host_window);
 
 };
 

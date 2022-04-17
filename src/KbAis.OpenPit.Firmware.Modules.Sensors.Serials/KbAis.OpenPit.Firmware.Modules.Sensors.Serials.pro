@@ -21,23 +21,26 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Modules/Sensors/Serials/ModuleBootstraperSerialDevices.h \
-    Modules/Sensors/Serials/ModuleFactorySerialDevices.h \
-    Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.h \
-    Modules/Sensors/Serials/RxFuelMessagePublisher.h \
-    Modules/Sensors/Serials/SerialRxLcsSensorPublisher.h \
-    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.h \
-    Modules/Sensors/Serials/TkCardReader/FormatterModbusCardReader.h \
-    Modules/Sensors/Serials/TkCardReader/SerialRxRcrSensorPublisher.h \
+    modules/sensors/serials/crd/crd_formatter_tkcardreader_modbus.h \
+    modules/sensors/serials/crd/crd_sensor_integrator_tkcardreader.h \
+    modules/sensors/serials/crd/crd_sensor_publisher.h \
+    modules/sensors/serials/lcs/lcs_sensor_integrator_wtruck.h \
+    modules/sensors/serials/lcs/lcs_sensor_publisher.h \
+    modules/sensors/serials/lls/flv_calibration_publisher.h \
+    modules/sensors/serials/lls/lls_formatter_omnicomm.h \
+    modules/sensors/serials/lls/lls_sensor_integrator_omnicomm.h \
+    modules/sensors/serials/lls/lls_sensor_publisher.h \
+    modules/sensors/serials/module_factory_sensors_serials.h  \
+    modules/sensors/serials/runner_module_sensors_serials.h
 
 SOURCES += \
-    Modules/Sensors/Serials/ModuleBootstraperSerialDevices.cpp \
-    Modules/Sensors/Serials/OmnicommLlsProtocolFomratter.cpp \
-    Modules/Sensors/Serials/RxFuelMessagePublisher.cpp \
-    Modules/Sensors/Serials/SerialRxLcsSensorPublisher.cpp \
-    Modules/Sensors/Serials/SerialRxLlsSensorPublisher.cpp \
-    Modules/Sensors/Serials/TkCardReader/FormatterModbusCardReader.cpp \
-    Modules/Sensors/Serials/TkCardReader/SerialRxRcrSensorPublisher.cpp \
+    modules/sensors/serials/crd/crd_formatter_tkcardreader_modbus.cpp \
+    modules/sensors/serials/crd/crd_sensor_publisher.cpp \
+    modules/sensors/serials/lcs/lcs_sensor_publisher.cpp \
+    modules/sensors/serials/lls/flv_calibration_publisher.cpp \
+    modules/sensors/serials/lls/lls_formatter_omnicomm.cpp \
+    modules/sensors/serials/lls/lls_sensor_publisher.cpp \
+    modules/sensors/serials/runner_module_sensors_serials.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

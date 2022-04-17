@@ -16,15 +16,13 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Configuration.h \
-    ConfigurationChangeSource.h \
-    ConfigurationsManager.h \
-    IConfigurationProvider.h \
-    IRxConfigurationChangePublisher.h \
+    core/configuration/app_configuration.h \
+    core/configuration/app_configuration_manager.h \
+    core/configuration/app_configuration_watcher.h
 
 SOURCES += \
-    ConfigurationChangeSource.cpp \
-    ConfigurationsManager.cpp \
+    core/configuration/app_configuration_manager.cpp \
+    core/configuration/app_configuration_watcher.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

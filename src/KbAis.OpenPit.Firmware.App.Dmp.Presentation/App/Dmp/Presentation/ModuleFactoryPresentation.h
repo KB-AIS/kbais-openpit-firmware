@@ -6,12 +6,12 @@
 
 #include "App/Dmp/Presentation/BootstrapperPresentation.h"
 
-inline auto CreateModulePresentation() noexcept {
+inline auto create_module_presentation_dmp() noexcept {
     return boost::di::make_injector(
-        boost::di::bind<NavController>.in(boost::di::singleton)
+        boost::di::bind<nav_controller>.in(boost::di::singleton)
     ,   boost::di::bind<HostWindow>.in(boost::di::singleton)
     ,   boost::di::bind<DiagView>.in(boost::di::singleton)
-    ,   boost::di::bind<MainView>.in(boost::di::singleton)
+    ,   boost::di::bind<i_main_view>.to<main_view>().in(boost::di::singleton)
     ,   boost::di::bind<BootstrapperPresentation>.in(boost::di::singleton)
     );
 }

@@ -14,7 +14,7 @@ class SetupDateTimeService {
     void handle(const GpsMessage& gps_message);
 
 public:
-    SetupDateTimeService(const IRxGpsSensorPublisher& gps_publisher);
+    SetupDateTimeService(const i_gps_sensor_publisher& gps_publisher);
 
     ~SetupDateTimeService() noexcept;
 

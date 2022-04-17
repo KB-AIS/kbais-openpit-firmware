@@ -1,7 +1,7 @@
 #ifndef SETUP_ETHERNET_SERVICE_H
 #define SETUP_ETHERNET_SERVICE_H
 
-#include "IRxConfigurationChangePublisher.h"
+#include "core/configuration/app_configuration_manager.h"
 
 struct EthernetConfiguration {
 
@@ -26,12 +26,12 @@ class SetupEthernetService {
 
     rxcpp::composite_subscription subscriptions_;
 
-    static EthernetConfigurationOpt_t map_ethernet_configuration(const AppConfiguration& conf);
+    static EthernetConfigurationOpt_t map_ethernet_configuration(const app_configuration& c);
 
-    static void handle_new_ethernet_configuration(const EthernetConfigurationOpt_t& conf_opt);
+    static void handle_new_ethernet_configuration(const EthernetConfigurationOpt_t& c_opt);
 
 public:
-    SetupEthernetService(IRxConfigurationChangePublisher& conf_pub);
+    SetupEthernetService(const i_app_configuration_publisher& app_configuraiton_publisher);
 
     ~SetupEthernetService();
 

@@ -19,22 +19,22 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Core/Persisting/CachingBootstrapper.h \
-    Core/Persisting/BlockingMessagesCachingService.h \
     Core/Persisting/Commands/InsertMessagesBatchCmd.h \
     Core/Persisting/Commands/UpdateSenderCmd.h \
     Core/Persisting/Configuration/DatabaseConfigurator.h \
-    Core/Persisting/IMessagesCachingService.h \
     Core/Persisting/Queries/Dtos.h \
     Core/Persisting/Queries/SelectMessagesBatchesQry.h \
+    Core/Persisting/blocking_message_caching_service.h \
+    Core/Persisting/i_message_caching_service.h \
+    Core/Persisting/runner_core_persisting.h
 
 SOURCES += \
-    Core/Persisting/CachingBootstrapper.cpp \
-    Core/Persisting/BlockingMessagesCachingService.cpp \
     Core/Persisting/Commands/InsertMessagesBatchCmd.cpp \
     Core/Persisting/Commands/UpdateSenderCmd.cpp \
     Core/Persisting/Configuration/DatabaseConfigurator.cpp \
     Core/Persisting/Queries/SelectMessagesBatchesQry.cpp \
+    Core/Persisting/blocking_message_caching_service.cpp \
+    Core/Persisting/runner_core_persisting.cpp
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj

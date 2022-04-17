@@ -3,7 +3,6 @@
 // qt
 #include <QRegularExpression>
 // oss
-#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <plog/Log.h>
 
@@ -14,7 +13,7 @@ const QString REQUEST_NAME { QStringLiteral("ETHERNET_SETTINGS") };
 const QRegularExpression REQUEST_PARAM_CAPTURE { "([\\w]+):(.*)" };
 
 ConfigEthernetRequestHandler::ConfigEthernetRequestHandler(
-    ConfigurationManager& configuration_service
+    app_configuration_manager& configuration_service
 )
     :   mConfigurationService { configuration_service }
 {
@@ -46,11 +45,11 @@ void
 ConfigEthernetRequestHandler::updateConfiguration(const QString& configuration_value) {
     auto payload = nlohmann::json::parse(configuration_value.toStdString().c_str());
 
-    mConfigurationService.updateConfiguration("ethernet", payload);
+    mConfigurationService.set_configuration("ethernet", payload);
 }
 
 QString ConfigEthernetRequestHandler::fetchConfiguration() const {
-    auto const configuration = mConfigurationService.getConfiguration("ethernet");
+    auto const configuration = mConfigurationService.get_configuration("ethernet");
 
-    return QString::fromStdString(configuration.j_object.dump());
+    return QString::fromStdString(configuration.value.dump());
 }

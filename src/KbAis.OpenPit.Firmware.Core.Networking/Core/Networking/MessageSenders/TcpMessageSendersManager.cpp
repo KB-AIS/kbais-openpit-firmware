@@ -7,9 +7,8 @@
 #include <plog/Log.h>
 #include <range/v3/all.hpp>
 
-// Utils.TrdParty.JsonQt
-#include "JsonQt.h"
 #include "Format.h"
+#include "JsonQt.h"
 
 using namespace std::chrono_literals;
 
@@ -21,9 +20,9 @@ QString QtEnumToString(const QEnum value) {
 }
 
 TcpMessageSendersManager::TcpMessageSendersManager(
-    IRxConfigurationChangePublisher& configurationPublisher
+    const i_app_configuration_publisher& app_configuration_publisher
 )
-    :   m_configurationPublisher(configurationPublisher)
+    :   app_configuration_publisher_(app_configuration_publisher)
     ,   m_subMessageSenderDiagInfosChanged({ })
 {
     m_subsConfigurationChanged = rxcpp::composite_subscription();
@@ -33,16 +32,16 @@ void
 TcpMessageSendersManager::StartWorkOn(const rxcpp::observe_on_one_worker& coordination) {
     PLOGD << "starting work";
 
-    m_configurationPublisher.getChangeObservable("base")
+    app_configuration_publisher_.get_observable("base")
         // TODO: Use aggregate function to make a strong-typed config
-        .combine_latest(m_configurationPublisher.getChangeObservable("networking"))
+        .combine_latest(app_configuration_publisher_.get_observable("networking"))
         .sample_with_time(500ms, coordination)
         .subscribe(
             m_subsConfigurationChanged
-        ,   [&](const std::tuple<AppConfiguration, AppConfiguration> x) {
+        ,   [&](const std::tuple<app_configuration, app_configuration> x) {
                 constexpr int CONFIG_BASE = 0, CONFIG_NETW = 1;
 
-                m_equipment_id = std::get<CONFIG_BASE>(x).j_object
+                m_equipment_id = std::get<CONFIG_BASE>(x).value
                     .at("/vehihle_id"_json_pointer).get<QString>();
 
                 OnConfigurationChanged(std::get<CONFIG_NETW>(x));
@@ -59,7 +58,7 @@ TcpMessageSendersManager::GetObservableDiagInfo() const {
 }
 
 void
-TcpMessageSendersManager::OnConfigurationChanged(const AppConfiguration& newConfiguration) {
+TcpMessageSendersManager::OnConfigurationChanged(const app_configuration& configuration) {
     PLOGV << "got a new 'networking' configuration";
 
     // Stop getting old notifications
@@ -72,7 +71,7 @@ TcpMessageSendersManager::OnConfigurationChanged(const AppConfiguration& newConf
     m_messageSenders.clear();
     m_messageSenderStates.clear();
 
-    m_messageSenderConfigurations = newConfiguration.j_object.at("/servers"_json_pointer)
+    m_messageSenderConfigurations = configuration.value.at("/servers"_json_pointer)
     |   ranges::views::transform([](nlohmann::json x) {
             TcpMessageSenderConfiguration msc {
                 x.at("server_name").get<QString>()

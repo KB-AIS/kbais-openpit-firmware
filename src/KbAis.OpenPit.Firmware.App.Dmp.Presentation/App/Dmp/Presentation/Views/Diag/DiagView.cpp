@@ -2,7 +2,7 @@
 #include "ui_DiagView.h"
 
 DiagView::DiagView(
-    NavController& navController
+    nav_controller& navController
 )
     :   QWidget()
     ,   m_navEmmiter(navController)

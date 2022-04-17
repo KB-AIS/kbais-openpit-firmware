@@ -1,15 +1,15 @@
 #ifndef CONFIGSCALEREQUESTHANDLER_H
 #define CONFIGSCALEREQUESTHANDLER_H
 
-#include "ConfigurationsManager.h"
+#include "core/configuration/app_configuration_manager.h"
 #include "IAgtpRequestHandler.h"
 
 class ConfigScaleRequestHandler : public IAgtpRequestHandler {
 
-    ConfigurationManager& m_configuration_manager;
+    app_configuration_manager& m_configuration_manager;
 
 public:
-    ConfigScaleRequestHandler(ConfigurationManager& configuration_manager);
+    ConfigScaleRequestHandler(app_configuration_manager& configuration_manager);
 
     AgtpResponse handle(const AgtpRequest& request);
 

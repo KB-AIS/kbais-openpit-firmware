@@ -4,8 +4,8 @@
 #include <plog/Log.h>
 
 DeviceStateCollector::DeviceStateCollector(
-    const IRxGpsSensorPublisher& service_gps
-,   const RxServiceCardReader& service_tcr
+    const i_gps_sensor_publisher& service_gps
+,   const crd_sensor_publisher& service_tcr
 )
     :   QObject()
     ,   m_service_gps { service_gps }
@@ -22,11 +22,11 @@ void DeviceStateCollector::start(const rxqt::run_loop& loop) {
             }
         );
 
-    m_service_tcr.get_observable()
+    m_service_tcr.get_observable(loop.observe_on_run_loop())
         .observe_on(loop.observe_on_run_loop())
         .subscribe(
             m_subscriptions
-        ,   [&](const CardReaderMessage& msg) {
+        ,   [&](const crd_sensor_message& msg) {
                 m_cached_tcr_msg = msg;
             }
         );
@@ -37,7 +37,7 @@ DeviceStateCollector::getGpsMessage() const {
     return m_cached_gps_msg;
 }
 
-CardReaderMessage
+crd_sensor_message
 DeviceStateCollector::get_tcr_msg() const {
     return m_cached_tcr_msg;
 }

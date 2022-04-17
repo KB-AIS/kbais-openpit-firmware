@@ -4,7 +4,7 @@ TARGET = opf
 
 TEMPLATE = app
 
-QT += core gui network serialport sql widgets \
+QT += core gui network serialport sql widgets svg \
 
 CONFIG += depend_includepath conan_basic_setup \
 
@@ -29,27 +29,38 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    Messaging/DmpImmediateMessageMapper.h \
-    Messaging/DmpRecurrentMessageMapper.h \
-    system/module_factory_system_services.h \
-    composition_root_module.h \
+    app_configuration_initializer_dmp.h \
+    composition_root_factory.h \
     conifgurator_cli_processor.h \
-    dmp_configuration_initializer.h \
-    state_watcher_fuelling.h \
-    state_watcher_loading.h \
-    state_watcher_motioning.h \
+    messaging/immediate_message_mapper_dmp.h \
+    messaging/recurrent_message_mapper_dmp.h \
+    simulating/fake_gps_sensor_publisher.h \
+    simulating/fake_lcs_sensor_publisher.h \
+    simulating/scenario_executor.h \
+    state_watching/module_factory_state_watchers.h \
+    state_watching/runner_state_watcher.h \
+    state_watching/shift_watcher.h \
+    state_watching/state_watcher.h \
+    state_watching/state_watcher_fuelling.h \
+    state_watching/state_watcher_loading.h \
+    state_watching/state_watcher_motioning.h \
+    system/module_factory_system_services.h \
     system/setup_datetime_service.h \
     system/setup_ethernet_service.h
 
 SOURCES += \
-    Messaging/DmpImmediateMessageMapper.cpp \
-    Messaging/DmpRecurrentMessageMapper.cpp \
+    app_configuration_initializer_dmp.cpp \
     conifgurator_cli_processor.cpp \
-    dmp_configuration_initializer.cpp \
     main.cpp \
-    state_watcher_fuelling.cpp \
-    state_watcher_loading.cpp \
-    state_watcher_motioning.cpp \
+    messaging/immediate_message_mapper_dmp.cpp \
+    messaging/recurrent_message_mapper_dmp.cpp \
+    simulating/fake_gps_sensor_publisher.cpp \
+    simulating/fake_lcs_sensor_publisher.cpp \
+    state_watching/runner_state_watcher.cpp \
+    state_watching/shift_watcher.cpp \
+    state_watching/state_watcher_fuelling.cpp \
+    state_watching/state_watcher_loading.cpp \
+    state_watching/state_watcher_motioning.cpp \
     system/setup_datetime_service.cpp \
     system/setup_ethernet_service.cpp
 

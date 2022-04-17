@@ -1,15 +1,15 @@
 #include "NavController.h"
 
-NavController::NavController() {
+nav_controller::nav_controller() {
 
 }
 
 void
-NavController::Navigate(int screenIdx) const {
+nav_controller::Navigate(int screenIdx) const {
     m_subjectReqestedDestId.get_subscriber().on_next(screenIdx);
 }
 
 rxcpp::observable<int>
-NavController::GetObservableNavRequested() const {
+nav_controller::GetObservableNavRequested() const {
     return m_subjectReqestedDestId.get_observable();
 }

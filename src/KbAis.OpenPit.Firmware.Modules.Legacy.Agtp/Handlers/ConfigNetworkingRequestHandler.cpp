@@ -5,7 +5,7 @@
 const QString REQUEST_NAME { QStringLiteral("SERVER_PARAM") };
 
 ConfigNetworkingRequestHandler::ConfigNetworkingRequestHandler(
-    ConfigurationManager& configurationProvider
+    app_configuration_manager& configurationProvider
 )
     : mConfigurationManager(configurationProvider)
 {
@@ -17,10 +17,10 @@ ConfigNetworkingRequestHandler::handle(const AgtpRequest& request) {
     const auto opt_configuration = extract_configuration(request.payload);
 
     if (opt_configuration.has_value()) {
-        mConfigurationManager.updateConfiguration("networking", *opt_configuration);
+        mConfigurationManager.set_configuration("networking", *opt_configuration);
     }
 
-    const auto configuration = mConfigurationManager.getConfiguration("networking").j_object;
+    const auto configuration = mConfigurationManager.get_configuration("networking").value;
 
     return {
         request.uid

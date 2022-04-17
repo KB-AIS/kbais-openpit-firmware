@@ -2,21 +2,21 @@
 #define CONFIGNETWORKINGREQUESTHANDLER_H
 
 // Core.Configuration
-#include "ConfigurationsManager.h"
+#include "core/configuration/app_configuration_manager.h"
 
 #include "IAgtpRequestHandler.h"
 
 class ConfigNetworkingRequestHandler : public IAgtpRequestHandler {
 
 public:
-    ConfigNetworkingRequestHandler(ConfigurationManager& configurationProvider);
+    ConfigNetworkingRequestHandler(app_configuration_manager& configurationProvider);
 
     AgtpResponse handle(const AgtpRequest &request);
 
     QString get_request_name() const;
 
 private:
-    ConfigurationManager& mConfigurationManager;
+    app_configuration_manager& mConfigurationManager;
 };
 
 #endif // CONFIGNETWORKINGREQUESTHANDLER_H

@@ -7,7 +7,7 @@
 #include "Core/Networking/MessageSenders/TcpMessageSendersManager.h"
 #include "Core/Networking/ModuleBootstraperNetworking.h"
 
-inline auto CreateInjectorCoreNetworking() noexcept {
+inline auto create_core_networking() noexcept {
     return boost::di::make_injector(
         boost::di::bind<IMessageSendersManager, IRxMessageSendersDiagPub>
             .to<TcpMessageSendersManager>()

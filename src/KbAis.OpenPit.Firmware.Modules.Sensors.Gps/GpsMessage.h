@@ -2,7 +2,7 @@
 #define GPSMESSAGE_H
 
 // qt
-#include <QDateTime>
+#include <QtCore/qdatetime.h>
 
 struct GpsMessage {
 

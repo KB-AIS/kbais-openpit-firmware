@@ -5,7 +5,6 @@
 *~
 *.autosave
 *.a
-*.core
 *.moc
 *.o
 *.obj
@@ -18,8 +17,6 @@
 *.qm
 .#*
 *.*#
-core
-!core/
 tags
 .DS_Store
 .directory

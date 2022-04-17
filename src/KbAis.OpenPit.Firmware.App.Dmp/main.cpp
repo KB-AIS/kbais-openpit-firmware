@@ -1,27 +1,24 @@
 #define FMT_HEADER_ONLY
 
 // qt
-#include <QApplication>
+#include <QtWidgets/QApplication>
 // oss
 #include <plog/Log.h>
 
-#include "Core/Persisting/Configuration/DatabaseConfigurator.h"
+#include "app_configuration_initializer_dmp.h"
 #include "boost_di_extensions.h"
-#include "composition_root_module.h"
+#include "composition_root_factory.h"
 #include "conifgurator_cli_processor.h"
-#include "dmp_configuration_initializer.h"
-#include "state_watcher_fuelling.h"
-#include "state_watcher_motioning.h"
 
 QApplication create_application() {
     int                app_argc { 3 };
     std::vector<char*> app_argv { (char*)"opf", (char*)"-platform", (char*)"linuxfb", nullptr };
+
     return { app_argc, app_argv.data() };
 }
 
 int main(int argc, char* argv[]) {
-    CliProcessor_t cli_processor { "OpenPit Firmware", "OPF" };
-
+    cli_processor_t cli_processor { "OpenPit Firmware: a program to fetch equipment telemetry data", "opf" };
     configure_cli_processor(cli_processor);
 
     CLI11_PARSE(cli_processor, argc, argv);
@@ -33,16 +30,32 @@ int main(int argc, char* argv[]) {
 
     PLOGI << "Setup application";
     const auto application { create_application() };
+    QApplication::setApplicationName("opf");
+
+    const auto s = rxcpp::observe_on_new_thread().create_coordinator().get_scheduler();
+    const auto t = rxcpp::observe_on_one_worker(s);
 
     {
-        DatabaseConfigurator::configure();
-    }
+        const auto injector = boost::di::make_injector(create_composition_root());
 
-    {
-        const auto injector { composition_root_module() };
-        // Конфиги сервисов должны быть проинициализированы до самих сервисов
-        boost::di::create<std::shared_ptr<DmpConfigurationInitializer>>(injector);
-        // Инициализация всех остальных сервисов приложения
+        boost::di::create<std::shared_ptr<app_configuration_initializer_dmp>>(injector);
+
+        {
+            auto state_watcher_motioning_ = injector.create<std::shared_ptr<state_watcher_motioning>>();
+            state_watcher_motioning_->start_working_on(t);
+
+            auto state_watcher_loading_ = injector.create<std::shared_ptr<state_watcher_loading>>();
+            state_watcher_loading_->start_working_on(t);
+
+            auto gps_sensor_publisher = injector.create<std::shared_ptr<fake_gps_sensor_publisher>>();
+            gps_sensor_publisher->setup_scenario(t);
+            gps_sensor_publisher->start_scenario();
+
+            auto lcs_sensor_publisher = injector.create<std::shared_ptr<fake_lcs_sensor_publisher>>();
+            lcs_sensor_publisher->setup_scenario(t);
+            lcs_sensor_publisher->start_scenario();
+        }
+
         create_singletons(injector);
     }
 

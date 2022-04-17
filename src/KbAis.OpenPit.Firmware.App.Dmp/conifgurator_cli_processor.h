@@ -1,18 +1,29 @@
 #ifndef CONIFGURATOR_CLI_PROCESSOR_H
 #define CONIFGURATOR_CLI_PROCESSOR_H
 
-// oss
+// oss, cli11
 #include <CLI/CLI.hpp>
+// oss, plog
 #include <plog/Severity.h>
 
-using CliProcessor_t = CLI::App;
+using cli_processor_t = CLI::App;
 
-struct LoggerOptions {
-    plog::Severity severity_level { plog::Severity::none };
+void configure_cli_processor(cli_processor_t& cli);
+
+struct logging_options {
+
+    plog::Severity level { plog::Severity::none };
+
 };
 
-void configure_cli_processor(CliProcessor_t& cli);
+void run_use_logging(logging_options& opts);
 
-void run_setup_logger_options(const LoggerOptions& options);
+struct simulating_options {
+
+    std::vector<std::string> scenarios;
+
+};
+
+void run_use_simulating(simulating_options& opts);
 
 #endif // CONIFGURATOR_CLI_PROCESSOR_H

@@ -17,12 +17,12 @@ class DiagView : public QWidget{
     Q_OBJECT
 
 public:
-    DiagView(NavController& navigationEmmiter);
+    DiagView(nav_controller& navigationEmmiter);
 
     ~DiagView();
 
 private:
-    NavController& m_navEmmiter;
+    nav_controller& m_navEmmiter;
 
     Ui::DiagView* ui;
 

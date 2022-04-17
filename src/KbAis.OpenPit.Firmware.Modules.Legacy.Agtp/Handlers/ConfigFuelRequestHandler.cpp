@@ -5,7 +5,7 @@
 const QString REQUEST_NAME { QStringLiteral("SCALE_PARAMS") };
 
 ConfigFuelRequestHandler::ConfigFuelRequestHandler(
-    ConfigurationManager& configuration_manager
+    app_configuration_manager& configuration_manager
 )
     :   m_configuration_manager(configuration_manager)
 {
@@ -17,10 +17,10 @@ ConfigFuelRequestHandler::handle(const AgtpRequest& request) {
     const auto config_opt = extract_configuration(request.payload);
 
     if (config_opt) {
-        m_configuration_manager.updateConfiguration("fuel", *config_opt);
+        m_configuration_manager.set_configuration("fuel", *config_opt);
     }
 
-    const auto config = m_configuration_manager.getConfiguration("fuel").j_object;
+    const auto config = m_configuration_manager.get_configuration("fuel").value;
 
     return {
         request.uid

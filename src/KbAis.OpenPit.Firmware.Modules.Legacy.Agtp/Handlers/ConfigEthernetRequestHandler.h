@@ -2,22 +2,21 @@
 #define CONFIGETHERNETREQUESTHANDLER_H
 
 // Core.Configuration
-#include "ConfigurationsManager.h"
-#include <range/v3/view/transform.hpp>
+#include "core/configuration/app_configuration_manager.h"
 
 #include "IAgtpRequestHandler.h"
 
 class ConfigEthernetRequestHandler : public IAgtpRequestHandler {
 
 public:
-    ConfigEthernetRequestHandler(ConfigurationManager& configurationService);
+    ConfigEthernetRequestHandler(app_configuration_manager& configurationService);
 
     AgtpResponse handle(const AgtpRequest& request) override;
 
     QString get_request_name() const override;
 
 private:
-    ConfigurationManager& mConfigurationService;
+    app_configuration_manager& mConfigurationService;
 
     void updateConfiguration(const QString& configurationValue);
 

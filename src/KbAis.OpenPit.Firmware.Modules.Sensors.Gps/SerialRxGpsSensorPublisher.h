@@ -14,12 +14,12 @@
 #include "IRxGpsSensorPublisher.h"
 #include "Nmea/NmeaParser.h"
 
-class SerialRxGpsSensorPublisher : public IRxGpsSensorPublisher {
+class gps_sensor_publisher : public i_gps_sensor_publisher {
 
 public:
-    SerialRxGpsSensorPublisher();
+    gps_sensor_publisher();
 
-    ~SerialRxGpsSensorPublisher();
+    ~gps_sensor_publisher();
 
     const rxcpp::observable<GpsMessage> get_observable() const override;
 

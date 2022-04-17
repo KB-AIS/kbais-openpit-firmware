@@ -14,9 +14,9 @@ using namespace std::chrono_literals;
 const QString CONNMAN_SETTINGS_PATH { QStringLiteral("/media/app/connman/tiptruck.config") };
 
 SetupEthernetService::SetupEthernetService(
-    IRxConfigurationChangePublisher& conf_pub
+    const i_app_configuration_publisher& app_configuration_publisher
 ) {
-    conf_pub.getChangeObservable(QStringLiteral("ethernet"))
+    app_configuration_publisher.get_observable(QStringLiteral("ethernet"))
         .sample_with_time(500ms, rxcpp::observe_on_event_loop()) // TODO: Run in main thread
         .map(&SetupEthernetService::map_ethernet_configuration)
         .filter([](const auto& x) -> bool {
@@ -33,16 +33,16 @@ SetupEthernetService::~SetupEthernetService() {
 }
 
 SetupEthernetService::EthernetConfigurationOpt_t
-SetupEthernetService::map_ethernet_configuration(const AppConfiguration& conf) {
+SetupEthernetService::map_ethernet_configuration(const app_configuration& c) {
     try {
-        const auto& j_object = conf.j_object;
+        const auto& c_v = c.value;
 
         return std::make_optional(EthernetConfiguration {
-            .dns               = j_object.at("dns").get<std::string>()
-        ,   .ip                = j_object.at("ip").get<std::string>()
-        ,   .mask              = j_object.at("mask").get<std::string>()
-        ,   .gateway           = j_object.at("gateway").get<std::string>()
-        ,   .is_manual_enabled = j_object.at("manual_enable").get<bool>()
+            .dns               = c_v.at("dns").get<std::string>()
+        ,   .ip                = c_v.at("ip").get<std::string>()
+        ,   .mask              = c_v.at("mask").get<std::string>()
+        ,   .gateway           = c_v.at("gateway").get<std::string>()
+        ,   .is_manual_enabled = c_v.at("manual_enable").get<bool>()
         });
     } catch(std::exception& exception) {
         PLOGE << "An exception occured during ethernet configuration mapping: " <<  exception.what();

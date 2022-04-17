@@ -21,7 +21,7 @@
 #include "Handlers/FetchDeviceStateRequsetHandler.h"
 #include "Handlers/IAgtpRequestHandler.h"
 
-inline auto createAgtpServiceModule() noexcept {
+inline auto create_module_legacy_agtp() noexcept {
     return boost::di::make_injector(
         boost::di::bind<AgtpThreadWorker>()
             .in(boost::di::singleton)

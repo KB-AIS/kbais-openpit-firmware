@@ -8,9 +8,11 @@
 
 #include "GpsMessage.h"
 
-class IRxGpsSensorPublisher : public QObject {
+class i_gps_sensor_publisher : public QObject {
 
 public:
+    virtual ~i_gps_sensor_publisher() noexcept = default;
+
     virtual const rxcpp::observable<GpsMessage> get_observable() const = 0;
 
 };

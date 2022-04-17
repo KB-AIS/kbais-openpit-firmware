@@ -3,10 +3,10 @@
 
 #include <rxcpp/rx.hpp>
 
-class NavController {
+class nav_controller {
 
 public:
-    NavController();
+    nav_controller();
 
     void Navigate(int destId) const;
 
