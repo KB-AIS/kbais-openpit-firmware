@@ -39,7 +39,7 @@ HEADERS += \
     simulating/scenario_executor.h \
     state_watching/module_factory_state_watchers.h \
     state_watching/runner_state_watcher.h \
-    state_watching/shift_watcher.h \
+    state_watching/shift_controller.h \
     state_watching/state_watcher.h \
     state_watching/state_watcher_fuelling.h \
     state_watching/state_watcher_loading.h \
@@ -57,7 +57,7 @@ SOURCES += \
     simulating/fake_gps_sensor_publisher.cpp \
     simulating/fake_lcs_sensor_publisher.cpp \
     state_watching/runner_state_watcher.cpp \
-    state_watching/shift_watcher.cpp \
+    state_watching/shift_controller.cpp \
     state_watching/state_watcher_fuelling.cpp \
     state_watching/state_watcher_loading.cpp \
     state_watching/state_watcher_motioning.cpp \

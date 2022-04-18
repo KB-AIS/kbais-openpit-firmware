@@ -3,10 +3,10 @@
 // c
 #include <time.h>
 // std
-#include <cmath>
+#include <ctime>
 
-SetupDateTimeService::SetupDateTimeService(const i_gps_sensor_publisher& gps_publisher) {
-    gps_publisher.get_observable()
+SetupDateTimeService::SetupDateTimeService(const i_gps_sensor_publisher& gps_sensor_publisher) {
+    gps_sensor_publisher.get_observable()
         .subscribe(subscriptions_, [this](const GpsMessage& x) { handle(x); });
 }
 
@@ -15,14 +15,21 @@ SetupDateTimeService::~SetupDateTimeService() noexcept {
 }
 
 void
-SetupDateTimeService::handle(const GpsMessage& gps_message) {
-    if (!gps_message.isValid) return;
+SetupDateTimeService::handle(const GpsMessage& msg) {
+    if (!msg.isValid) return;
 
-   // Используется obsolete-метод для повторения реализации с прошивки TK
-   const time_t sys_time = QDateTime::currentDateTimeUtc().toTime_t();
-   const time_t new_time = gps_message.datetime.toTime_t();
+    auto diff = msg.datetime.secsTo(QDateTime::currentDateTime());
 
-   if (std::abs(new_time - sys_time) <= 1) return;
+    if (std::abs(diff) <= 1) return;
 
-   stime(&new_time);
+    std::chrono::seconds      s  { msg.datetime.toSecsSinceEpoch() };
+    std::chrono::milliseconds ms { msg.datetime.toMSecsSinceEpoch() };
+
+    std::chrono::nanoseconds  ns { ms - s };
+
+    const timespec time_to_set  {
+        .tv_sec  = static_cast<__time_t>(s.count())
+    ,   .tv_nsec = static_cast<__syscall_slong_t>(ns.count())
+    };
+    clock_settime(CLOCK_REALTIME, &time_to_set);
 }

@@ -84,15 +84,15 @@ inline auto create_module_state_watching() {
 inline auto create_composition_root() noexcept {
     return boost::di::make_injector(         
         create_core_configuration()
-    ,   create_core_networking()
+//    ,   create_core_networking()
 //    ,   create_core_messaging()
-    ,   create_core_persisting()
+//    ,   create_core_persisting()
 //    ,   create_module_legacy_agtp()
-    ,   create_module_presentation_dmp()
-//    ,   create_module_sensors_gps()
+//    ,   create_module_presentation_dmp()
+    ,   create_module_sensors_gps()
 //    ,   create_module_sensors_serials()
-//    ,   create_module_system()
-    ,   create_module_state_watching()
+    ,   create_module_system()
+//    ,   create_module_state_watching()
     );
 };
 

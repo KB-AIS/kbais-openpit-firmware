@@ -11,10 +11,10 @@ class SetupDateTimeService {
 
     rxcpp::composite_subscription subscriptions_;
 
-    void handle(const GpsMessage& gps_message);
+    void handle(const GpsMessage& msg);
 
 public:
-    SetupDateTimeService(const i_gps_sensor_publisher& gps_publisher);
+    SetupDateTimeService(const i_gps_sensor_publisher& gps_sensor_publisher);
 
     ~SetupDateTimeService() noexcept;
 
