@@ -12,12 +12,12 @@
 class DmpImmediateMessageMapper : public IRxImmediateMessageMapper {
     const main_view& m_main_view;
 
-    const StateWatcherFuelling& m_state_ful_pub;
+    const state_watcher_fuelling& m_state_ful_pub;
 
 public:
     DmpImmediateMessageMapper(
         const main_view& main_view
-    ,   const StateWatcherFuelling& state_ful_pub
+    ,   const state_watcher_fuelling& state_ful_pub
     );
 
     rxcpp::observable<Message> getObservable() const override;

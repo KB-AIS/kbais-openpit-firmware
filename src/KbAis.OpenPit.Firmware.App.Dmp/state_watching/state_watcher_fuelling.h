@@ -7,35 +7,49 @@
 #include "modules/sensors/serials/lls/flv_calibration_publisher.h"
 #include "state_watching/state_watcher_motioning.h"
 
-class StateWatcherFuelling : public i_state_watcher_service {
-    using SteadyClock_t = std::chrono::steady_clock::time_point;
+struct state_watcher_fuelling_configuration {
 
-    flv_calibration_publisher& ful_msg_pub_;
+};
 
-    rxcpp::rxsub::behavior<state_changed_message> subject_state_message_;
+/*!
+ *  \brief Сервис мониторинга за уровнем топлива оборудования и детекции
+ *  заправок/сливов.
+ *
+ *  \note Оригинальная реализаця взята из tiptruck\fuel.cpp.
+ */
+class state_watcher_fuelling : public i_state_watcher_service {
+    using fuelling_state_t = rxcpp::rxsub::behavior<state_changed_message>;
 
-    std::vector<double> m_fls;
-    int                 m_fl_current_idx { 0 };
-    double              m_fl_filtered { 0.0 };
+    using time_point_t = std::chrono::steady_clock::time_point;
 
-    bool                m_fl_fixed { false };
-    SteadyClock_t       m_fl_last_unfixed_time;
-    double              m_fl_fixed_tmp { 0.0 };
+    struct impl_tk {
+        std::vector<double> buffered_flv;
+        int                 buffered_flv_cur_idx { 0 };
 
-    bool                m_state_fueling { false };
-    double              m_fl_fueling_begin { 0.0 };
+        double              flv_filtered         { 0.0 };
 
-    bool                m_state_draining { false };
-    double              m_fl_draining_begin { 0.0 };
+        bool                is_flv_fixed         { false };
+        time_point_t        tp_flv_last_unfix    { std::chrono::steady_clock::now() };
+        double              flv_fixed_tmp        { 0.0 };
 
-    void handle_fuel_message(const flv_message& fuel_message);
+        bool                is_state_fueling     { false };
+        bool                is_state_draining    { false };
+    };
 
-    void publish_new_state(state_code state_code);
+    const flv_calibration_publisher& flv_calibration_publisher_;
+
+    fuelling_state_t current_fuelling_state_;
+
+    impl_tk tk_;
+
+    void handle_flv_message(const flv_message& msg);
 
 public:
-    StateWatcherFuelling(flv_calibration_publisher& ful_msg_pub);
+    state_watcher_fuelling(const flv_calibration_publisher& flv_calibration_publisher);
 
-    void start_working_on(const rxcpp::observe_on_one_worker& coordination) override;
+    void start_working_on(
+        const rxcpp::observe_on_one_worker& coordination
+    ) override;
 
     rxcpp::observable<state_changed_message> get_observable() const;
 

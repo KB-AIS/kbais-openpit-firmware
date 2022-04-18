@@ -42,7 +42,7 @@ struct state_watcher_motioning_configuration {
  *
  */
 class state_watcher_motioning : public i_state_watcher_service, public i_state_changed_publisher {
-    using steady_clock_t = std::chrono::steady_clock::time_point;
+    using time_point_t = std::chrono::steady_clock::time_point;
 
     using motioning_state_t = rxcpp::rxsub::behavior<state_code_motioning>;
 
@@ -60,13 +60,13 @@ class state_watcher_motioning : public i_state_watcher_service, public i_state_c
 
     std::vector<double> buffered_speed_values_;
 
-    steady_clock_t last_move_time;
+    time_point_t last_move_time;
 
-    steady_clock_t last_stop_time;
+    time_point_t last_stop_time;
 
-    steady_clock_t prev_stop_time;
+    time_point_t prev_stop_time;
 
-    steady_clock_t last_park_time;
+    time_point_t last_park_time;
 
     void handle_gps_message(const GpsMessage& gps_msg);
 

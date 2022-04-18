@@ -8,100 +8,94 @@
 
 using namespace std::chrono;
 
-constexpr int FUL_LVL_BUF_SIZE { 5 };
+constexpr int BUFFERED_FLV_SIZE { 5 };
 
-constexpr int FUL_LVL_PERIOD { 50 };
+constexpr int FLV_PERIOD { 50 };
 
-constexpr double FUL_LVL_WIDTH_FIX { 5.0 };
+constexpr double FLV_WIDTH_FIX { 5.0 };
 
-constexpr double FUL_LVL_FUELLING { 20.0 };
+constexpr double FLV_FUELLING { 20.0 };
 
-constexpr double FUL_LVL_FUELLING_DLT { 10.0 };
+constexpr double FLV_FUELLING_DLT { 10.0 };
 
-constexpr double FUL_LVL_DRAINING { 20.0 };
+constexpr double FLV_DRAINING { 20.0 };
 
-constexpr double FUL_LVL_DRAINGIN_DLT { 10.0 };
+constexpr double FLV_DRAINGIN_DLT { 10.0 };
 
 
-StateWatcherFuelling::StateWatcherFuelling(flv_calibration_publisher& ful_msg_pub)
-    :   ful_msg_pub_(ful_msg_pub)
-    ,   subject_state_message_(state_changed_message { state_code::unknown })
+state_watcher_fuelling::state_watcher_fuelling(
+    const flv_calibration_publisher& flv_calibration_publisher
+)
+    :   flv_calibration_publisher_ { flv_calibration_publisher }
+    ,   current_fuelling_state_(state_changed_message { state_code::unknown })
 {
-    m_fls.resize(FUL_LVL_BUF_SIZE);
+    tk_.buffered_flv.resize(BUFFERED_FLV_SIZE);
 }
 
-void
-StateWatcherFuelling::start_working_on(const rxcpp::observe_on_one_worker& coordination) {
-    ful_msg_pub_
+void state_watcher_fuelling::start_working_on(
+    [[maybe_unused]]const rxcpp::observe_on_one_worker& coordination
+) {
+    flv_calibration_publisher_
         .get_observable()
-        .subscribe([this](const auto& x) { handle_fuel_message(x); });
+        .subscribe([this](const auto& x) { handle_flv_message(x); });
 }
 
-void
-StateWatcherFuelling::handle_fuel_message(const flv_message& fuel_message) {
-    m_fls[m_fl_current_idx] = fuel_message.fuel_level;
-    m_fl_current_idx = (m_fl_current_idx + 1) % FUL_LVL_BUF_SIZE;
+void state_watcher_fuelling::handle_flv_message(const flv_message& msg) {
+    tk_.buffered_flv[tk_.buffered_flv_cur_idx] = msg.fuel_level;
+    tk_.buffered_flv_cur_idx = (tk_.buffered_flv_cur_idx + 1) % BUFFERED_FLV_SIZE;
 
-    const auto fl_average = ranges::accumulate(m_fls, 0.0) / FUL_LVL_BUF_SIZE;
+    const auto flv_avg = ranges::accumulate(tk_.buffered_flv, 0.0) / BUFFERED_FLV_SIZE;
 
     // Q!: Some magic is happening here, need to add an detailed comment
-    m_fl_filtered = m_fl_filtered > 0.0
-        ? m_fl_filtered * (FUL_LVL_PERIOD - 1) / FUL_LVL_PERIOD + fl_average / FUL_LVL_PERIOD
-        : fl_average;
+    tk_.flv_filtered = tk_.flv_filtered > 0.0
+        ? tk_.flv_filtered * (FLV_PERIOD - 1) / FLV_PERIOD + flv_avg / FLV_PERIOD
+        : flv_avg;
 
-    const auto fl_delta = std::abs(fl_average - m_fl_filtered);
+    const auto flv_delta = std::abs(flv_avg - tk_.flv_filtered);
 
     // TODO: Move to 'fixing' function
-    if (fl_delta < FUL_LVL_WIDTH_FIX) {
+    if (flv_delta < FLV_WIDTH_FIX) {
         const auto need_fix =
-            !m_fl_fixed
-            && duration_cast<milliseconds>(steady_clock::now() - m_fl_last_unfixed_time) > 5s;
+            !tk_.is_flv_fixed
+            && duration_cast<milliseconds>(steady_clock::now() - tk_.tp_flv_last_unfix) > 5s;
 
         if (need_fix) {
-            m_fl_fixed = true;
+            tk_.is_flv_fixed = true;
 
-            if (!m_state_fueling) {
-                m_fl_fixed_tmp = fl_average;
+            if (!tk_.is_state_fueling) {
+                tk_.flv_fixed_tmp = flv_avg;
             }
         }
     } else {
-        m_fl_last_unfixed_time = steady_clock::now();
-        const auto need_unfix = fl_delta > 2.0 * FUL_LVL_WIDTH_FIX;
+        tk_.tp_flv_last_unfix = steady_clock::now();
+        const auto need_unfix = flv_delta > 2.0 * FLV_WIDTH_FIX;
 
         if (need_unfix) {
-            m_fl_fixed = false;
+            tk_.is_flv_fixed = false;
         }
     }
 
     // TODO: Move to 'fueling' function
-    const auto fl_fueling = fl_average - m_fl_filtered;
-    if (fl_fueling >= FUL_LVL_FUELLING && !m_state_fueling) {
-        m_state_fueling = true;
-        m_fl_fueling_begin = m_fl_fixed_tmp;
-        publish_new_state(state_code::refueling_begin);
-    } else if (fl_fueling < FUL_LVL_FUELLING - FUL_LVL_FUELLING_DLT && m_state_fueling) {
-        m_state_fueling = false;
-        publish_new_state(state_code::refueling_finish);
+    const auto fl_fueling = flv_avg - tk_.flv_filtered;
+    if (fl_fueling >= FLV_FUELLING && !tk_.is_state_fueling) {
+        tk_.is_state_fueling = true;
+        current_fuelling_state_.get_subscriber().on_next(state_changed_message { state_code::refueling_begin });
+    } else if (fl_fueling < FLV_FUELLING - FLV_FUELLING_DLT && tk_.is_state_fueling) {
+        tk_.is_state_fueling = false;
+        current_fuelling_state_.get_subscriber().on_next(state_changed_message { state_code::refueling_finish });
     }
 
     // TODO: Move to 'draining' function
-    const auto fl_draingin = m_fl_filtered - fl_average;
-    if (fl_draingin >= FUL_LVL_DRAINING && !m_state_draining) {
-        m_state_draining = true;
-        m_fl_draining_begin = m_fl_filtered;
-        publish_new_state(state_code::discharging_begin);
-    } else if (fl_draingin < FUL_LVL_DRAINING - FUL_LVL_DRAINGIN_DLT && m_state_draining) {
-        m_state_draining = false;
-        publish_new_state(state_code::discharging_finish);
+    const auto fl_draingin = tk_.flv_filtered - flv_avg;
+    if (fl_draingin >= FLV_DRAINING && !tk_.is_state_draining) {
+        tk_.is_state_draining = true;
+        current_fuelling_state_.get_subscriber().on_next(state_changed_message { state_code::discharging_begin });
+    } else if (fl_draingin < FLV_DRAINING - FLV_DRAINGIN_DLT && tk_.is_state_draining) {
+        tk_.is_state_draining = false;
+        current_fuelling_state_.get_subscriber().on_next(state_changed_message { state_code::discharging_finish });
     }
 }
 
-void
-StateWatcherFuelling::publish_new_state(state_code state_code) {
-    subject_state_message_.get_subscriber().on_next(state_changed_message { state_code });
-}
-
-rxcpp::observable<state_changed_message>
-StateWatcherFuelling::get_observable() const {
-    return subject_state_message_.get_observable();
+rxcpp::observable<state_changed_message> state_watcher_fuelling::get_observable() const {
+    return current_fuelling_state_.get_observable();
 }
