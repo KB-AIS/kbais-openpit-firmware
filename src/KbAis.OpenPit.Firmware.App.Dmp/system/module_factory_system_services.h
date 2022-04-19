@@ -9,8 +9,8 @@
 
 inline auto create_module_system() noexcept {
     return boost::di::make_injector(
-        boost::di::bind<SetupDateTimeService>().in(boost::di::singleton)
-    ,   boost::di::bind<SetupEthernetService>().in(boost::di::singleton)
+        boost::di::bind<setup_datetime_service>().in(boost::di::singleton)
+    ,   boost::di::bind<setup_ethernet_service>().in(boost::di::singleton)
     );
 }
 

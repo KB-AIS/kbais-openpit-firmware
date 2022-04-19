@@ -30,8 +30,8 @@ DmpRecurrentMessageMapper::getObservable() const {
         .get_observable()
         .map([&](const GpsMessage& x) -> Message {
             nlohmann::json j_object;
-            j_object["datetime"] = x.isValid ? x.datetime : QDateTime::currentDateTimeUtc();
-            j_object["isValid"] = x.isValid;
+            j_object["datetime"] = x.is_valid ? x.datetime : QDateTime::currentDateTimeUtc();
+            j_object["isValid"] = x.is_valid;
             j_object["latitude"] = x.latitude;
             j_object["longitude"] = x.longitude;
             j_object["speed"] = x.speed;

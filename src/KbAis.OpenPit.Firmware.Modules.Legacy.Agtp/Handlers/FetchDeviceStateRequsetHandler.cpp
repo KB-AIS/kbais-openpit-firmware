@@ -33,7 +33,7 @@ FetchDeviceStateRequestHandler::handle(const AgtpRequest& command) {
     const auto payload = json {
         { "gps", {
             { "sat", gpsMessage.satellites },
-            { "valid", gpsMessage.isValid },
+            { "valid", gpsMessage.is_valid },
             { "lat", gpsMessage.latitude },
             { "lon", gpsMessage.longitude },
         }},

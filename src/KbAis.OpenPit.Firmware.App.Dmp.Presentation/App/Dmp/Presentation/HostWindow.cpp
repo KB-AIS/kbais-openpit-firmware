@@ -71,7 +71,7 @@ void HostWindow::SetupAppBar() {
         .observe_on(coordinator)
         .subscribe(m_rxSubs, [&](const GpsMessage& x) {
             ui->lbl_indicatorGps
-              ->setStyleSheet(x.isValid ? STYLE_INDICATOR_VALID : STYLE_INDICATOR_INVALID);
+              ->setStyleSheet(x.is_valid ? STYLE_INDICATOR_VALID : STYLE_INDICATOR_INVALID);
         });
 
     m_netDiagPub.GetObservableDiagInfo()

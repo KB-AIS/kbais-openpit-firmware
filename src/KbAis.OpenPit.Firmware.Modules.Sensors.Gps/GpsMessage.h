@@ -8,7 +8,7 @@ struct GpsMessage {
 
     QDateTime datetime;
 
-    bool isValid { false };
+    bool is_valid { false };
 
     double latitude { 0.0 };
 

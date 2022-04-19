@@ -3,7 +3,7 @@
 
 #include "core/configuration/app_configuration_manager.h"
 
-struct EthernetConfiguration {
+struct ethnet_config {
 
     std::string dns;
 
@@ -20,20 +20,20 @@ struct EthernetConfiguration {
 /*!
  * \brief Сервис записи конфигурации сетевого подключения устройства.
  */
-class SetupEthernetService {
+class setup_ethernet_service {
 
-    using EthernetConfigurationOpt_t = std::optional<EthernetConfiguration>;
+    using ethnet_config_opt_t = std::optional<ethnet_config>;
 
     rxcpp::composite_subscription subscriptions_;
 
-    static EthernetConfigurationOpt_t map_ethernet_configuration(const app_configuration& c);
+    static ethnet_config_opt_t map_ethernet_configuration(const app_configuration& config);
 
-    static void handle_new_ethernet_configuration(const EthernetConfigurationOpt_t& c_opt);
+    static void handle_new_ethnet_config(const ethnet_config_opt_t& config_opt);
 
 public:
-    SetupEthernetService(const i_app_configuration_publisher& app_configuraiton_publisher);
+    setup_ethernet_service(const i_app_configuration_publisher& app_configuraiton_publisher);
 
-    ~SetupEthernetService();
+    ~setup_ethernet_service();
 
 };
 
