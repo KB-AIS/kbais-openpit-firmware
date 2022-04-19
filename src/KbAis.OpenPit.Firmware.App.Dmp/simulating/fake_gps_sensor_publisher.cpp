@@ -27,7 +27,7 @@ void fake_gps_sensor_publisher::setup_scenario(
 ) {
     constexpr auto make_gps_message = [](double speed) -> GpsMessage {
         return {
-            .datetime = { }, .isValid = true, .latitude  = 0.0, .longitude = 0.0
+            .datetime = { }, .is_valid = true, .latitude  = 0.0, .longitude = 0.0
         ,   .speed = speed
         };
     };

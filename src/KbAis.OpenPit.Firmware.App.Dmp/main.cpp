@@ -9,6 +9,7 @@
 #include "boost_di_extensions.h"
 #include "composition_root_factory.h"
 #include "conifgurator_cli_processor.h"
+#include "state_watching/shift_controller.h"
 
 QApplication create_application() {
     int                app_argc { 3 };
@@ -32,28 +33,17 @@ int main(int argc, char* argv[]) {
     const auto application { create_application() };
     QApplication::setApplicationName("opf");
 
-    const auto s = rxcpp::observe_on_new_thread().create_coordinator().get_scheduler();
-    const auto t = rxcpp::observe_on_one_worker(s);
-
     {
         const auto injector = boost::di::make_injector(create_composition_root());
 
         boost::di::create<std::shared_ptr<app_configuration_initializer_dmp>>(injector);
 
+        const auto s = rxcpp::observe_on_new_thread().create_coordinator().get_scheduler();
+        const auto t = rxcpp::observe_on_one_worker(s);
+
         {
-//            auto state_watcher_motioning_ = injector.create<std::shared_ptr<state_watcher_motioning>>();
-//            state_watcher_motioning_->start_working_on(t);
-
-//            auto state_watcher_loading_ = injector.create<std::shared_ptr<state_watcher_loading>>();
-//            state_watcher_loading_->start_working_on(t);
-
-//            auto gps_sensor_publisher = injector.create<std::shared_ptr<fake_gps_sensor_publisher>>();
-//            gps_sensor_publisher->setup_scenario(t);
-//            gps_sensor_publisher->start_scenario();
-
-//            auto lcs_sensor_publisher = injector.create<std::shared_ptr<fake_lcs_sensor_publisher>>();
-//            lcs_sensor_publisher->setup_scenario(t);
-//            lcs_sensor_publisher->start_scenario();
+            const auto shift_controller_ = injector.create<std::shared_ptr<shift_controller>>();
+            shift_controller_->start_working_on(t);
         }
 
         create_singletons(injector);

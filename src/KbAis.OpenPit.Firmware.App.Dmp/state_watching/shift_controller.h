@@ -2,7 +2,7 @@
 #define SHIFT_CONTROLLER_H
 
 // qt
-#include <QtCore/qdatetime.h>
+#include <QtCore/QDateTime>
 // oss
 #include <rxcpp/rx.hpp>
 
@@ -14,27 +14,48 @@ struct shift_close_message {
 
 };
 
-class shift_controller {
+struct shift_controller_config {
 
-    struct shift {
-        const QTime shift_start_time, shift_close_time;
-    };
+    using shift_interval_t  = std::pair<QTime, QTime>;
+
+    using shift_intervals_t = std::vector<shift_interval_t>;
+
+    shift_intervals_t shift_intervals;
+
+    bool use_manual_shifts { false };
+
+};
+
+class shift_controller_config_mapper {
+
+};
+
+class shift_controller {
 
     struct shift_agregated_data {
 
     };
 
-    rxcpp::composite_subscription subscriptions_;
+    shift_controller_config config_;
+
+    rxcpp::composite_subscription subs_;
+
+    rxcpp::composite_subscription subs_timer_;
+
+    void handle_dt_sys_change();
+
+    void handle_config_change();
+
+    void handle_setup_shift_close_timer();
 
     void handle_shift_start();
 
-    void hanlde_shift_close();
+    void handle_shift_close();
 
 public:
     explicit shift_controller();
 
-    template<class coordination_t>
-    void start_working_on(const coordination_t& coordination);
+    void start_working_on(const rxcpp::observe_on_one_worker& coordination);
 
 };
 
