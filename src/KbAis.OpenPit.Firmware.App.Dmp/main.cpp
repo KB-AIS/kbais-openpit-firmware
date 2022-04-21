@@ -42,8 +42,13 @@ int main(int argc, char* argv[]) {
         const auto t = rxcpp::observe_on_one_worker(s);
 
         {
+            auto gps_sensor_publisher = injector.create<std::shared_ptr<fake_gps_sensor_publisher>>();
+            gps_sensor_publisher->setup_scenario(t);
+
             const auto shift_controller_ = injector.create<std::shared_ptr<shift_controller>>();
             shift_controller_->start_working_on(t);
+
+            gps_sensor_publisher->start_scenario();
         }
 
         create_singletons(injector);

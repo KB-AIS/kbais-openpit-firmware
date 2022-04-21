@@ -6,6 +6,9 @@
 // oss
 #include <rxcpp/rx.hpp>
 
+#include "IRxGpsSensorPublisher.h"
+#include "state_watching/state_watcher_loading.h"
+
 struct shift_start_message {
 
 };
@@ -53,7 +56,6 @@ struct shift_controller_config {
     std::vector<time_range<std::chrono::seconds>> shifts;
 
     bool use_manual_shifts { false };
-
 };
 
 class shift_controller_config_mapper {
@@ -63,14 +65,22 @@ class shift_controller_config_mapper {
 class shift_controller {
 
     struct shift_agregated_data {
+        GpsMessage last_position;
 
+        double total_mileage_m { 0.0 };
     };
+
+    const i_gps_sensor_publisher& gps_sensor_publisher_;
+
+    const i_state_loading_changed_publisher& state_loading_changed_publisher_;
 
     shift_controller_config config_;
 
+    shift_agregated_data data_;
+
     rxcpp::composite_subscription subs_;
 
-    rxcpp::composite_subscription subs_t_;
+    rxcpp::composite_subscription subs_shift_timers_;
 
     void handle_dt_sys_change();
 
@@ -83,7 +93,10 @@ class shift_controller {
     void handle_shift_close();
 
 public:
-    explicit shift_controller();
+    explicit shift_controller(
+        const i_gps_sensor_publisher& gps_sensor_publisher
+    ,   const i_state_loading_changed_publisher& state_loading_changed_publisher_
+    );
 
     void start_working_on(const rxcpp::observe_on_one_worker& coordination);
 

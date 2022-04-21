@@ -17,8 +17,9 @@
 #include "presentation/dmp/state_changed_publisher.h"
 #include "simulating/fake_gps_sensor_publisher.h"
 #include "simulating/fake_lcs_sensor_publisher.h"
-#include "state_watching/state_watcher_motioning.h"
+#include "state_watching/shift_controller.h"
 #include "state_watching/state_watcher_loading.h"
+#include "state_watching/state_watcher_motioning.h"
 #include "system/module_factory_system_services.h"
 
 inline auto create_core_configuration() {
@@ -61,11 +62,12 @@ inline auto create_module_sensors_gps() {
 
 inline auto create_module_state_watching() {
     return boost::di::make_injector(
-        boost::di::bind<i_state_changed_publisher, state_watcher_motioning>()
+        /*boost::di::bind<i_state_changed_publisher, state_watcher_motioning>()
             .to<state_watcher_motioning>().in(boost::di::singleton)
     ,   boost::di::bind<i_state_loading_changed_publisher, state_watcher_loading>()
-            .to<state_watcher_loading>().in(boost::di::singleton)
-
+            .to<state_watcher_loading>().in(boost::di::singleton)*/
+        boost::di::bind<shift_controller>()
+            .in(boost::di::singleton)
     ,   boost::di::bind<
             i_gps_sensor_publisher
         ,   i_scenario_executor
@@ -89,10 +91,10 @@ inline auto create_composition_root() noexcept {
 //    ,   create_core_persisting()
 //    ,   create_module_legacy_agtp()
 //    ,   create_module_presentation_dmp()
-    ,   create_module_sensors_gps()
+//    ,   create_module_sensors_gps()
 //    ,   create_module_sensors_serials()
-    ,   create_module_system()
-//    ,   create_module_state_watching()
+//    ,   create_module_system()
+    ,   create_module_state_watching()
     );
 };
 
