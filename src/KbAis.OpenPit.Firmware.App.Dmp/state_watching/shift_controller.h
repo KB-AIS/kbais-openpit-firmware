@@ -14,13 +14,43 @@ struct shift_close_message {
 
 };
 
+template<class duration_t>
+class time_range {
+    duration_t l_;
+
+    duration_t u_;
+
+    constexpr bool is_overlap() const noexcept { return l_ > u_; }
+
+public:
+    constexpr explicit time_range(duration_t lower, duration_t upper) noexcept
+    :   l_ { lower }, u_ { upper }
+    {}
+
+    constexpr bool is_in_range(duration_t t) const noexcept {
+        return !is_overlap() ? t >= l_ && t < u_ : t >= l_ || t < u_;
+    }
+
+    constexpr duration_t get_duration_to_lower(duration_t t) const {
+        if (t == l_) return duration_t::zero();
+
+        return t > l_
+        ?   std::chrono::duration_cast<duration_t>(std::chrono::hours(24) + t - l_)
+        :   l_ - t;
+    }
+
+    constexpr duration_t get_duration_to_upper(duration_t t) const {
+        if (t == l_) return duration_t::zero();
+
+        return t > u_
+        ?   std::chrono::duration_cast<duration_t>(std::chrono::hours(24) + t - u_)
+        :   u_ - t;
+    }
+
+};
+
 struct shift_controller_config {
-
-    using shift_interval_t  = std::pair<QTime, QTime>;
-
-    using shift_intervals_t = std::vector<shift_interval_t>;
-
-    shift_intervals_t shift_intervals;
+    std::vector<time_range<std::chrono::seconds>> shifts;
 
     bool use_manual_shifts { false };
 
@@ -40,7 +70,7 @@ class shift_controller {
 
     rxcpp::composite_subscription subs_;
 
-    rxcpp::composite_subscription subs_timer_;
+    rxcpp::composite_subscription subs_t_;
 
     void handle_dt_sys_change();
 
