@@ -26,7 +26,7 @@ class setup_ethernet_service {
 
     rxcpp::composite_subscription subscriptions_;
 
-    static ethnet_config_opt_t map_ethernet_configuration(const app_configuration& config);
+    static ethnet_config_opt_t map_ethernet_configuration(const app_configuration& config );
 
     static void handle_new_ethnet_config(const ethnet_config_opt_t& config_opt);
 

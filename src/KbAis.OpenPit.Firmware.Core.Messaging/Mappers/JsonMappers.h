@@ -8,7 +8,7 @@
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GpsMessage
 ,   datetime
-,   isValid
+,   is_valid
 ,   latitude
 ,   longitude
 ,   speed
