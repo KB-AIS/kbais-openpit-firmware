@@ -9,16 +9,9 @@
 #include "IRxGpsSensorPublisher.h"
 #include "state_watching/state_watcher_loading.h"
 
-struct shift_start_message {
-
-};
-
-struct shift_close_message {
-
-};
-
 template<class duration_t>
 class time_range {
+
     duration_t l_;
 
     duration_t u_;
@@ -34,7 +27,7 @@ public:
         return !is_overlap() ? t >= l_ && t < u_ : t >= l_ || t < u_;
     }
 
-    constexpr duration_t get_duration_to_lower(duration_t t) const {
+    constexpr duration_t get_duration_to_lower(duration_t t) const noexcept {
         if (t == l_) return duration_t::zero();
 
         return t > l_
@@ -42,7 +35,7 @@ public:
         :   l_ - t;
     }
 
-    constexpr duration_t get_duration_to_upper(duration_t t) const {
+    constexpr duration_t get_duration_to_upper(duration_t t) const noexcept {
         if (t == l_) return duration_t::zero();
 
         return t > u_
@@ -62,7 +55,26 @@ class shift_controller_config_mapper {
 
 };
 
-class shift_controller {
+struct shift_message {
+    virtual ~shift_message() noexcept = default;
+};
+
+struct shift_message_start : public shift_message {
+
+};
+
+struct shift_message_close : public shift_message {
+
+};
+
+class i_shift_messages_publisher {
+
+public:
+    virtual ~i_shift_messages_publisher() noexcept = default;
+
+};
+
+class shift_controller : public i_shift_messages_publisher {
 
     struct shift_agregated_data {
         GpsMessage last_position;
@@ -76,7 +88,7 @@ class shift_controller {
 
     shift_controller_config config_;
 
-    shift_agregated_data data_;
+    shift_agregated_data shift_agregated_data_;
 
     rxcpp::composite_subscription subs_;
 
@@ -84,18 +96,20 @@ class shift_controller {
 
     void handle_dt_sys_change();
 
-    void handle_config_change();
+    void handle_config_change(const shift_controller_config& config);
 
-    void handle_setup_shift_close_timer();
+    void handle_setup_shift_timers();
 
     void handle_shift_start();
 
     void handle_shift_close();
 
+    void handle_incr_total_mileage(const GpsMessage& msg);
+
 public:
     explicit shift_controller(
         const i_gps_sensor_publisher& gps_sensor_publisher
-    ,   const i_state_loading_changed_publisher& state_loading_changed_publisher_
+    ,   const i_state_loading_changed_publisher& state_loading_changed_publisher
     );
 
     void start_working_on(const rxcpp::observe_on_one_worker& coordination);
