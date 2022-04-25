@@ -4,7 +4,6 @@
 #include "modules/sensors/serials/lcs/lcs_sensor_publisher.h"
 #include "state_watching/state_watcher.h"
 #include "state_watching/state_watcher_motioning.h"
-#include "presentation/dmp/state_changed_publisher.h"
 
 struct state_watcher_loading_configuration {
     using duration_ms_t = std::chrono::duration<int64_t, std::milli>;

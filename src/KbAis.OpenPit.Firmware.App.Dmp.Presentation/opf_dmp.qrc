@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/views">
-        <file>svgs/fuel.svg</file>
-        <file>svgs/weight.svg</file>
-    </qresource>
-</RCC>

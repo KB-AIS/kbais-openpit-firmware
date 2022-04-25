@@ -2,7 +2,7 @@
 #define STATE_WATCHER_MOTIONING_H
 
 #include "IRxGpsSensorPublisher.h"
-#include "presentation/dmp/state_changed_publisher.h"
+#include "opf/app/view/dmp/state_changed_publisher.h"
 #include "state_watching/state_watcher.h"
 
 struct state_watcher_motioning_configuration {

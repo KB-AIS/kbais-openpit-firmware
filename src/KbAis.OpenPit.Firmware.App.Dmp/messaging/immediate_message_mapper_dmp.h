@@ -4,9 +4,9 @@
 // qt
 #include <QObject>
 
-#include "App/Dmp/Presentation/Views/Main/main_view.h"
 #include "IRxImmediateMessageMapper.h"
 #include "RxQt.h"
+#include "opf/app/view/dmp/screens/main/main_view.h"
 #include "state_watching/state_watcher_fuelling.h"
 
 class DmpImmediateMessageMapper : public IRxImmediateMessageMapper {
