@@ -15,11 +15,11 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-	color: #feff00;
+	color: #ffe400;
 }
 
 #lbl_topBar {
-	background-color: #011efe;
+	background-color: #000aff;
 }
 
 #sw_nav {
@@ -28,7 +28,7 @@
 
 QDialog {
 	background-color: #000000;
-	border: 1px solid yellow;
+	border: 1px solid #ffe400;
 }
 
 QLabel {
@@ -37,9 +37,10 @@ QLabel {
 
 QPushButton {
 	background: #000000;
-	border-color: #feff00;
-    border-width: 4px;
+	border-color: #ffe400;
+    border-width: 2px;
     border-style: solid;
+    border-radius: 8px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">

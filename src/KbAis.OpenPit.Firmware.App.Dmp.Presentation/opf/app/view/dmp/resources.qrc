@@ -1,10 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>res/icons/menu.svg</file>
-        <file>res/icons/nav.svg</file>
-        <file>res/icons/net.svg</file>
+        <file>res/icons/navigation.svg</file>
         <file>res/icons/message.svg</file>
         <file>res/icons/settings.svg</file>
         <file>res/icons/shift.svg</file>
+        <file>res/icons/fuel.svg</file>
+        <file>res/icons/weight.svg</file>
+        <file>res/icons/info.svg</file>
     </qresource>
 </RCC>

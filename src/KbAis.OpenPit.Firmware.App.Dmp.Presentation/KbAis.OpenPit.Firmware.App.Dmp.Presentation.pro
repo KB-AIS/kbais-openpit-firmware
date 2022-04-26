@@ -21,29 +21,33 @@ INCLUDEPATH += \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    opf/app/view/dmp/host/host_window.h \
     opf/app/view/dmp/module_factory_app_view_dmp.h \
     opf/app/view/dmp/nav/nav_controller.h \
     opf/app/view/dmp/runner_app_view_dmp.h \
+    opf/app/view/dmp/screens/host_window.h \
     opf/app/view/dmp/screens/diag/diag_view.h \
-    opf/app/view/dmp/screens/main/main_view.h \
     opf/app/view/dmp/screens/main/main_view_dialog_nav.h \
-    opf/app/view/dmp/screens/main/utils/gauge_speed.h \
-    opf/app/view/dmp/state_changed_publisher.h
+    opf/app/view/dmp/screens/main/main_view.h \
+    opf/app/view/dmp/screens/main/subviews/gauge_speed_subview.h \
+    opf/app/view/dmp/state_changed_publisher.h \
+    opf/app/view/dmp/utils/neon_colors.h
 
 SOURCES += \
-    opf/app/view/dmp/host/host_window.cpp \
     opf/app/view/dmp/nav/nav_controller.cpp \
     opf/app/view/dmp/runner_app_view_dmp.cpp \
+    opf/app/view/dmp/screens/host_window.cpp \
     opf/app/view/dmp/screens/diag/diag_view.cpp \
-    opf/app/view/dmp/screens/main/main_view.cpp \
-    opf/app/view/dmp/screens/main/main_view_dialog_nav.cpp
+    opf/app/view/dmp/screens/main/main_view_dialog_nav.cpp \
+    opf/app/view/dmp/screens/main/main_view.cpp
 
 FORMS += \
-    opf/app/view/dmp/host/host_window.ui \
+    opf/app/view/dmp/screens/host_window.ui \
     opf/app/view/dmp/screens/diag/diag_view.ui \
     opf/app/view/dmp/screens/main/main_view.ui \
     opf/app/view/dmp/screens/main/main_view_dialog_nav.ui
+
+RESOURCES += \
+    opf/app/view/dmp/resources.qrc
 
 DESTDIR     = $$PRJDIR/binaries
 OBJECTS_DIR = $$PWD/build/.obj
@@ -53,6 +57,3 @@ UI_DIR      = $$PWD/build/.ui
 
 target.path += /usr/lib
 INSTALLS += target
-
-RESOURCES += \
-    opf/app/view/dmp/resources.qrc

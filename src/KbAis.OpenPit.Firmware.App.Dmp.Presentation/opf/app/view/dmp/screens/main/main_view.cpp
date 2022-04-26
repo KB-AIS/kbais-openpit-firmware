@@ -5,6 +5,9 @@
 #include <chrono>
 // oss
 #include <range/v3/all.hpp>
+#include <plog/Log.h>
+
+#include "opf/app/view/dmp/utils/neon_colors.h"
 
 using namespace std::chrono_literals;
 
@@ -14,14 +17,21 @@ main_view::main_view(
 )
     :   i_main_view()
     ,   ui { new Ui::main_view }
-    ,   gauge_speed_ { new gauge_speed }
     ,   dialog_nav_ { this }
     ,   gps_sensor_publisher_ { gps_sensor_publisher }
     ,   nav_controller_(nav_controller)
 {
     ui->setupUi(this);
 
-    gauge_speed_->setup_speed_gauge(ui->gau_spd);
+    QPixmap pmap;
+    pmap.load(":/res/icons/fuel.svg");
+    ui->label->setPixmap(pmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    QPixmap pmap2;
+    pmap2.load(":/res/icons/weight.svg");
+    ui->label_4->setPixmap(pmap2.scaled(ui->label_4->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    gauge_speed_subview_.setup_speed_gauge(ui->gau_spd);
 
     dialog_nav_.setWindowFlags(Qt::Popup);
 
@@ -31,49 +41,66 @@ main_view::main_view(
 
             dialog_nav_.move(g.center() - dialog_nav_.rect().center());
 
-            dialog_nav_.show();
+            dialog_nav_.open();
         });
 
-    auto x = ui->gau_flv->addArc(95);
-    x->setColor({ 253, 254, 2 });
-    x->setDegreeRange(-60.0f, 90.0f);
+    const int s = -30.0f, e = 210.0f;
+    auto gau_flv_arc = ui->gau_flv->addArc(95);
+    gau_flv_arc->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_flv_arc->setDegreeRange(s, e);
 
-    auto ticA = ui->gau_flv->addDegrees(90);
-    ticA->setColor(Qt::yellow);
-    ticA->setDegreeRange(-60.0f, 90.0f);
-    ticA->setStep(5);
-    ticA->setSubDegree(true);
-    ticA->setValueRange(0, 100);
+    auto gau_flv_deg = ui->gau_flv->addDegrees(88);
+    gau_flv_deg->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_flv_deg->setDegreeRange(s, e);
+    gau_flv_deg->setStep(2000 / 10);
+    gau_flv_deg->setSubDegree(true);
+    gau_flv_deg->setValueRange(0, 2000);
 
-    auto valA =  ui->gau_flv->addValues(94);
-    valA->setColor(Qt::yellow);
-    valA->setDegreeRange(-60.0f, 90.0f);
-    valA->setStep(25);
-    valA->setValueRange(0, 100);
+    auto gau_flv_val =  ui->gau_flv->addValues(60);
+    gau_flv_val->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_flv_val->setDegreeRange(s, e);
+    gau_flv_val->setFont("DS-Digital");
+    gau_flv_val->setStep(2000 / 5);
+    gau_flv_val->setValueRange(0, 2000);
 
-    auto y = ui->gau_wgt->addArc(95);
-    y->setColor({ 253, 254, 2 });
-    y->setDegreeRange(0.0f, 180.0f);
+    auto gau_flv_bnd = ui->gau_flv->addColorBand(90);
+    gau_flv_bnd->setColors({
+        { opf::app::view::utils::colors::neon_red,    2000 }
+    ,   { opf::app::view::utils::colors::neon_green,  2000 * 0.66 }
+    ,   { opf::app::view::utils::colors::neon_yellow,   2000 * 0.33 }
+    });
+    gau_flv_bnd->setDegreeRange(s, e);
+    gau_flv_bnd->setValueRange(0, 2000);
 
-    auto ticB = ui->gau_wgt->addDegrees(90);
-    ticB->setColor(Qt::yellow);
-    ticB->setDegreeRange(0.0f, 180.0f);
-    ticB->setStep(5);
-    ticB->setSubDegree(true);
-    ticB->setValueRange(0, 100);
+    auto gau_wgt_arc = ui->gau_wgt->addArc(95);
+    gau_wgt_arc->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_wgt_arc->setDegreeRange(s, e);
 
-    auto valB =  ui->gau_wgt->addValues(94);
-    valB->setColor(Qt::yellow);
-    valB->setDegreeRange(0.0f, 180.0f);
-    valB->setStep(25);
-    valB->setValueRange(0, 100);
+    auto gau_wgt_deg = ui->gau_wgt->addDegrees(88);
+    gau_wgt_deg->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_wgt_deg->setDegreeRange(s, e);
+    gau_wgt_deg->setStep(200 / 10);
+    gau_wgt_deg->setSubDegree(true);
+    gau_wgt_deg->setValueRange(0, 200);
 
+    auto gau_wgt_val =  ui->gau_wgt->addValues(60);
+    gau_wgt_val->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_wgt_val->setDegreeRange(s, e);
+    gau_wgt_val->setFont("DS-Digital");
+    gau_wgt_val->setStep(200 / 5);
+    gau_wgt_val->setValueRange(0, 200);
+
+    auto gau_wgt_bnd = ui->gau_wgt->addColorBand(90);
+    gau_wgt_bnd->setColors({
+        { opf::app::view::utils::colors::neon_yellow,    200 }
+    ,   { opf::app::view::utils::colors::neon_red,  200 * 0.75 }
+    });
+    gau_wgt_bnd->setDegreeRange(s, e);
+    gau_wgt_bnd->setValueRange(0, 200);
 }
 
 main_view::~main_view() {
     subscriptions_.unsubscribe();
-
-    delete gauge_speed_;
 
     delete ui;
 }
@@ -84,12 +111,8 @@ void main_view::observe_on(const rxcpp::observe_on_one_worker& coordinator) {
     rxcpp::observable<>::interval(UPDATE_DISPLAY_DATETIME_INTERVAL, coordinator)
         .subscribe(subscriptions_, [this](auto) { handle_update_date(); });
 
-    auto sub_handle_update_speed = rxcpp::make_subscriber<GpsMessage>(
-        [this](const auto& x) { handle_update_speed(x); }
-    );
-    gps_sensor_publisher_.get_observable()
-        .observe_on(coordinator)
-        .subscribe(subscriptions_, sub_handle_update_speed);
+    const auto obs_gps_message = gps_sensor_publisher_.get_observable().observe_on(coordinator);
+    gauge_speed_subview_.update_value_from(obs_gps_message);
 }
 
 QString DATE_FMT { QStringLiteral("ddd, d MMM yyyy") };
@@ -98,11 +121,4 @@ void main_view::handle_update_date() {
     const auto now { QDateTime::currentDateTime() };
 
     ui->lbl_date->setText(now.toString(DATE_FMT));
-}
-
-void main_view::handle_update_speed(const GpsMessage& msg) {
-    gauge_speed_->needle->setCurrentValue(msg.speed);
-
-    const auto lable_speed_text = QStringLiteral("%1 КМ/Ч.").arg(std::round(msg.speed));
-    gauge_speed_->lable->setText(lable_speed_text);
 }

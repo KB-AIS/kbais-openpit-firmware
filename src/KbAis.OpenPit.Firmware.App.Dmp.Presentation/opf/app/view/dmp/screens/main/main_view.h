@@ -11,7 +11,7 @@
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
 #include "opf/app/view/dmp/screens/main/main_view_dialog_nav.h"
-#include "opf/app/view/dmp/screens/main/utils/gauge_speed.h"
+#include "opf/app/view/dmp/screens/main/subviews/gauge_speed_subview.h"
 
 class i_main_view : public QWidget {
 
@@ -28,7 +28,7 @@ class main_view : public i_main_view {
 
     Ui::main_view* ui;
 
-    gauge_speed* gauge_speed_;
+    gauge_speed_subview gauge_speed_subview_;
 
     main_view_dialog_nav dialog_nav_;
 
@@ -37,8 +37,6 @@ class main_view : public i_main_view {
     const nav_controller& nav_controller_;
 
     rxcpp::composite_subscription subscriptions_;
-
-    void handle_update_speed(const GpsMessage& msg);
 
     void handle_update_date();
 
