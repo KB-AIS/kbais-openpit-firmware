@@ -91,9 +91,9 @@ inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcep
 
     auto setup_needle = [&]() {
         needle_ = gauge->addNeedle(100);
-        needle_->setColor(opf::app::view::utils::colors::neon_yellow);
+        needle_->setColor(opf::app::view::utils::colors::neon_blue);
         needle_->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
-        needle_->setNeedle(QcNeedleItem::TriangleNeedle);
+        needle_->setNeedle(QcNeedleItem::DiamonNeedle);
         needle_->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
     };
     setup_needle();

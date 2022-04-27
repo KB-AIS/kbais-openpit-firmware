@@ -23,14 +23,6 @@ main_view::main_view(
 {
     ui->setupUi(this);
 
-    QPixmap pmap;
-    pmap.load(":/res/icons/fuel.svg");
-    ui->label->setPixmap(pmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    QPixmap pmap2;
-    pmap2.load(":/res/icons/weight.svg");
-    ui->label_4->setPixmap(pmap2.scaled(ui->label_4->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
     gauge_speed_subview_.setup_speed_gauge(ui->gau_spd);
 
     dialog_nav_.setWindowFlags(Qt::Popup);
@@ -72,6 +64,17 @@ main_view::main_view(
     gau_flv_bnd->setDegreeRange(s, e);
     gau_flv_bnd->setValueRange(0, 2000);
 
+    gau_flv_ndl_ = ui->gau_flv->addNeedle(100);
+    gau_flv_ndl_->setColor(opf::app::view::utils::colors::neon_blue);
+    gau_flv_ndl_->setDegreeRange(s, e);
+    gau_flv_ndl_->setNeedle(QcNeedleItem::DiamonNeedle);
+    gau_flv_ndl_->setValueRange(0, 2000);
+
+    gau_flv_lbl_ = ui->gau_flv->addLabel(90);
+    gau_flv_lbl_->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_flv_lbl_->setFont("Roboto");
+    gau_flv_lbl_->setText("1800 Л.");
+
     auto gau_wgt_arc = ui->gau_wgt->addArc(95);
     gau_wgt_arc->setColor(opf::app::view::utils::colors::neon_yellow);
     gau_wgt_arc->setDegreeRange(s, e);
@@ -97,6 +100,17 @@ main_view::main_view(
     });
     gau_wgt_bnd->setDegreeRange(s, e);
     gau_wgt_bnd->setValueRange(0, 200);
+
+    gau_wgt_ndl_ = ui->gau_wgt->addNeedle(100);
+    gau_wgt_ndl_->setColor(opf::app::view::utils::colors::neon_blue);
+    gau_wgt_ndl_->setDegreeRange(s, e);
+    gau_wgt_ndl_->setNeedle(QcNeedleItem::DiamonNeedle);
+    gau_wgt_ndl_->setValueRange(0, 200);
+
+    gau_wgt_lbl_ = ui->gau_wgt->addLabel(90);
+    gau_wgt_lbl_->setColor(opf::app::view::utils::colors::neon_yellow);
+    gau_wgt_lbl_->setFont("Roboto");
+    gau_wgt_lbl_->setText("110 Т.");
 }
 
 main_view::~main_view() {
@@ -117,8 +131,21 @@ void main_view::observe_on(const rxcpp::observe_on_one_worker& coordinator) {
 
 QString DATE_FMT { QStringLiteral("ddd, d MMM yyyy") };
 
+QLocale RUS_LOCALE { QLocale::Russian, QLocale::Russia };
+
+QString CSS { QStringLiteral(R"(
+    color: %1;
+    border: 2px solid #ffe400;
+    border-radius: 8px;
+)") };
+
 void main_view::handle_update_date() {
     const auto now { QDateTime::currentDateTime() };
 
-    ui->lbl_date->setText(now.toString(DATE_FMT));
+    ui->lbl_date->setText(RUS_LOCALE.toString(now, DATE_FMT));
+
+    const auto delimeter = now.time().second() % 2;
+    auto color = delimeter ? opf::app::view::utils::colors::neon_yellow.name() : opf::app::view::utils::colors::neon_red.name();
+    auto ss = CSS.arg(color);
+    ui->lbl_sta_last->setStyleSheet(ss);
 }

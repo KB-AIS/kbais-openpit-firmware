@@ -17,24 +17,40 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>420</y>
+     <y>430</y>
      <width>621</width>
-     <height>51</height>
+     <height>42</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
+     <widget class="QLabel" name="label_7">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
       </property>
       <property name="text">
-       <string>SPEED</string>
+       <string/>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+      <property name="pixmap">
+       <pixmap resource="../../resources.qrc">:/res/icons/fuel.svg</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -42,11 +58,11 @@
      <widget class="QLabel" name="label_3">
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>FUEL</string>
+       <string>1800 Л.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -54,14 +70,91 @@
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="label_6">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="../../resources.qrc">:/res/icons/speed.svg</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label">
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>16</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>WEIGHT</string>
+       <string>0 КМ/Ч.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_8">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="../../resources.qrc">:/res/icons/weight.svg</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>110 Т.</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -70,38 +163,18 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>360</y>
-     <width>601</width>
-     <height>49</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>ПОКАЗАТЕЛИ КРАТКО</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>601</width>
-     <height>49</height>
+     <x>150</x>
+     <y>20</y>
+     <width>340</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
+     <family>Roboto</family>
      <pointsize>20</pointsize>
     </font>
    </property>
@@ -112,169 +185,274 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>170</y>
-     <width>120</width>
-     <height>120</height>
+     <x>20</x>
+     <y>60</y>
+     <width>601</width>
+     <height>351</height>
     </rect>
    </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>120</width>
-     <height>120</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>92</width>
-     <height>92</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/res/icons/shift.svg</normaloff>:/res/icons/shift.svg</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>100</width>
-     <height>100</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>170</y>
-     <width>120</width>
-     <height>120</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>120</width>
-     <height>120</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>92</width>
-     <height>92</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/res/icons/settings.svg</normaloff>:/res/icons/settings.svg</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>100</width>
-     <height>100</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>170</y>
-     <width>120</width>
-     <height>120</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>120</width>
-     <height>120</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>92</width>
-     <height>92</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/res/icons/message.svg</normaloff>:/res/icons/message.svg</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>100</width>
-     <height>100</height>
-    </size>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_4">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>170</y>
-     <width>120</width>
-     <height>120</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>120</width>
-     <height>120</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>92</width>
-     <height>92</height>
-    </size>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/res/icons/info.svg</normaloff>:/res/icons/info.svg</iconset>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>120</width>
-     <height>120</height>
-    </size>
-   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="3">
+     <widget class="QPushButton" name="pushButton_6">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/camera.svg</normaloff>:/res/icons/camera.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/stop.svg</normaloff>:/res/icons/stop.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/shift.svg</normaloff>:/res/icons/shift.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/settings.svg</normaloff>:/res/icons/settings.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/info.svg</normaloff>:/res/icons/info.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoRepeat">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/message.svg</normaloff>:/res/icons/message.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>92</width>
+        <height>92</height>
+       </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::WheelFocus</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../resources.qrc">
+        <normaloff>:/res/icons/repair.svg</normaloff>:/res/icons/repair.svg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>88</width>
+        <height>88</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources>

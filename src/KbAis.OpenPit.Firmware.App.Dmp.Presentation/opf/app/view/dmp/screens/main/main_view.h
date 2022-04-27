@@ -28,6 +28,14 @@ class main_view : public i_main_view {
 
     Ui::main_view* ui;
 
+    QcLabelItem*  gau_flv_lbl_;
+
+    QcNeedleItem* gau_flv_ndl_;
+
+    QcLabelItem*  gau_wgt_lbl_;
+
+    QcNeedleItem* gau_wgt_ndl_;
+
     gauge_speed_subview gauge_speed_subview_;
 
     main_view_dialog_nav dialog_nav_;

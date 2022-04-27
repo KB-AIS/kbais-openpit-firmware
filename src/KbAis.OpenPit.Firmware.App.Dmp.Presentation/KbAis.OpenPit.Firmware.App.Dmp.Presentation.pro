@@ -26,6 +26,7 @@ HEADERS += \
     opf/app/view/dmp/runner_app_view_dmp.h \
     opf/app/view/dmp/screens/host_window.h \
     opf/app/view/dmp/screens/diag/diag_view.h \
+    opf/app/view/dmp/screens/info/info_view.h \
     opf/app/view/dmp/screens/main/main_view_dialog_nav.h \
     opf/app/view/dmp/screens/main/main_view.h \
     opf/app/view/dmp/screens/main/subviews/gauge_speed_subview.h \
@@ -37,12 +38,14 @@ SOURCES += \
     opf/app/view/dmp/runner_app_view_dmp.cpp \
     opf/app/view/dmp/screens/host_window.cpp \
     opf/app/view/dmp/screens/diag/diag_view.cpp \
+    opf/app/view/dmp/screens/info/info_view.cpp \
     opf/app/view/dmp/screens/main/main_view_dialog_nav.cpp \
     opf/app/view/dmp/screens/main/main_view.cpp
 
 FORMS += \
     opf/app/view/dmp/screens/host_window.ui \
     opf/app/view/dmp/screens/diag/diag_view.ui \
+    opf/app/view/dmp/screens/info/info_view.ui \
     opf/app/view/dmp/screens/main/main_view.ui \
     opf/app/view/dmp/screens/main/main_view_dialog_nav.ui
 

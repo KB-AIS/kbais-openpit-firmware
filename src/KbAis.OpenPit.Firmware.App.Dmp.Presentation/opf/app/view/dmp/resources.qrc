@@ -8,5 +8,12 @@
         <file>res/icons/fuel.svg</file>
         <file>res/icons/weight.svg</file>
         <file>res/icons/info.svg</file>
+        <file>res/icons/sun.svg</file>
+        <file>res/icons/camera.svg</file>
+        <file>res/icons/kbais-logo.svg</file>
+        <file>res/icons/moon.svg</file>
+        <file>res/icons/repair.svg</file>
+        <file>res/icons/stop.svg</file>
+        <file>res/icons/speed.svg</file>
     </qresource>
 </RCC>
