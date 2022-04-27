@@ -17,7 +17,7 @@ class diag_view;
 class diag_view : public QWidget{
     Q_OBJECT
 
-    Ui::diag_view* ui;
+    Ui::diag_view* ui_;
 
     nav_controller& nav_controller_;
 

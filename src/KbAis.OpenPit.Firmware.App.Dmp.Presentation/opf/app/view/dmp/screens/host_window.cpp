@@ -6,7 +6,9 @@
 
 using namespace std::chrono_literals;
 
-constexpr qint32 MAIN_VIEW_IDX { 0 }, DIAG_VIEW_IDX { 1 };
+constexpr qint32 MAIN_VIEW_IDX { 0 }
+               , DIAG_VIEW_IDX { 1 }
+               , INFO_VIEW_IDX { 2 };
 
 QString TIME_EVEN_FMT { QStringLiteral("hh:mm") }, TIME_FMT { QStringLiteral("hh mm") };
 
@@ -25,6 +27,7 @@ host_window::host_window(
 ,   const IRxMessageSendersDiagPub& net_module_publisher
 ,   i_main_view& main_view
 ,   diag_view& diag_view
+,   info_view& info_view
 ,   nav_controller& nav_controller
 )
     :   QMainWindow()
@@ -33,6 +36,7 @@ host_window::host_window(
     ,   net_module_publisher_ { net_module_publisher }
     ,   main_view_ { main_view }
     ,   diag_view_ { diag_view }
+    ,   info_view_ { info_view }
     ,   nav_controller_ { nav_controller }
 {
     ui_->setupUi(this);
@@ -55,10 +59,25 @@ void host_window::setup_screen_stack() {
     diag_view_.setParent(ui_->sw_nav);
     ui_->sw_nav->insertWidget(DIAG_VIEW_IDX, &diag_view_);
 
+    info_view_.setParent(ui_->sw_nav);
+    ui_->sw_nav->insertWidget(INFO_VIEW_IDX, &info_view_);
+
     ui_->sw_nav->setCurrentIndex(MAIN_VIEW_IDX);
 
     nav_controller_.get_observable()
         .subscribe(subscriptions_, [&](int screen_id) {
+            if (screen_id == MAIN_VIEW_IDX) {
+                ui_->lbl_screen_title->setText(QString {});
+            }
+
+            if (screen_id == DIAG_VIEW_IDX) {
+                ui_->lbl_screen_title->setText(QStringLiteral("ДИАГНОСТИКА"));
+            }
+
+            if (screen_id == INFO_VIEW_IDX) {
+                ui_->lbl_screen_title->setText(QStringLiteral("ИНФОРМАЦИЯ"));
+            }
+
             // TODO: Typesafe navigation
             ui_->sw_nav->setCurrentIndex(screen_id);
         });

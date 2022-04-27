@@ -19,30 +19,35 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QPushButton" name="btn_navigateBack">
+  <widget class="QPushButton" name="btn_home">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>128</width>
-     <height>128</height>
+     <x>464</x>
+     <y>460</y>
+     <width>96</width>
+     <height>96</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Roboto</family>
-     <pointsize>14</pointsize>
-     <italic>false</italic>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true"/>
+   <property name="toolTip">
+    <string extracomment="Панель навигации"/>
    </property>
    <property name="text">
-    <string>BACK</string>
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/res/icons/home.svg</normaloff>:/res/icons/home.svg</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>72</width>
+     <height>72</height>
+    </size>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

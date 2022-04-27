@@ -14,6 +14,8 @@ inline auto create_app_view_dmp() noexcept {
             .in(boost::di::singleton)
     ,   boost::di::bind<diag_view>
             .in(boost::di::singleton)
+    ,   boost::di::bind<info_view>
+            .in(boost::di::singleton)
     ,   boost::di::bind<i_main_view>
             .to<main_view>().in(boost::di::singleton)
     ,   boost::di::bind<runner_app_view_dmp>

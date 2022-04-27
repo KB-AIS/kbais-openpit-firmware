@@ -126,7 +126,7 @@ QPushButton {
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="lbl_screenName">
+   <widget class="QLabel" name="lbl_screen_title">
     <property name="geometry">
      <rect>
       <x>10</x>

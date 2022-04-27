@@ -5,17 +5,17 @@ diag_view::diag_view(
     nav_controller& nav_controller
 )
     :   QWidget()
-    ,   ui(new Ui::diag_view)
+    ,   ui_(new Ui::diag_view)
     ,   nav_controller_ { nav_controller }
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 
-    rxqt::from_signal(ui->btn_navigateBack, &QPushButton::released)
+    rxqt::from_signal(ui_->btn_home, &QPushButton::released)
         .subscribe(subscriptions_, [&](auto) { nav_controller_.nav_to(0); });
 }
 
 diag_view::~diag_view() {
     subscriptions_.unsubscribe();
 
-    delete ui;
+    delete ui_;
 }

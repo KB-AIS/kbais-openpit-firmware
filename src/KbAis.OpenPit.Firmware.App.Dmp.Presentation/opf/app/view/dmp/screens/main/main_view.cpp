@@ -17,9 +17,9 @@ main_view::main_view(
 )
     :   i_main_view()
     ,   ui { new Ui::main_view }
-    ,   dialog_nav_ { this }
-    ,   gps_sensor_publisher_ { gps_sensor_publisher }
     ,   nav_controller_(nav_controller)
+    ,   dialog_nav_ { nav_controller_, this }
+    ,   gps_sensor_publisher_ { gps_sensor_publisher }
 {
     ui->setupUi(this);
 

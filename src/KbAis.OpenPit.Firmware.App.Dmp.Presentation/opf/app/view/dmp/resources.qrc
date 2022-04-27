@@ -15,5 +15,6 @@
         <file>res/icons/repair.svg</file>
         <file>res/icons/stop.svg</file>
         <file>res/icons/speed.svg</file>
+        <file>res/icons/home.svg</file>
     </qresource>
 </RCC>

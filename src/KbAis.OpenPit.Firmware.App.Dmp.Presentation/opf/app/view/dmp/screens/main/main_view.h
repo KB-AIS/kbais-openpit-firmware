@@ -34,11 +34,11 @@ class main_view : public i_main_view {
 
     gauge_speed_subview gauge_speed_subview_;
 
+    const nav_controller& nav_controller_;
+
     main_view_dialog_nav dialog_nav_;
 
     const i_gps_sensor_publisher& gps_sensor_publisher_;
-
-    const nav_controller& nav_controller_;
 
     rxcpp::composite_subscription subscriptions_;
 
