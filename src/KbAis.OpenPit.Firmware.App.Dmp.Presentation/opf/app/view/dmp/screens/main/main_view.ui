@@ -405,7 +405,7 @@ border-radius: 8px;</string>
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="btn_menu_2">
+  <widget class="QPushButton" name="btn_backlight">
    <property name="geometry">
     <rect>
      <x>17</x>
@@ -431,6 +431,50 @@ border-radius: 8px;</string>
     </size>
    </property>
   </widget>
+  <widget class="QLabel" name="label_13">
+   <property name="geometry">
+    <rect>
+     <x>17</x>
+     <y>390</y>
+     <width>280</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Roboto</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>1800 Л.</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_14">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>390</y>
+     <width>280</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Roboto</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>110 Т.</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <zorder>lbl_date</zorder>
   <zorder>btn_menu</zorder>
   <zorder>gau_spd</zorder>
@@ -443,7 +487,9 @@ border-radius: 8px;</string>
   <zorder>label_5</zorder>
   <zorder>lbl_icon_flv</zorder>
   <zorder>gridLayoutWidget</zorder>
-  <zorder>btn_menu_2</zorder>
+  <zorder>btn_backlight</zorder>
+  <zorder>label_13</zorder>
+  <zorder>label_14</zorder>
  </widget>
  <customwidgets>
   <customwidget>

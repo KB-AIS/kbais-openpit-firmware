@@ -70,11 +70,6 @@ main_view::main_view(
     gau_flv_ndl_->setNeedle(QcNeedleItem::DiamonNeedle);
     gau_flv_ndl_->setValueRange(0, 2000);
 
-    gau_flv_lbl_ = ui->gau_flv->addLabel(90);
-    gau_flv_lbl_->setColor(opf::app::view::utils::colors::neon_yellow);
-    gau_flv_lbl_->setFont("Roboto");
-    gau_flv_lbl_->setText("1800 Л.");
-
     auto gau_wgt_arc = ui->gau_wgt->addArc(95);
     gau_wgt_arc->setColor(opf::app::view::utils::colors::neon_yellow);
     gau_wgt_arc->setDegreeRange(s, e);
@@ -95,8 +90,8 @@ main_view::main_view(
 
     auto gau_wgt_bnd = ui->gau_wgt->addColorBand(90);
     gau_wgt_bnd->setColors({
-        { opf::app::view::utils::colors::neon_yellow,    200 }
-    ,   { opf::app::view::utils::colors::neon_red,  200 * 0.75 }
+        { opf::app::view::utils::colors::neon_yellow, 200 }
+    ,   { opf::app::view::utils::colors::neon_red,    200 * 0.75 }
     });
     gau_wgt_bnd->setDegreeRange(s, e);
     gau_wgt_bnd->setValueRange(0, 200);
@@ -106,11 +101,6 @@ main_view::main_view(
     gau_wgt_ndl_->setDegreeRange(s, e);
     gau_wgt_ndl_->setNeedle(QcNeedleItem::DiamonNeedle);
     gau_wgt_ndl_->setValueRange(0, 200);
-
-    gau_wgt_lbl_ = ui->gau_wgt->addLabel(90);
-    gau_wgt_lbl_->setColor(opf::app::view::utils::colors::neon_yellow);
-    gau_wgt_lbl_->setFont("Roboto");
-    gau_wgt_lbl_->setText("110 Т.");
 }
 
 main_view::~main_view() {
