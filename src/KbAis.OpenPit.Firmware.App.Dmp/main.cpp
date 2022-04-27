@@ -9,7 +9,6 @@
 #include "boost_di_extensions.h"
 #include "composition_root_factory.h"
 #include "conifgurator_cli_processor.h"
-#include "state_watching/shift_controller.h"
 
 QApplication create_application() {
     int                app_argc { 3 };
@@ -44,10 +43,6 @@ int main(int argc, char* argv[]) {
         {
             auto gps_sensor_publisher = injector.create<std::shared_ptr<fake_gps_sensor_publisher>>();
             gps_sensor_publisher->setup_scenario(t);
-
-            const auto shift_controller_ = injector.create<std::shared_ptr<shift_controller>>();
-            shift_controller_->start_working_on(t);
-
             gps_sensor_publisher->start_scenario();
         }
 

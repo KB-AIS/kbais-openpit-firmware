@@ -75,22 +75,22 @@ void fake_gps_sensor_publisher::setup_scenario(
     observable_gps_messages_ =
         from(
             coordination
-        ,   iterate(std::vector<GpsMessage> {
-                {
-                    .datetime = { }, .is_valid = true, .latitude = 53.734967, .longitude = 91.439935
-                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
-                }
-            ,   {
-                    .datetime = { }, .is_valid = true, .latitude = 53.727640, .longitude = 91.442116
-                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
-                }
-            })
-//        ,   iterate(gen_gps_messages_w_const_spd(0.0, 18s))
-//        ,   iterate(gen_gps_messages_w_smooth_spd(0.0, 30.0, 8s))
-//        ,   iterate(gen_gps_messages_w_shuffle_spd(28.8, 32.3, 30s))
-//        ,   iterate(gen_gps_messages_w_smooth_spd(0.0, 30.0, 8s) | actions::reverse)
-//        ,   iterate(gen_gps_messages_w_shuffle_spd(0.0, 4.3, 22s))
-//        ,   iterate(gen_gps_messages_w_const_spd(25.0, 30s))
+//        ,   iterate(std::vector<GpsMessage> {
+//                {
+//                    .datetime = { }, .is_valid = true, .latitude = 53.734967, .longitude = 91.439935
+//                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
+//                }
+//            ,   {
+//                    .datetime = { }, .is_valid = true, .latitude = 53.727640, .longitude = 91.442116
+//                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
+//                }
+//            })
+        ,   iterate(gen_gps_messages_w_const_spd(0.0, 18s))
+        ,   iterate(gen_gps_messages_w_smooth_spd(0.0, 30.0, 8s))
+        ,   iterate(gen_gps_messages_w_shuffle_spd(28.8, 32.3, 30s))
+        ,   iterate(gen_gps_messages_w_smooth_spd(0.0, 30.0, 8s) | actions::reverse)
+        ,   iterate(gen_gps_messages_w_shuffle_spd(0.0, 4.3, 22s))
+        ,   iterate(gen_gps_messages_w_const_spd(25.0, 30s))
         )
     |   concat() | delay_every | repeat() | multicast(subject_gps_messages_);
 }

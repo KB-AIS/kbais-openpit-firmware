@@ -22,15 +22,15 @@ rxcpp::observable<Message>
 DmpImmediateMessageMapper::getObservable() const {
     rxcpp::observable<Message> observable = rxcpp::observable<>::empty<Message>();
 
-    rxcpp::observable<Message> user_message_observable =
-        rxqt::from_signal(&m_main_view, &main_view::notify_test_user_event)
-            .map([&](auto) -> Message {
-                return Message {
-                    MESSAGE_MONKIER_USR
-                ,   fromStdVector(nlohmann::json::to_msgpack("Some user's UI event"))
-                ,   QDateTime::currentDateTimeUtc()
-                };
-            });
+//    rxcpp::observable<Message> user_message_observable =
+//        rxqt::from_signal(&m_main_view, &main_view::notify_test_user_event)
+//            .map([&](auto) -> Message {
+//                return Message {
+//                    MESSAGE_MONKIER_USR
+//                ,   fromStdVector(nlohmann::json::to_msgpack("Some user's UI event"))
+//                ,   QDateTime::currentDateTimeUtc()
+//                };
+//            });
 
     rxcpp::observable<Message> state_fueling_message_observable =
         m_state_ful_pub.get_observable()
@@ -45,5 +45,5 @@ DmpImmediateMessageMapper::getObservable() const {
                 };
             });
 
-    return observable.merge(user_message_observable, state_fueling_message_observable);
+    return observable.merge(/*user_message_observable, */state_fueling_message_observable);
 }

@@ -4,7 +4,7 @@ TARGET = opf
 
 TEMPLATE = app
 
-QT += core gui network serialport sql widgets svg \
+QT += core gui network serialport sql widgets \
 
 CONFIG += depend_includepath conan_basic_setup \
 
