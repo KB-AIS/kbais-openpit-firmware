@@ -16,6 +16,7 @@
   <property name="styleSheet">
    <string notr="true">* {
 	color: #ffe400;
+	font-family: &quot;Roboto&quot;;
 }
 
 #lbl_topBar {

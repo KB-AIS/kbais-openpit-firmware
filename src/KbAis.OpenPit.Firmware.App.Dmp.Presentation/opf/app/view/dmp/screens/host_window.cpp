@@ -8,7 +8,8 @@ using namespace std::chrono_literals;
 
 constexpr qint32 MAIN_VIEW_IDX { 0 }
                , DIAG_VIEW_IDX { 1 }
-               , INFO_VIEW_IDX { 2 };
+               , INFO_VIEW_IDX { 2 }
+               , STOP_VIEW_IDX { 3 };
 
 QString TIME_EVEN_FMT { QStringLiteral("hh:mm") }, TIME_FMT { QStringLiteral("hh mm") };
 
@@ -28,6 +29,7 @@ host_window::host_window(
 ,   i_main_view& main_view
 ,   diag_view& diag_view
 ,   info_view& info_view
+,   stop_view& stop_view
 ,   nav_controller& nav_controller
 )
     :   QMainWindow()
@@ -37,6 +39,7 @@ host_window::host_window(
     ,   main_view_ { main_view }
     ,   diag_view_ { diag_view }
     ,   info_view_ { info_view }
+    ,   stop_view_ { stop_view }
     ,   nav_controller_ { nav_controller }
 {
     ui_->setupUi(this);
@@ -61,6 +64,9 @@ void host_window::setup_screen_stack() {
 
     info_view_.setParent(ui_->sw_nav);
     ui_->sw_nav->insertWidget(INFO_VIEW_IDX, &info_view_);
+
+    stop_view_.setParent(ui_->sw_nav);
+    ui_->sw_nav->insertWidget(STOP_VIEW_IDX, &stop_view_);
 
     ui_->sw_nav->setCurrentIndex(MAIN_VIEW_IDX);
 

@@ -11,14 +11,20 @@ main_view_dialog_nav::main_view_dialog_nav(
 {
     ui_->setupUi(this);
 
-    QObject::connect(ui_->btn_nav_info, &QPushButton::released, [&]() {
+    QObject::connect(ui_->btn_nav_info, &QPushButton::released, this, [&]() {
         nav_controller_.nav_to(2);
 
         accept();
     });
 
-    QObject::connect(ui_->btn_nav_diag, &QPushButton::released, [&]() {
+    QObject::connect(ui_->btn_nav_diag, &QPushButton::released, this, [&]() {
         nav_controller_.nav_to(1);
+
+        accept();
+    });
+
+    QObject::connect(ui_->btn_nav_stop, &QPushButton::released, this, [&]() {
+        nav_controller_.nav_to(3);
 
         accept();
     });

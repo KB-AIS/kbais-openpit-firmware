@@ -36,9 +36,9 @@ class main_view : public i_main_view {
 
     const nav_controller& nav_controller_;
 
-    main_view_dialog_nav dialog_nav_;
-
     const i_gps_sensor_publisher& gps_sensor_publisher_;
+
+    main_view_dialog_nav dialog_nav_;
 
     rxcpp::composite_subscription subscriptions_;
 

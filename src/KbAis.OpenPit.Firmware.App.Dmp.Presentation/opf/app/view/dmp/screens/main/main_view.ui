@@ -442,8 +442,7 @@ border-radius: 8px;</string>
    </property>
    <property name="font">
     <font>
-     <family>Roboto</family>
-     <pointsize>14</pointsize>
+     <pointsize>20</pointsize>
     </font>
    </property>
    <property name="text">
@@ -464,8 +463,7 @@ border-radius: 8px;</string>
    </property>
    <property name="font">
     <font>
-     <family>Roboto</family>
-     <pointsize>14</pointsize>
+     <pointsize>20</pointsize>
     </font>
    </property>
    <property name="text">

@@ -12,6 +12,7 @@
 #include "opf/app/view/dmp/screens/diag/diag_view.h"
 #include "opf/app/view/dmp/screens/main/main_view.h"
 #include "opf/app/view/dmp/screens/info/info_view.h"
+#include "opf/app/view/dmp/screens/stop/stop_view.h"
 
 namespace Ui {
     class host_window;
@@ -31,6 +32,8 @@ class host_window : public QMainWindow {
     diag_view& diag_view_;
 
     info_view& info_view_;
+
+    stop_view& stop_view_;
 
     nav_controller& nav_controller_;
 
@@ -53,6 +56,7 @@ public:
     ,   i_main_view& main_view
     ,   diag_view& diag_view
     ,   info_view& info_view
+    ,   stop_view& stop_view
     ,   nav_controller& nav_controller
     );
 
