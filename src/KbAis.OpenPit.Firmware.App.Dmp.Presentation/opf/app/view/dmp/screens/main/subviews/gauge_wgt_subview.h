@@ -1,0 +1,4 @@
+#ifndef GAUGE_WGT_SUBVIEW_H
+#define GAUGE_WGT_SUBVIEW_H
+
+#endif // GAUGE_WGT_SUBVIEW_H

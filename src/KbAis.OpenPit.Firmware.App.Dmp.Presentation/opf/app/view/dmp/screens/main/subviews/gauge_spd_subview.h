@@ -1,5 +1,5 @@
-#ifndef GAUGE_SPEED_SUBVIEW_H
-#define GAUGE_SPEED_SUBVIEW_H
+#ifndef GAUGE_SPD_SUBVIEW_H
+#define GAUGE_SPD_SUBVIEW_H
 
 #include "Utils/Widgets/QcGauge/QcGaugeWidget.h"
 
@@ -7,7 +7,7 @@
 
 #include <IRxGpsSensorPublisher.h>
 
-class gauge_speed_subview {
+class gauge_spd_subview {
     QcLabelItem*  lable_;
 
     QcNeedleItem* needle_;
@@ -27,7 +27,7 @@ public:
 
 };
 
-inline void gauge_speed_subview::handle_gps_message(const GpsMessage& message) {
+inline void gauge_spd_subview::handle_gps_message(const GpsMessage& message) {
     needle_->setCurrentValue(message.speed);
 
     const auto lable_speed_text = QStringLiteral("%1 КМ/Ч.").arg(std::round(message.speed));
@@ -35,14 +35,14 @@ inline void gauge_speed_subview::handle_gps_message(const GpsMessage& message) {
     lable_->setText(lable_speed_text);
 }
 
-inline void gauge_speed_subview::update_value_from(rxcpp::observable<GpsMessage> obs_gps_message) const {
+inline void gauge_spd_subview::update_value_from(rxcpp::observable<GpsMessage> obs_gps_message) const {
     obs_gps_message.subscribe(sub_gps_message_);
 }
 
-inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcept {
+inline void gauge_spd_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcept {
     constexpr int GAUGE_DEG_S = -60, GAUGE_DEG_E = 240;
 
-    constexpr int GAUGE_SPD_MIN = 0, GAUGE_SPD_MAX = 80;
+    constexpr int GAUGE_VAL_MIN = 0, GAUGE_VAL_MAX = 80;
 
     auto setup_arc = [&]() {
         auto x = gauge->addArc(95);
@@ -57,14 +57,14 @@ inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcep
         x->setColor(opf::app::view::utils::colors::neon_yellow);
         x->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
         x->setStep(10);
-        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+        x->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
 
         auto y = gauge->addDegrees(88);
         y->setColor(opf::app::view::utils::colors::neon_yellow);
         y->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
         y->setStep(2.5);
         y->setSubDegree(true);
-        y->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+        y->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
     };
     setup_degrees();
 
@@ -72,9 +72,9 @@ inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcep
         auto x = gauge->addValues(65);
         x->setColor(opf::app::view::utils::colors::neon_yellow);
         x->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
-        x->setFont("DS-Digital");
+        x->setFont("Roboto");
         x->setStep(10);
-        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+        x->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
     };
     setup_values();
 
@@ -85,7 +85,7 @@ inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcep
         ,   { opf::app::view::utils::colors::neon_red, 55 },
         });
         x->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
-        x->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+        x->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
     };
     setup_color_band();
 
@@ -94,16 +94,16 @@ inline void gauge_speed_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcep
         needle_->setColor(opf::app::view::utils::colors::neon_blue);
         needle_->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
         needle_->setNeedle(QcNeedleItem::DiamonNeedle);
-        needle_->setValueRange(GAUGE_SPD_MIN, GAUGE_SPD_MAX);
+        needle_->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
     };
     setup_needle();
 
     auto setup_label = [&]() {
         lable_ = gauge->addLabel(90);
         lable_->setColor(opf::app::view::utils::colors::neon_yellow);
-        lable_->setFont("DS-Digital");
+        lable_->setFont("Roboto");
     };
     setup_label();
 }
 
-#endif // GAUGE_SPEED_SUBVIEW_H
+#endif // GAUGE_SPD_SUBVIEW_H

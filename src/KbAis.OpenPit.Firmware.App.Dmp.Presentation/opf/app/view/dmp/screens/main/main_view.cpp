@@ -14,10 +14,12 @@ using namespace std::chrono_literals;
 main_view::main_view(
     const i_gps_sensor_publisher& gps_sensor_publisher
 ,   const nav_controller& nav_controller
+,   const ntf_controller& ntf_controller
 )
     :   i_main_view()
     ,   ui { new Ui::main_view }
     ,   nav_controller_(nav_controller)
+    ,   ntf_controller_ { ntf_controller }
     ,   gps_sensor_publisher_ { gps_sensor_publisher }
     ,   dialog_nav_ { nav_controller_, this }
 {
@@ -30,10 +32,21 @@ main_view::main_view(
     rxqt::from_signal(ui->btn_menu, &QPushButton::released)
         .subscribe([this](auto) {
             const auto g = geometry();
-
             dialog_nav_.move(g.center() - dialog_nav_.rect().center());
-
             dialog_nav_.open();
+        });
+
+    rxqt::from_signal(ui->btn_backlight, &QPushButton::released)
+        .subscribe([this](auto) {
+            ntf_controller_.req_ntf(ntf_prms {
+                .primary_text = "БЫЛ ОБНАРУЖЕН ПРОСТОЙ"
+            ,   .secondary_text = "НАЖМИТЕ ДЛЯ ВВОДА ПРИЧИНЫ"
+            ,   .action_opt = [this]() {
+                    const auto g = geometry();
+                    dialog_nav_.move(g.center() - dialog_nav_.rect().center());
+                    dialog_nav_.open();
+                }
+            });
         });
 
     const int s = -30.0f, e = 210.0f;

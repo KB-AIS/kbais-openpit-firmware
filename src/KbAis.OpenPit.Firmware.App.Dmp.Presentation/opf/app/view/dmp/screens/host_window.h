@@ -2,17 +2,20 @@
 #define HOST_WINDOW_H
 
 // qt
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets/qmainwindow.h>
 
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
 #include "IRxGpsSensorPublisher.h"
 #include "RxQt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
+#include "opf/app/view/dmp/nav/ntf_controller.h"
+#include "opf/app/view/dmp/nav/pop_controller.h"
 #include "opf/app/view/dmp/screens/diag/diag_view.h"
-#include "opf/app/view/dmp/screens/main/main_view.h"
 #include "opf/app/view/dmp/screens/info/info_view.h"
+#include "opf/app/view/dmp/screens/main/main_view.h"
 #include "opf/app/view/dmp/screens/stop/stop_view.h"
+#include "opf/app/view/dmp/screens/notificator_w_action.h"
 
 namespace Ui {
     class host_window;
@@ -25,7 +28,7 @@ class host_window : public QMainWindow {
 
     const i_gps_sensor_publisher& gps_sensor_publisher_;
 
-    const IRxMessageSendersDiagPub& net_module_publisher_;
+    const IRxMessageSendersDiagPub& msg_sender_diag_publisher_;
 
     i_main_view& main_view_;
 
@@ -36,6 +39,12 @@ class host_window : public QMainWindow {
     stop_view& stop_view_;
 
     nav_controller& nav_controller_;
+
+    ntf_controller& ntf_controller_;
+
+    pop_controller& pop_controller_;
+
+    notificator_w_action notificator_w_action_;
 
     rxcpp::composite_subscription subscriptions_;
 
@@ -52,12 +61,14 @@ class host_window : public QMainWindow {
 public:
     host_window(
         const i_gps_sensor_publisher& gps_sensor_publisher
-    ,   const IRxMessageSendersDiagPub& net_module_publisher
+    ,   const IRxMessageSendersDiagPub& msg_sender_diag_publisher
     ,   i_main_view& main_view
     ,   diag_view& diag_view
     ,   info_view& info_view
     ,   stop_view& stop_view
     ,   nav_controller& nav_controller
+    ,   ntf_controller& ntf_controller
+    ,   pop_controller& pop_controller
     );
 
     ~host_window();

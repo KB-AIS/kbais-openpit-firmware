@@ -7,7 +7,7 @@
 #include "RxQt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
-#include "opf/app/view/dmp/screens/stop/stop_view_dialog_reason.h"
+#include "opf/app/view/dmp/screens/stop/stop_view_dialog_cause.h"
 
 namespace Ui { class stop_view; }
 
@@ -18,7 +18,7 @@ class stop_view : public QWidget {
 
     const nav_controller& nav_controller_;
 
-    stop_view_dialog_reason dialog_reason_;
+    stop_view_dialog_cause dialog_reason_;
 
 public:
     explicit stop_view(const nav_controller& nav_controller);

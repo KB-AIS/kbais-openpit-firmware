@@ -10,8 +10,9 @@
 #include "RxQt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
+#include "opf/app/view/dmp/nav/ntf_controller.h"
 #include "opf/app/view/dmp/screens/main/main_view_dialog_nav.h"
-#include "opf/app/view/dmp/screens/main/subviews/gauge_speed_subview.h"
+#include "opf/app/view/dmp/screens/main/subviews/gauge_spd_subview.h"
 
 class i_main_view : public QWidget {
 
@@ -32,9 +33,11 @@ class main_view : public i_main_view {
 
     QcNeedleItem* gau_wgt_ndl_;
 
-    gauge_speed_subview gauge_speed_subview_;
+    gauge_spd_subview gauge_speed_subview_;
 
     const nav_controller& nav_controller_;
+
+    const ntf_controller& ntf_controller_;
 
     const i_gps_sensor_publisher& gps_sensor_publisher_;
 
@@ -48,6 +51,7 @@ public:
     main_view(
         const i_gps_sensor_publisher& gps_sensor_publisher
     ,   const nav_controller& nav_controller
+    ,   const ntf_controller& ntf_controller
     );
 
     ~main_view();

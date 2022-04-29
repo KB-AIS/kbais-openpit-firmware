@@ -2,6 +2,8 @@
 #include "ui_host_window.h"
 
 // oss
+#include <plog/Log.h>
+#include <qscreen.h>
 #include <range/v3/all.hpp>
 
 using namespace std::chrono_literals;
@@ -25,26 +27,32 @@ constexpr auto UPDATE_DISPLAY_DATETIME_INTERVAL { 1s };
 
 host_window::host_window(
     const i_gps_sensor_publisher& gps_sensor_publisher
-,   const IRxMessageSendersDiagPub& net_module_publisher
+,   const IRxMessageSendersDiagPub& msg_sender_diag_publisher
 ,   i_main_view& main_view
 ,   diag_view& diag_view
 ,   info_view& info_view
 ,   stop_view& stop_view
 ,   nav_controller& nav_controller
+,   ntf_controller& ntf_controller
+,   pop_controller& pop_controller
 )
     :   QMainWindow()
     ,   ui_ { new Ui::host_window }
     ,   gps_sensor_publisher_ { gps_sensor_publisher }
-    ,   net_module_publisher_ { net_module_publisher }
+    ,   msg_sender_diag_publisher_ { msg_sender_diag_publisher }
     ,   main_view_ { main_view }
     ,   diag_view_ { diag_view }
     ,   info_view_ { info_view }
     ,   stop_view_ { stop_view }
     ,   nav_controller_ { nav_controller }
+    ,   ntf_controller_ { ntf_controller }
+    ,   pop_controller_ { pop_controller }
+    ,   notificator_w_action_ { this }
 {
     ui_->setupUi(this);
 
     setup_screen_stack();
+
     setup_appbar();
 
     main_view_.observe_on(run_loop_.observe_on_run_loop());
@@ -87,6 +95,16 @@ void host_window::setup_screen_stack() {
             // TODO: Typesafe navigation
             ui_->sw_nav->setCurrentIndex(screen_id);
         });
+
+    ntf_controller_.get_observable()
+        .subscribe(subscriptions_, [&](ntf_prms x) {
+            notificator_w_action_.execute(std::move(x));
+        });
+
+    pop_controller_.get_observable()
+        .subscribe(subscriptions_, [&](int pop_wnd_idx) {
+
+        });
 }
 
 void host_window::setup_appbar() {
@@ -100,14 +118,15 @@ void host_window::setup_appbar() {
             }
         );
 
-    net_module_publisher_.GetObservableDiagInfo().observe_on(coordination)
+    msg_sender_diag_publisher_.GetObservableDiagInfo().observe_on(coordination)
         .subscribe(
             subscriptions_
         ,   [&](const std::vector<MessageSenderDiagInfo>& x) {
                 auto isConnected = ranges::contains(x, QString { "ConnectedState" }, &MessageSenderDiagInfo::stateText);
 
                 ui_->lbl_indicatorSrv->setStyleSheet(isConnected ? STYLE_INDICATOR_VALID : STYLE_INDICATOR_INVALID);
-        });
+            }
+        );
 
     rxqt::from_signal(&timer_update_display_time, &QTimer::timeout)
         .subscribe(subscriptions_, [&](auto) { handle_update_display_time(); });
