@@ -8,7 +8,7 @@
 #include <range/v3/all.hpp>
 
 #include "Crc16Alogs.h"
-#include "JsonQt.h"
+#include "qt_json.h"
 #include "QtExtensions/QByteArrayExt.h"
 
 using json = nlohmann::json;

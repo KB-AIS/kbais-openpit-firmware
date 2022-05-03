@@ -13,7 +13,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
-    JsonQt.h \
+    qt_json.h
 
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj

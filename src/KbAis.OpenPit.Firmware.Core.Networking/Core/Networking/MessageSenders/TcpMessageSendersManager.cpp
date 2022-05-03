@@ -8,7 +8,7 @@
 #include <range/v3/all.hpp>
 
 #include "Format.h"
-#include "JsonQt.h"
+#include "qt_json.h"
 
 using namespace std::chrono_literals;
 

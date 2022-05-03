@@ -10,7 +10,7 @@
 #include <nonstd/expected.hpp>
 
 #include "Core/Persisting/Queries/Dtos.h"
-#include "JsonQt.h"
+#include "qt_json.h"
 
 enum class SwomPacketType : quint8 {
     Ath = 0x01

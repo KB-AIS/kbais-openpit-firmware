@@ -4,7 +4,7 @@
 // Modules.Sensors.Gps
 #include "GpsMessage.h"
 // Utils.TrdParty.JsonQt
-#include "JsonQt.h"
+#include "qt_json.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(GpsMessage
 ,   datetime
