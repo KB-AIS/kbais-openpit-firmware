@@ -1,9 +1,10 @@
 #ifndef STATE_WATCHER_MOTIONING_H
 #define STATE_WATCHER_MOTIONING_H
 
-#include "IRxGpsSensorPublisher.h"
-#include "opf/app/view/dmp/state_changed_publisher.h"
 #include "state_watching/state_watcher.h"
+
+#include "opf/app/view/dmp/state_changed_publisher.h"
+#include "opf/modules/sensors/gps/gps_sensor_publisher.h"
 
 struct state_watcher_motioning_configuration {
 
@@ -68,7 +69,7 @@ class state_watcher_motioning : public i_state_watcher_service, public i_state_c
 
     time_point_t last_park_time;
 
-    void handle_gps_message(const GpsMessage& gps_msg);
+    void handle_gps_message(const gps_sensor_message& gps_msg);
 
     bool is_in_move_state() const;
 

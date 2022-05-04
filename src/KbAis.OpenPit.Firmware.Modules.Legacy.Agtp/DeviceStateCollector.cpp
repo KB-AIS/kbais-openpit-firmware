@@ -17,7 +17,7 @@ void DeviceStateCollector::start(const rxqt::run_loop& loop) {
         .observe_on(loop.observe_on_run_loop())
         .subscribe(
             m_subscriptions
-        ,   [&](const GpsMessage& msg) {
+        ,   [&](const gps_sensor_message& msg) {
                 m_cached_gps_msg = msg;
             }
         );
@@ -32,12 +32,10 @@ void DeviceStateCollector::start(const rxqt::run_loop& loop) {
         );
 }
 
-GpsMessage
-DeviceStateCollector::getGpsMessage() const {
+gps_sensor_message DeviceStateCollector::getGpsMessage() const {
     return m_cached_gps_msg;
 }
 
-crd_sensor_message
-DeviceStateCollector::get_tcr_msg() const {
+crd_sensor_message DeviceStateCollector::get_tcr_msg() const {
     return m_cached_tcr_msg;
 }

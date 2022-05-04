@@ -11,8 +11,7 @@ CONFIG += staticlib conan_basic_setup \
 QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 
 INCLUDEPATH += \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Extensions \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \

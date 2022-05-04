@@ -5,8 +5,7 @@
 #include <QtWidgets/qmainwindow.h>
 
 #include "Core/Networking/Diagnostic/IRxMessageSendersDiagPub.h"
-#include "IRxGpsSensorPublisher.h"
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
 #include "opf/app/view/dmp/nav/ntf_controller.h"
@@ -15,6 +14,8 @@
 #include "opf/app/view/dmp/screens/main/main_view.h"
 #include "opf/app/view/dmp/screens/stop/stop_view.h"
 #include "opf/app/view/dmp/screens/notificator_w_action.h"
+
+#include "opf/modules/sensors/gps/gps_sensor_publisher.h"
 
 namespace Ui { class host_window; }
 
@@ -28,15 +29,11 @@ class host_window : public QMainWindow {
     const IRxMessageSendersDiagPub& msg_sender_diag_publisher_;
 
     i_main_view& main_view_;
-
     diag_view& diag_view_;
-
     info_view& info_view_;
-
     stop_view& stop_view_;
 
     nav_controller& nav_controller_;
-
     ntf_controller& ntf_controller_;
 
     notificator_w_action notificator_w_action_;

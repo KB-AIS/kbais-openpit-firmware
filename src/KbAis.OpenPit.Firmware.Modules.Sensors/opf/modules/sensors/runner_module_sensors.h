@@ -1,7 +1,7 @@
 #ifndef RUNNER_MODULE_SENSORS_H
 #define RUNNER_MODULE_SENSORS_H
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "opf/modules/sensors/crd/crd_sensor_publisher.h"
 #include "opf/modules/sensors/lcs/lcs_sensor_publisher.h"

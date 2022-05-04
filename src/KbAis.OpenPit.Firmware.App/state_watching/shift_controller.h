@@ -6,8 +6,9 @@
 // oss
 #include <rxcpp/rx.hpp>
 
-#include "IRxGpsSensorPublisher.h"
 #include "state_watching/state_watcher_loading.h"
+
+#include "opf/modules/sensors/gps/gps_sensor_publisher.h"
 
 template<class duration_t>
 class time_range {
@@ -77,7 +78,7 @@ public:
 class shift_controller : public i_shift_messages_publisher {
 
     struct shift_agregated_data {
-        GpsMessage last_position;
+        gps_sensor_message last_position;
 
         double total_mileage_m { 0.0 };
     };
@@ -104,7 +105,7 @@ class shift_controller : public i_shift_messages_publisher {
 
     void handle_shift_close();
 
-    void handle_incr_total_mileage(const GpsMessage& msg);
+    void handle_incr_total_mileage(const gps_sensor_message& msg);
 
 public:
     explicit shift_controller(

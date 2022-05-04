@@ -28,7 +28,7 @@ class i_flv_message_publisher {
 public:
     virtual ~i_flv_message_publisher() noexcept = default;
 
-    virtual rxcpp::observable<flv_message> get_observable(const rxcpp::observe_on_one_worker& c) const = 0;
+    virtual rxcpp::observable<flv_message> get_observable() const = 0;
 };
 
 #endif // FLV_MESSAGE_PUBLISHER_H

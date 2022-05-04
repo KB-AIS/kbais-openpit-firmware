@@ -24,7 +24,6 @@ HEADERS += \
     Collectors/RecurrentMessagesCollector.h \
     IRxImmediateMessageMapper.h \
     IRxRecurrentMessageMapper.h \
-    Mappers/JsonMappers.h \
     Message.h \
     MessagesBatch.h \
     ThreadWorkerMessaging.h

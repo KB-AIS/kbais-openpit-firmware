@@ -1,7 +1,7 @@
 #ifndef SETUP_DATETIME_SERVICE_H
 #define SETUP_DATETIME_SERVICE_H
 
-#include "IRxGpsSensorPublisher.h"
+#include "opf/modules/sensors/gps/gps_sensor_publisher.h"
 
 /*!
  * \brief Сервис установки системного времени согласно показателям полученным
@@ -11,7 +11,7 @@ class setup_datetime_service {
 
     rxcpp::composite_subscription subscriptions_;
 
-    static void handle_gps_message(const GpsMessage& msg);
+    static void handle_gps_message(const gps_sensor_message& msg);
 
     static bool need_sync_system_datetime(
         const QDateTime& gps_datetime, const QDateTime& sys_datetime

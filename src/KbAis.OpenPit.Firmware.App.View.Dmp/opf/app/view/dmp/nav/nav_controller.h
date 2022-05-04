@@ -6,10 +6,10 @@
 
 class nav_controller {
 
-    rxcpp::rxsub::subject<int> subject_screen_id_;
+    rxcpp::rxsub::subject<int> sub_idx_;
 
 public:
-    void nav_to(const int screen_id) const;
+    void nav_to(const int view_idx) const;
 
     rxcpp::observable<int> get_observable() const;
 

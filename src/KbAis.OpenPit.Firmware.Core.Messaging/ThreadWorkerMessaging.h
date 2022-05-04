@@ -2,7 +2,7 @@
 #define THREADWORKERMESSAGING_H
 
 // Utils.TrdPary.RxQt
-#include <RxQt.h>
+#include <rxqt.h>
 
 #include "Collectors/MessagesCollectorsAdapter.h"
 

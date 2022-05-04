@@ -20,7 +20,7 @@ state_watcher_motioning::state_watcher_motioning(
 void state_watcher_motioning::start_working_on(const rxcpp::observe_on_one_worker& coordination) {
     gps_sensor_publisher_.get_observable()
         .observe_on(coordination)
-        .subscribe(subscriptions_, [this](const GpsMessage& x) { handle_gps_message(x); });
+        .subscribe(subscriptions_, [this](const gps_sensor_message& x) { handle_gps_message(x); });
 }
 
 rxcpp::observable<state_code_motioning> state_watcher_motioning::get_observable(
@@ -29,7 +29,7 @@ rxcpp::observable<state_code_motioning> state_watcher_motioning::get_observable(
     return current_motioning_state_.get_observable().subscribe_on(coordination);
 }
 
-void state_watcher_motioning::handle_gps_message(const GpsMessage& gps_message) {
+void state_watcher_motioning::handle_gps_message(const gps_sensor_message& gps_message) {
     buffered_speed_values_[buffered_speed_cur_idx_] = gps_message.speed;
     buffered_speed_cur_idx_ = (buffered_speed_cur_idx_ + 1) % buffered_speed_size_;
 

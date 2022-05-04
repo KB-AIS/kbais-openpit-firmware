@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QSerialPort>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 struct lcs_sensor_message {
 

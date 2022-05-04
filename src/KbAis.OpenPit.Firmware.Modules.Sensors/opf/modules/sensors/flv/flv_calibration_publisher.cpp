@@ -20,8 +20,7 @@ flv_calibration_publisher::flv_calibration_publisher(
 
 }
 
-void
-flv_calibration_publisher::start_publish_on(const rxcpp::observe_on_one_worker& coord) {
+void flv_calibration_publisher::start_publish_on(const rxcpp::observe_on_one_worker& coord) {
     app_configuration_publisher_.get_observable("scale")
         .sample_with_time(500ms, coord)
         .subscribe(
@@ -37,13 +36,11 @@ flv_calibration_publisher::start_publish_on(const rxcpp::observe_on_one_worker& 
         );
 }
 
-rxcpp::observable<flv_message>
-flv_calibration_publisher::get_observable(const rxcpp::observe_on_one_worker& c) const {
+rxcpp::observable<flv_message> flv_calibration_publisher::get_observable() const {
     return last_flv_message_.get_observable();
 }
 
-void
-flv_calibration_publisher::handle_new_scale_config(const app_configuration& config) {
+void flv_calibration_publisher::handle_new_scale_config(const app_configuration& config) {
     // Parce calibration table
     // TODO: Get calibration table for all sensors
     calibration_table_ = config.value.at("/Scales/0/Sens/0/Tar"_json_pointer)
@@ -59,8 +56,7 @@ flv_calibration_publisher::handle_new_scale_config(const app_configuration& conf
     max_fuel_level_ = config.value.at("/Scales/0/MaxScale"_json_pointer).get<double>();
 }
 
-void
-flv_calibration_publisher::handle_fuel_calibration(const lls_sensor_message& message) const {
+void flv_calibration_publisher::handle_fuel_calibration(const lls_sensor_message& message) const {
     const auto subscriber = last_flv_message_.get_subscriber();
 
     if (calibration_table_.empty()) {
@@ -90,9 +86,8 @@ flv_calibration_publisher::handle_fuel_calibration(const lls_sensor_message& mes
     subscriber.on_next(flv_message { fuel, max_fuel_level_, true });
 }
 
-double
-flv_calibration_publisher::get_fuel_level_by_calibration_table(double lls_level) const {
-    constexpr int LIT = 0, ADC = 1;
+double flv_calibration_publisher::get_fuel_level_by_calibration_table(double lls_level) const {
+    [[maybe_unused]] constexpr int LIT = 0, ADC = 1;
 
     int s_idx = 0, e_idx = calibration_table_.size() - 2;
 

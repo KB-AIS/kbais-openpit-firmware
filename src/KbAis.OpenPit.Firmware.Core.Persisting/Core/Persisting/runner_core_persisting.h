@@ -2,7 +2,7 @@
 #define RUNNER_CORE_PERSISTING_H
 
 #include "Core/Persisting/i_message_caching_service.h"
-#include "RxQt.h"
+#include "rxqt.h"
 
 class runner_core_persisting : QObject {
 

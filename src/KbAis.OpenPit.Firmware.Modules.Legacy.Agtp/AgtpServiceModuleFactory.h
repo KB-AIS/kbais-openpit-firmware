@@ -5,7 +5,7 @@
 #include <boost/di.hpp>
 
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "AgtpRequestMediator.h"
 #include "AgtpThreadWorker.h"

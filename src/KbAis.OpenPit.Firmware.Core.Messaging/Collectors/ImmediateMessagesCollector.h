@@ -5,7 +5,7 @@
 #include <QVector>
 
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "IRxImmediateMessageMapper.h"
 #include "Message.h"

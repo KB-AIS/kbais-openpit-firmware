@@ -13,8 +13,7 @@ QMAKE_CXXFLAGS += -std=gnu++17 -Wno-psabi \
 INCLUDEPATH += \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Configuration \
     $$PRJDIR/KbAis.OpenPit.Firmware.Core.Networking \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Gps \
-    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors.Serials \
+    $$PRJDIR/KbAis.OpenPit.Firmware.Modules.Sensors \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.TrdParty.RxQt \
     $$PRJDIR/KbAis.OpenPit.Firmware.Utils.Widgets \
 
@@ -34,6 +33,8 @@ HEADERS += \
     opf/app/view/dmp/screens/main/subviews/gauge_spd_subview.h \
     opf/app/view/dmp/screens/main/subviews/gauge_wgt_subview.h \
     opf/app/view/dmp/screens/notificator_w_action.h \
+    opf/app/view/dmp/screens/stacked_view.h \
+    opf/app/view/dmp/screens/stacked_view_idxs.h \
     opf/app/view/dmp/screens/stop/stop_view.h \
     opf/app/view/dmp/screens/stop/stop_view_dialog_cause.h \
     opf/app/view/dmp/state_changed_publisher.h \

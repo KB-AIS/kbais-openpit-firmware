@@ -4,30 +4,28 @@
 #include "Utils/Widgets/QcGauge/QcGaugeWidget.h"
 
 #include "opf/app/view/dmp/utils/neon_colors.h"
-
-#include <IRxGpsSensorPublisher.h>
+#include "opf/modules/sensors/gps/gps_sensor_publisher.h"
 
 class gauge_spd_subview {
     QcLabelItem*  lable_;
-
     QcNeedleItem* needle_;
 
-    rxcpp::subscriber<GpsMessage> sub_gps_message_ {
-        rxcpp::make_subscriber<GpsMessage>([this](auto x) {
+    rxcpp::subscriber<gps_sensor_message> sub_gps_message_ {
+        rxcpp::make_subscriber<gps_sensor_message>([this](auto x) {
             handle_gps_message(x);
         })
     };
 
-    void handle_gps_message(const GpsMessage& message);
+    void handle_gps_message(const gps_sensor_message& message);
 
 public:
-    void update_value_from(rxcpp::observable<GpsMessage> obs_gps_message) const;
+    void update_value_from(rxcpp::observable<gps_sensor_message> obs_gps_message) const;
 
-    void setup_speed_gauge(QcGaugeWidget* gauge) noexcept;
+    void setup_subview(QcGaugeWidget* gauge) noexcept;
 
 };
 
-inline void gauge_spd_subview::handle_gps_message(const GpsMessage& message) {
+inline void gauge_spd_subview::handle_gps_message(const gps_sensor_message& message) {
     needle_->setCurrentValue(message.speed);
 
     const auto lable_speed_text = QStringLiteral("%1 КМ/Ч.").arg(std::round(message.speed));
@@ -35,11 +33,11 @@ inline void gauge_spd_subview::handle_gps_message(const GpsMessage& message) {
     lable_->setText(lable_speed_text);
 }
 
-inline void gauge_spd_subview::update_value_from(rxcpp::observable<GpsMessage> obs_gps_message) const {
+inline void gauge_spd_subview::update_value_from(rxcpp::observable<gps_sensor_message> obs_gps_message) const {
     obs_gps_message.subscribe(sub_gps_message_);
 }
 
-inline void gauge_spd_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcept {
+inline void gauge_spd_subview::setup_subview(QcGaugeWidget* gauge) noexcept {
     constexpr int GAUGE_DEG_S = -60, GAUGE_DEG_E = 240;
 
     constexpr int GAUGE_VAL_MIN = 0, GAUGE_VAL_MAX = 80;
@@ -72,7 +70,7 @@ inline void gauge_spd_subview::setup_speed_gauge(QcGaugeWidget* gauge) noexcept 
         auto x = gauge->addValues(65);
         x->setColor(opf::app::view::utils::colors::neon_yellow);
         x->setDegreeRange(GAUGE_DEG_S, GAUGE_DEG_E);
-        x->setFont("Roboto");
+        x->setFont("Digital-7");
         x->setStep(10);
         x->setValueRange(GAUGE_VAL_MIN, GAUGE_VAL_MAX);
     };

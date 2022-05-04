@@ -2,15 +2,13 @@
 #define NEON_COLORS_H
 
 // qt
-#include <QColor>
+#include <QtGui/qcolor.h>
 
 namespace opf::app::view::utils {
 
-class colors {
+struct colors {
     colors() = delete;
 
-public:
-    // TODO: Use constexpr after migration
     static inline const QColor neon_black  { 0x25, 0x25, 0x25 };
     static inline const QColor neon_blue   { 0x00, 0x0a, 0xff };
     static inline const QColor neon_green  { 0x00, 0xff, 0x28 };

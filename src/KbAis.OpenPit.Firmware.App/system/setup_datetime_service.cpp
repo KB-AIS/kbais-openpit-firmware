@@ -12,14 +12,14 @@ setup_datetime_service::setup_datetime_service(
     const i_gps_sensor_publisher& gps_sensor_publisher
 ) {
     gps_sensor_publisher.get_observable()
-        .subscribe(subscriptions_, [](const GpsMessage& x) { handle_gps_message(x); });
+        .subscribe(subscriptions_, [](const gps_sensor_message& x) { handle_gps_message(x); });
 }
 
 setup_datetime_service::~setup_datetime_service() noexcept {
     subscriptions_.unsubscribe();
 }
 
-void setup_datetime_service::handle_gps_message(const GpsMessage& msg) {
+void setup_datetime_service::handle_gps_message(const gps_sensor_message& msg) {
     if (!msg.is_valid) return;
 
     const auto sys_dt = QDateTime::currentDateTimeUtc();

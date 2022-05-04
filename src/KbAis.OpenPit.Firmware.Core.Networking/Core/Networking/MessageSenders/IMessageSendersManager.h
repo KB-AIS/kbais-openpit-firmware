@@ -2,7 +2,7 @@
 #define IMESSAGESENDERSMANAGER_H
 
 // oss
-#include <RxQt.h>
+#include <rxqt.h>
 
 class IMessageSendersManager : public QObject {
 

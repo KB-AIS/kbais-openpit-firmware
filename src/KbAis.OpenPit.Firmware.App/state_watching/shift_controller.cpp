@@ -15,7 +15,9 @@ shift_controller::shift_controller(
     const i_gps_sensor_publisher& gps_sensor_publisher
 ,   const i_state_loading_changed_publisher& state_loading_changed_publisher
 )
-    :   config_ {
+    :   gps_sensor_publisher_ { gps_sensor_publisher }
+    ,   state_loading_changed_publisher_ { state_loading_changed_publisher }
+    ,   config_ {
             .shifts = {
                 { time_range<seconds> { {  8h +  0min +  0s }, {  8h + 00min + 59s } } }
             ,   { time_range<seconds> { {  8h +  1min +  0s }, { 16h + 59min + 59s } } }
@@ -24,8 +26,6 @@ shift_controller::shift_controller(
             ,   { time_range<seconds> { {  2h +  0min +  0s }, {  7h + 59min + 59s } } }
             }
         }
-    ,   gps_sensor_publisher_ { gps_sensor_publisher }
-    ,   state_loading_changed_publisher_ { state_loading_changed_publisher }
 {}
 
 void shift_controller::start_working_on(
@@ -104,7 +104,7 @@ void shift_controller::handle_setup_shift_timers() {
         :   std::make_optional(ranges::front(shifts_filterd_and_sorted));
     };
 
-    const auto seconds_since_midnight = 8h + 58s;//get_seconds_since_last_midnight();
+    const auto seconds_since_midnight = /*8h + 58s;*/get_seconds_since_last_midnight();
 
     const auto current_shift = find_current_shift(seconds_since_midnight, config_.shifts);
     if (current_shift) {
@@ -129,7 +129,7 @@ void shift_controller::handle_shift_close() {
     PLOGD << "Performing shift close";
 }
 
-void shift_controller::handle_incr_total_mileage(const GpsMessage& x) {
+void shift_controller::handle_incr_total_mileage(const gps_sensor_message& x) {
     auto& y = shift_agregated_data_.last_position;
 
     if (!y.is_valid) {
@@ -138,7 +138,7 @@ void shift_controller::handle_incr_total_mileage(const GpsMessage& x) {
         return;
     }
 
-    constexpr auto calc_distance = [](const GpsMessage& x, const GpsMessage& y) -> double {
+    constexpr auto calc_distance = [](const gps_sensor_message& x, const gps_sensor_message& y) -> double {
         constexpr auto calc_radians = [](double degrees) -> double  {
             return degrees / 180.0 * M_PI;
         };

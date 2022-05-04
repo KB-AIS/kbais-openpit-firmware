@@ -4,7 +4,7 @@
 // qt
 #include <QIODevice>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 struct ProtocolViolationNotif {
     std::string message;

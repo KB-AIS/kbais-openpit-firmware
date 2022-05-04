@@ -2,7 +2,7 @@
 #define FETCHDEVICESTATEREQUSETHANDLER_H
 
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "IAgtpRequestHandler.h"
 #include "DeviceStateCollector.h"

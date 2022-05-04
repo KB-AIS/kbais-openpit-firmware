@@ -36,7 +36,7 @@ public:
 
     void start_publish_on(const rxcpp::observe_on_one_worker& c);
 
-    rxcpp::observable<flv_message> get_observable(const rxcpp::observe_on_one_worker& c) const override;
+    rxcpp::observable<flv_message> get_observable() const override;
 
 };
 

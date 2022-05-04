@@ -1,8 +1,9 @@
 #include "immediate_message_mapper_dmp.h"
 
-#include "Mappers/JsonMappers.h"
+// oss
+#include <nlohmann/json.hpp>
+
 #include "QtExtensions/QByteArrayExt.h"
-#include "RxQt.h"
 
 const QString MESSAGE_MONKIER_USR { QStringLiteral("USR") };
 
@@ -10,12 +11,11 @@ const QString MESSAGE_MONKIER_STA { QStringLiteral("STA") };
 
 DmpImmediateMessageMapper::DmpImmediateMessageMapper(
     const main_view& main_view
-,   const state_watcher_fuelling& state_ful_pub
+,   const state_watcher_fuelling& state_watcher_fuelling
 )
-    :   m_main_view(main_view)
-    ,   m_state_ful_pub(state_ful_pub)
+    :   main_view_ { main_view }
+    ,   state_watcher_fuelling_ { state_watcher_fuelling }
 {
-
 }
 
 rxcpp::observable<Message>
@@ -33,7 +33,7 @@ DmpImmediateMessageMapper::getObservable() const {
 //            });
 
     rxcpp::observable<Message> state_fueling_message_observable =
-        m_state_ful_pub.get_observable()
+        state_watcher_fuelling_.get_observable()
             .map([&](const state_changed_message& x) -> Message {
                 nlohmann::json j_object;
                 j_object["COD"] = x.new_state_code;

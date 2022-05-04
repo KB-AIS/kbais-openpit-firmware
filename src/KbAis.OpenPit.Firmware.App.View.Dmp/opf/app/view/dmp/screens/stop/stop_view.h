@@ -4,7 +4,7 @@
 // qt
 #include <QtWidgets/qwidget.h>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
 #include "opf/app/view/dmp/screens/stop/stop_view_dialog_cause.h"

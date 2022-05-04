@@ -10,8 +10,8 @@
 
 inline auto create_module_sensors() noexcept {
     return boost::di::make_injector(
-        boost::di::bind<flv_calibration_publisher>
-            .in(boost::di::singleton)
+        boost::di::bind<i_flv_message_publisher>
+            .to<flv_calibration_publisher>().in(boost::di::singleton)
 
     ,   boost::di::bind<i_gps_sensor_publisher>()
             .to<gps_sensor_publisher>().in(boost::di::singleton)

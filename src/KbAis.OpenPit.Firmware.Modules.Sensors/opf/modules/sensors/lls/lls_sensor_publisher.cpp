@@ -8,7 +8,7 @@
 
 #include "Crc8Alogs.h"
 #include "Format.h"
-#include "RxQt.h"
+#include "rxqt.h"
 
 using namespace std::chrono_literals;
 

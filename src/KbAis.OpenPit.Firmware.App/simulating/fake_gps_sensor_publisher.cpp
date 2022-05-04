@@ -14,18 +14,18 @@ constexpr auto GPS_MESSAGE_SEND_INTERVAL { 1000ms };
 std::mt19937 random_engine;
 
 fake_gps_sensor_publisher::fake_gps_sensor_publisher() noexcept
-    :   subject_gps_messages_ { GpsMessage { } }
+    :   sub_gps_sensor_messages_ { gps_sensor_message { } }
 {
 }
 
-const rxcpp::observable<GpsMessage> fake_gps_sensor_publisher::get_observable() const {
-    return subject_gps_messages_.get_observable();
+const rxcpp::observable<gps_sensor_message> fake_gps_sensor_publisher::get_observable() const {
+    return sub_gps_sensor_messages_.get_observable();
 }
 
 void fake_gps_sensor_publisher::setup_scenario(
     const rxcpp::observe_on_one_worker& coordination
 ) {
-    constexpr auto make_gps_message = [](double speed) -> GpsMessage {
+    constexpr auto make_gps_message = [](double speed) -> gps_sensor_message {
         return {
             .datetime = { }, .is_valid = true, .latitude  = 0.0, .longitude = 0.0
         ,   .speed = speed
@@ -35,11 +35,11 @@ void fake_gps_sensor_publisher::setup_scenario(
     constexpr auto gen_gps_messages_w_const_spd = [mkr = make_gps_message](
         double speed
     ,   duration<int64_t, std::milli> duration
-    ) -> std::vector<GpsMessage> {
+    ) -> std::vector<gps_sensor_message> {
         const auto msgs_num = duration / GPS_MESSAGE_SEND_INTERVAL;
 
         return
-            views::generate([&]() -> GpsMessage { return mkr(speed); })
+            views::generate([&]() -> gps_sensor_message { return mkr(speed); })
         |   views::take(msgs_num)
         |   to<std::vector>();
     };
@@ -47,7 +47,7 @@ void fake_gps_sensor_publisher::setup_scenario(
     constexpr auto gen_gps_messages_w_smooth_spd = [mkr = make_gps_message](
         double speed_s, double speed_e
     ,   duration<int64_t, std::milli> duration
-    ) -> std::vector<GpsMessage> {
+    ) -> std::vector<gps_sensor_message> {
         const auto msgs_num = duration / GPS_MESSAGE_SEND_INTERVAL;
 
         return
@@ -59,7 +59,7 @@ void fake_gps_sensor_publisher::setup_scenario(
     constexpr auto gen_gps_messages_w_shuffle_spd = [mkr = make_gps_message](
         double speed_s, double speed_e
     ,   duration<int64_t, std::milli> duration
-    ) -> std::vector<GpsMessage> {
+    ) -> std::vector<gps_sensor_message> {
         const auto msgs_num = duration / GPS_MESSAGE_SEND_INTERVAL;
 
         return
@@ -72,19 +72,9 @@ void fake_gps_sensor_publisher::setup_scenario(
     auto delay_every =
         concat_map([](auto x) { return just(x) | delay(GPS_MESSAGE_SEND_INTERVAL); });
 
-    observable_gps_messages_ =
+    obs_gps_sensor_messages_ =
         from(
             coordination
-//        ,   iterate(std::vector<GpsMessage> {
-//                {
-//                    .datetime = { }, .is_valid = true, .latitude = 53.734967, .longitude = 91.439935
-//                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
-//                }
-//            ,   {
-//                    .datetime = { }, .is_valid = true, .latitude = 53.727640, .longitude = 91.442116
-//                ,   .speed = 0, .gpsQauality = 0, .satellites = 4
-//                }
-//            })
         ,   iterate(gen_gps_messages_w_const_spd(0.0, 18s))
         ,   iterate(gen_gps_messages_w_smooth_spd(0.0, 30.0, 8s))
         ,   iterate(gen_gps_messages_w_shuffle_spd(28.8, 32.3, 30s))
@@ -92,9 +82,9 @@ void fake_gps_sensor_publisher::setup_scenario(
         ,   iterate(gen_gps_messages_w_shuffle_spd(0.0, 4.3, 22s))
         ,   iterate(gen_gps_messages_w_const_spd(25.0, 30s))
         )
-    |   concat() | delay_every | repeat() | multicast(subject_gps_messages_);
+    |   concat() | delay_every | repeat() | multicast(sub_gps_sensor_messages_);
 }
 
 void fake_gps_sensor_publisher::start_scenario() {
-    observable_gps_messages_.connect();
+    obs_gps_sensor_messages_.connect();
 }

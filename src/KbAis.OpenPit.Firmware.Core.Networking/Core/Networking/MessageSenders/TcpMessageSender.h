@@ -10,7 +10,7 @@
 
 #include "Core/Networking/Communicators/IProtocolCommunicator.h"
 #include "Core/Networking/MessageSenders/TcpMessageSenderConfiguration.h"
-#include "RxQt.h"
+#include "rxqt.h"
 
 struct TcpMessageSenderState {
 

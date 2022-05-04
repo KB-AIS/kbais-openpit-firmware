@@ -7,7 +7,7 @@
 // oss
 #include <plog/Log.h>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 using namespace std::chrono_literals;
 

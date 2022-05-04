@@ -2,7 +2,7 @@
 #define MODULEBOOTSTRAPERNETWORKING_H
 
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "Core/Networking/MessageSenders/IMessageSendersManager.h"
 

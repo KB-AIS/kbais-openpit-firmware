@@ -1,6 +1,8 @@
 #include "info_view.h"
 #include "ui_info_view.h"
 
+#include "opf/app/view/dmp/screens/stacked_view_idxs.h"
+
 info_view::info_view(
     const nav_controller& nav_controller
 )
@@ -16,4 +18,8 @@ info_view::info_view(
 
 info_view::~info_view() {
     delete ui_;
+}
+
+int info_view::get_view_idx() const noexcept {
+    return opf::app::view::dmp::stacked_view_idxs::INFO;
 }

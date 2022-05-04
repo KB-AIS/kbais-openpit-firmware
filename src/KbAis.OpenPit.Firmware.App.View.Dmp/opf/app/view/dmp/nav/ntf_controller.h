@@ -20,7 +20,7 @@ struct ntf_prms {
 
 class ntf_controller {
 
-    rxcpp::rxsub::subject<ntf_prms> sub_notification_;
+    rxcpp::rxsub::subject<ntf_prms> sub_ntf_;
 
 public:
     void req_ntf(const ntf_prms&& prms) const;

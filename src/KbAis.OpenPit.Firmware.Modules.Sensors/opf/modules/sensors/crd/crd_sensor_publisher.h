@@ -6,7 +6,7 @@
 // qt
 #include <QSerialPort>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "opf/modules/sensors/crd/crd_formatter_tkcardreader_modbus.h"
 

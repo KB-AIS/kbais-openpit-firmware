@@ -149,7 +149,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lvl_shift_task">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -174,7 +174,7 @@ border-radius: 8px;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="lbl_sta_last">
+  <widget class="QLabel" name="lbl_sta_value">
    <property name="geometry">
     <rect>
      <x>322</x>
@@ -199,7 +199,7 @@ border-radius: 8px;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QLabel" name="lbl_wgt_icon">
    <property name="geometry">
     <rect>
      <x>770</x>
@@ -221,7 +221,7 @@ border-radius: 8px;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_6">
+  <widget class="QLabel" name="lbl_wgt_caption">
    <property name="geometry">
     <rect>
      <x>730</x>
@@ -236,13 +236,13 @@ border-radius: 8px;</string>
     </font>
    </property>
    <property name="text">
-    <string>МАССА</string>
+    <string>МАССА, Т.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_5">
+  <widget class="QLabel" name="lbl_flv_caption">
    <property name="geometry">
     <rect>
      <x>17</x>
@@ -257,13 +257,13 @@ border-radius: 8px;</string>
     </font>
    </property>
    <property name="text">
-    <string>ТОПЛИВО</string>
+    <string>ТОПЛИВО, Л.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="lbl_icon_flv">
+  <widget class="QLabel" name="lbl_flv_icon">
    <property name="geometry">
     <rect>
      <x>50</x>
@@ -431,43 +431,46 @@ border-radius: 8px;</string>
     </size>
    </property>
   </widget>
-  <widget class="QLabel" name="label_13">
+  <widget class="QLabel" name="lbl_flv_value">
    <property name="geometry">
     <rect>
      <x>17</x>
      <y>390</y>
      <width>280</width>
-     <height>32</height>
+     <height>42</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>20</pointsize>
+     <pointsize>28</pointsize>
+     <italic>true</italic>
     </font>
    </property>
    <property name="text">
-    <string>1800 Л.</string>
+    <string>1800</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_14">
+  <widget class="QLabel" name="lbl_wgt_value">
    <property name="geometry">
     <rect>
      <x>730</x>
      <y>390</y>
      <width>280</width>
-     <height>32</height>
+     <height>42</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>20</pointsize>
+     <family>Digital-7 Mono</family>
+     <pointsize>28</pointsize>
+     <italic>true</italic>
     </font>
    </property>
    <property name="text">
-    <string>110 Т.</string>
+    <string>110</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -478,16 +481,16 @@ border-radius: 8px;</string>
   <zorder>gau_spd</zorder>
   <zorder>gau_wgt</zorder>
   <zorder>gau_flv</zorder>
-  <zorder>label_2</zorder>
-  <zorder>lbl_sta_last</zorder>
-  <zorder>label_6</zorder>
-  <zorder>label_4</zorder>
-  <zorder>label_5</zorder>
-  <zorder>lbl_icon_flv</zorder>
+  <zorder>lvl_shift_task</zorder>
+  <zorder>lbl_sta_value</zorder>
+  <zorder>lbl_wgt_caption</zorder>
+  <zorder>lbl_wgt_icon</zorder>
+  <zorder>lbl_flv_caption</zorder>
+  <zorder>lbl_flv_icon</zorder>
   <zorder>gridLayoutWidget</zorder>
   <zorder>btn_backlight</zorder>
-  <zorder>label_13</zorder>
-  <zorder>label_14</zorder>
+  <zorder>lbl_flv_value</zorder>
+  <zorder>lbl_wgt_value</zorder>
  </widget>
  <customwidgets>
   <customwidget>

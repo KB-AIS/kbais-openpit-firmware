@@ -4,17 +4,14 @@
 // qt
 #include <QtWidgets/QWidget>
 
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "opf/app/view/dmp/nav/nav_controller.h"
+#include "opf/app/view/dmp/screens/stacked_view.h"
 
-namespace Ui {
+namespace Ui { class diag_view; }
 
-class diag_view;
-
-}
-
-class diag_view : public QWidget{
+class diag_view : public QWidget, public i_stacked_view {
     Q_OBJECT
 
     Ui::diag_view* ui_;
@@ -28,6 +25,7 @@ public:
 
     ~diag_view();
 
+    int get_view_idx() const noexcept override;
 };
 
 #endif // DIAG_VIEW_H

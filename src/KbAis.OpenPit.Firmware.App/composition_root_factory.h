@@ -23,11 +23,7 @@
 
 inline auto create_core_configuration() {
     return boost::di::make_injector(
-        boost::di::bind<
-            i_app_configuration_provider
-        ,   i_app_configuration_publisher
-        ,   app_configuration_manager
-        >()
+        boost::di::bind<i_app_configuration_provider, i_app_configuration_publisher, app_configuration_manager>()
             .to<app_configuration_manager>().in(boost::di::singleton)
     );
 }
@@ -60,18 +56,11 @@ inline auto create_module_state_watching() {
 //            .to<state_watcher_loading>().in(boost::di::singleton)
 //        boost::di::bind<shift_controller>()
 //            .in(boost::di::singleton)
-        boost::di::bind<
-            i_gps_sensor_publisher
-        ,   i_scenario_executor
-        ,   fake_gps_sensor_publisher
-        >()
+
+        boost::di::bind<i_gps_sensor_publisher, i_scenario_executor, fake_gps_sensor_publisher>()
             .to<fake_gps_sensor_publisher>().in(boost::di::singleton) [boost::di::override]
-//    ,   boost::di::bind<
-//            i_lcs_sensor_publisher
-//        ,   i_scenario_executor
-//        ,   fake_lcs_sensor_publisher
-//        >()
-//            .to<fake_lcs_sensor_publisher>().in(boost::di::singleton) [boost::di::override]
+    ,   boost::di::bind<i_lcs_sensor_publisher, i_scenario_executor, fake_lcs_sensor_publisher>()
+            .to<fake_lcs_sensor_publisher>().in(boost::di::singleton) [boost::di::override]
     );
 }
 

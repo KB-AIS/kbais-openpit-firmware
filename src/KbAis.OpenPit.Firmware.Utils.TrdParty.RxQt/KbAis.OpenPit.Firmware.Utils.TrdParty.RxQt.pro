@@ -14,12 +14,12 @@ include($$PRJDIR/../conanbuildinfo.pri)
 
 HEADERS += \
     Format.h \
-    RxQt.h \
     RxQtEvent.h \
     RxQtRunLoop.h \
     RxQtRunLoopThread.h \
     RxQtSignal.h \
     RxQtUtil.h \
+    rxqt.h
 
 DESTDIR     = $$PWD/../binaries
 OBJECTS_DIR = $$PWD/build/.obj

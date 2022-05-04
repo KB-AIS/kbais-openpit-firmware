@@ -18,14 +18,13 @@ fake_lcs_sensor_publisher::fake_lcs_sensor_publisher() noexcept
 }
 
 rxcpp::observable<lcs_sensor_message> fake_lcs_sensor_publisher::get_observable(
-    [[maybe_unused]] const rxcpp::observe_on_one_worker& coordination
+    const rxcpp::observe_on_one_worker& c
 ) const {
-    return sub_lcs_sensor_messages_.get_observable()
-        .subscribe_on(coordination);
+    return sub_lcs_sensor_messages_.get_observable().subscribe_on(c);
 }
 
 void fake_lcs_sensor_publisher::setup_scenario(
-    [[maybe_unused]] const rxcpp::observe_on_one_worker& coordination
+    [[maybe_unused]] const rxcpp::observe_on_one_worker& c
 ) {
     constexpr auto gen_lcs_msgs_smo = [](
         double wgt_s, double wgt_e
@@ -76,7 +75,7 @@ void fake_lcs_sensor_publisher::setup_scenario(
 
     obs_lcs_sensor_messages_ =
         from(
-            coordination
+            c
         ,   iterate(gen_lcs_msgs_smo(1.0 * 100.0, 200.0 * 100.0, 15s))
         ,   iterate(gen_lcs_msgs_dlt(200.0 * 100.0, 1.33, 50s))
         ,   iterate(gen_lcs_msgs_smo(1.0 * 100.0, 100.0 * 100.0, 11s) | actions::reverse)

@@ -7,7 +7,7 @@
 #include <readerwriterqueue/readerwriterqueue.h>
 
 // Utils.TrdParty.RxQt
-#include "RxQt.h"
+#include "rxqt.h"
 
 #include "Collectors/ImmediateMessagesCollector.h"
 #include "Collectors/RecurrentMessagesCollector.h"

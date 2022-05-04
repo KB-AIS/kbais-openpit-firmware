@@ -3,15 +3,13 @@
 
 // oss
 #include <plog/Log.h>
-#include <qscreen.h>
 #include <range/v3/all.hpp>
+
+#include "opf/app/view/dmp/screens/stacked_view_idxs.h"
 
 using namespace std::chrono_literals;
 
-constexpr qint32 MAIN_VIEW_IDX { 0 }
-               , DIAG_VIEW_IDX { 1 }
-               , INFO_VIEW_IDX { 2 }
-               , STOP_VIEW_IDX { 3 };
+using namespace opf::app::view::dmp;
 
 QString TIME_EVEN_FMT { QStringLiteral("hh:mm") }, TIME_FMT { QStringLiteral("hh mm") };
 
@@ -34,19 +32,13 @@ host_window::host_window(
 ,   stop_view& stop_view
 ,   nav_controller& nav_controller
 ,   ntf_controller& ntf_controller
-,   pop_controller& pop_controller
 )
     :   QMainWindow()
     ,   ui_ { new Ui::host_window }
     ,   gps_sensor_publisher_ { gps_sensor_publisher }
     ,   msg_sender_diag_publisher_ { msg_sender_diag_publisher }
-    ,   main_view_ { main_view }
-    ,   diag_view_ { diag_view }
-    ,   info_view_ { info_view }
-    ,   stop_view_ { stop_view }
-    ,   nav_controller_ { nav_controller }
-    ,   ntf_controller_ { ntf_controller }
-    ,   pop_controller_ { pop_controller }
+    ,   main_view_ { main_view }, diag_view_ { diag_view }, info_view_ { info_view }, stop_view_ { stop_view }
+    ,   nav_controller_ { nav_controller }, ntf_controller_ { ntf_controller }
     ,   notificator_w_action_ { this }
 {
     ui_->setupUi(this);
@@ -65,30 +57,30 @@ host_window::~host_window() {
 
 void host_window::setup_screen_stack() {
     main_view_.setParent(ui_->sw_nav);
-    ui_->sw_nav->insertWidget(MAIN_VIEW_IDX, &main_view_);
+    ui_->sw_nav->insertWidget(stacked_view_idxs::MAIN, &main_view_);
 
     diag_view_.setParent(ui_->sw_nav);
-    ui_->sw_nav->insertWidget(DIAG_VIEW_IDX, &diag_view_);
+    ui_->sw_nav->insertWidget(stacked_view_idxs::DIAG, &diag_view_);
 
     info_view_.setParent(ui_->sw_nav);
-    ui_->sw_nav->insertWidget(INFO_VIEW_IDX, &info_view_);
+    ui_->sw_nav->insertWidget(stacked_view_idxs::INFO, &info_view_);
 
     stop_view_.setParent(ui_->sw_nav);
-    ui_->sw_nav->insertWidget(STOP_VIEW_IDX, &stop_view_);
+    ui_->sw_nav->insertWidget(stacked_view_idxs::STOP, &stop_view_);
 
-    ui_->sw_nav->setCurrentIndex(MAIN_VIEW_IDX);
+    ui_->sw_nav->setCurrentIndex(stacked_view_idxs::MAIN);
 
     nav_controller_.get_observable()
         .subscribe(subscriptions_, [&](int screen_id) {
-            if (screen_id == MAIN_VIEW_IDX) {
+            if (screen_id == stacked_view_idxs::MAIN) {
                 ui_->lbl_screen_title->setText(QString {});
             }
 
-            if (screen_id == DIAG_VIEW_IDX) {
+            if (screen_id == stacked_view_idxs::DIAG) {
                 ui_->lbl_screen_title->setText(QStringLiteral("ДИАГНОСТИКА"));
             }
 
-            if (screen_id == INFO_VIEW_IDX) {
+            if (screen_id == stacked_view_idxs::INFO) {
                 ui_->lbl_screen_title->setText(QStringLiteral("ИНФОРМАЦИЯ"));
             }
 
@@ -100,11 +92,6 @@ void host_window::setup_screen_stack() {
         .subscribe(subscriptions_, [&](ntf_prms x) {
             notificator_w_action_.execute(std::move(x));
         });
-
-    pop_controller_.get_observable()
-        .subscribe(subscriptions_, [&](int pop_wnd_idx) {
-
-        });
 }
 
 void host_window::setup_appbar() {
@@ -113,7 +100,7 @@ void host_window::setup_appbar() {
     gps_sensor_publisher_.get_observable().observe_on(coordination)
         .subscribe(
             subscriptions_
-        ,   [&](const GpsMessage& x) {
+        ,   [&](const gps_sensor_message& x) {
                 ui_->lbl_indicatorGps->setStyleSheet(x.is_valid ? STYLE_INDICATOR_VALID : STYLE_INDICATOR_INVALID);
             }
         );

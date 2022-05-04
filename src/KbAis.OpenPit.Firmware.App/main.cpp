@@ -1,7 +1,7 @@
 #define FMT_HEADER_ONLY
 
 // qt
-#include <QtWidgets/QApplication>
+#include <QtWidgets/qapplication.h>
 // oss
 #include <plog/Log.h>
 
@@ -44,6 +44,10 @@ int main(int argc, char* argv[]) {
             auto gps_sensor_publisher = injector.create<std::shared_ptr<fake_gps_sensor_publisher>>();
             gps_sensor_publisher->setup_scenario(t);
             gps_sensor_publisher->start_scenario();
+
+            auto lcs_sensor_publisher = injector.create<std::shared_ptr<fake_lcs_sensor_publisher>>();
+            lcs_sensor_publisher->setup_scenario(t);
+            lcs_sensor_publisher->start_scenario();
         }
 
         create_singletons(injector);
